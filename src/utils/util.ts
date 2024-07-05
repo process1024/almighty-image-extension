@@ -1,4 +1,5 @@
-import { isBase64 } from "./base64";
+import { isBase64 } from './base64';
+
 // import { cdnRule } from "./cdnRule";
 
 export function uniqArray(arr: any[]) {
@@ -21,7 +22,7 @@ export const pipe =
 export function testURLMatches(url: string, matches: string[]) {
   let r, i;
   for (i = matches.length - 1; i >= 0; i--) {
-    r = new RegExp("^" + matches[i].replace(/\*/g, ".*") + "$");
+    r = new RegExp('^' + matches[i].replace(/\*/g, '.*') + '$');
     if (r.test(url)) {
       return true;
     }
@@ -30,14 +31,14 @@ export function testURLMatches(url: string, matches: string[]) {
 }
 
 export function isWebUrl(url) {
-  return url.startsWith("http");
+  return url.startsWith('http');
 }
 
 export function getDomainByUrl(url: string) {
   try {
-    return url.split("/")[2] || "";
+    return url.split('/')[2] || '';
   } catch {
-    return "";
+    return '';
   }
 }
 
@@ -53,20 +54,20 @@ export function sleep(time = 300) {
 // TODO: 跨域情况
 export function fetchContentType(url) {
   return fetch(url).then((res) => {
-    const contentType = res.headers.get("content-type");
-    return contentType.split("/")[1].match(/\b([a-z]+)/g)[0];
+    const contentType = res.headers.get('content-type');
+    return contentType.split('/')[1].match(/\b([a-z]+)/g)[0];
   });
 }
 
 export function parseJwt(e) {
-  var t = e.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"),
+  const t = e.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'),
     r = decodeURIComponent(
       atob(t)
-        .split("")
+        .split('')
         .map(function (e) {
-          return "%" + ("00" + e.charCodeAt(0).toString(16)).slice(-2);
+          return '%' + ('00' + e.charCodeAt(0).toString(16)).slice(-2);
         })
-        .join("")
+        .join(''),
     );
   return JSON.parse(r);
 }
@@ -96,8 +97,8 @@ export function parseJwt(e) {
 // }
 
 export function isHuaban() {
-  let urlInfo = new URL(location.href);
-  return urlInfo.hostname.endsWith("huaban.com");
+  const urlInfo = new URL(location.href);
+  return urlInfo.hostname.endsWith('huaban.com');
 }
 
 /** 返回时差，单位小时 */
