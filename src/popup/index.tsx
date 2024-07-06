@@ -1,35 +1,50 @@
-import React from "react"
+import React from 'react';
 
-import { sendCurrentTabMessage } from "~services/message"
+import './index.less';
+
+import { sendCurrentTabMessage } from '~services/message';
+
+import selectPicture from '../assets/select-picture.svg';
 
 function Popup() {
   function showSelectCapture() {
-    sendCurrentTabMessage({ type: "showSelectCapture" })
+    sendCurrentTabMessage({ type: 'showSelectCapture' });
   }
 
   function captureCurrent() {
-    sendCurrentTabMessage({ type: "captureCurrent" })
-    window.close()
+    sendCurrentTabMessage({ type: 'captureCurrent' });
+    window.close();
   }
 
   function captureFullPage() {
-    sendCurrentTabMessage({ type: "captureFullPage" })
-    window.close()
+    sendCurrentTabMessage({ type: 'captureFullPage' });
+    window.close();
   }
 
   return (
-    <div className="btn-wrap">
-      <button className="btn" onClick={showSelectCapture}>
-        <p>选定区域截图</p>
-      </button>
-      <button className="btn" onClick={captureCurrent}>
-        <p>可视区域截图</p>
-      </button>
-      <button className="btn" onClick={captureFullPage}>
-        <p>整张截图</p>
-      </button>
+    <div className="popup">
+      <div className="title">图片下载</div>
+      <div className="btn">
+        <div className="select-pic-icon icon" />
+        批量下载
+      </div>
+      <div className="title">截图</div>
+      <div className="capture-btn-wrap">
+        <button className="btn" onClick={showSelectCapture}>
+          <div className="select-icon icon"></div>
+          <div>选定区域截图</div>
+        </button>
+        <button className="btn" onClick={captureCurrent}>
+          <div className="current-icon icon"></div>
+          <div>可视区域截图</div>
+        </button>
+        <button className="btn" onClick={captureFullPage}>
+          <div className="full-icon icon"></div>
+          <div>整页截图</div>
+        </button>
+      </div>
     </div>
-  )
+  );
 }
 
-export default Popup
+export default Popup;
