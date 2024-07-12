@@ -1,27 +1,13 @@
-// @import "antd/lib/modal/style/index.less";
-// @import "antd/lib/style/default.less";
-// FIX: 修复message 组件在batchUpload引用 样式在全局加载，丢失本身样式问题
-// @import "../components/Message/index.less";
-// FIX: 升级plasmo版本后，content ui 不会加载component 的样式问题，导入所有用到的组件样式在getStyle里加载
-// @import "../components/PinBtn/index.less";
-// @import "../components/BatchPin/index.less";
+@import "../../components/BatchPin/index.less";
 @import "../../components/Resizer/index.less";
-// @import "../components/Masonry/index.less";
-// @import "../components/Loading/index.less";
-// @import "../components/DragPin/index.less";
+@import "../../components/Masonry/index.less";
 @import "../../components/Crosshair/index.less";
 @import "../../components/Capture/index.less";
+@import "../../components/BatchPin/Header/index.less";
+@import "../../components/BatchPin/HeaderRight/index.less";
+@import "../../components/BatchPin/ImageCard/index.less";
+@import "../../components/DragSelect/index.less";
 
-// @import "../components/BatchUpload/index.less";
-// @import "../components/BatchPin/Header/index.less";
-// @import "../components/BatchPin/HeaderRight/index.less";
-// @import "../components/BatchPin/ImageCard/index.less";
-// @import "../components/BoardSelect/index.less";
-// @import "../components/HBtagInput/index.less";
-// @import "../components/HBModal/index.less";
-// @import "../components/HBModal/confirm.less";
-// @import "../components/DragSelect/index.less";
-// @import "../components/ProtocolModal/index.less";
 #plasmo-shadow-container {
   font-family: Alibaba Sans, -apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, Hiragino Sans GB, Microsoft YaHei,
     Helvetica Neue, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;

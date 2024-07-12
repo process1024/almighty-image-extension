@@ -12,10 +12,12 @@
   "dependencies": {
     "ahooks": "^3.8.0",
     "classnames": "^2.5.1",
+    "lodash-es": "^4.17.21",
     "plasmo": "0.86.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-if": "^4.1.5",
+    "react-selecto": "^1.26.3",
     "vue": "^3.4.29"
   },
   "devDependencies": {

@@ -4,11 +4,13 @@ import './index.less';
 
 import { sendCurrentTabMessage } from '~services/message';
 
-import selectPicture from '../assets/select-picture.svg';
-
 function Popup() {
+  function showBatchPin() {
+    sendCurrentTabMessage({ type: 'batchPin' });
+  }
   function showSelectCapture() {
     sendCurrentTabMessage({ type: 'showSelectCapture' });
+    window.close();
   }
 
   function captureCurrent() {
@@ -24,7 +26,7 @@ function Popup() {
   return (
     <div className="popup">
       <div className="title">图片下载</div>
-      <div className="btn">
+      <div className="btn" onClick={showBatchPin}>
         <div className="select-pic-icon icon" />
         批量下载
       </div>

@@ -1,19 +1,22 @@
-import "./index.less"
-// import styleText from "data-text:./index.less"
-import { useDebounceEffect } from "ahooks";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { When } from "react-if";
+import React from 'react';
 
-import Crosshair from "~components/Crosshair";
+import './index.less';
+
+// import styleText from "data-text:./index.less"
+import { useDebounceEffect } from 'ahooks';
+// import type { PlasmoGetStyle } from 'plasmo';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { When } from 'react-if';
+
+import Crosshair from '~components/Crosshair';
 // import PinBtn from "~components/PinBtn";
-import { Resizer } from "~components/Resizer";
-import { captureSelect } from "~services/capture";
-import { useMouseDrag, useMouseMove } from "~services/hooks";
+import { Resizer } from '~components/Resizer';
+import { captureSelect } from '~services/capture';
+import { useMouseDrag, useMouseMove } from '~services/hooks';
 // import { onFlashPin as flashPin, openPinModal, useLastBoard } from "~services/pin";
 // import type { TrackerEvent } from "~services/tracker";
-import { TElementPosition, getMouseHoverElementPosition } from "~utils/element";
-import type { PlasmoGetStyle } from "plasmo"
- 
+import { getMouseHoverElementPosition, TElementPosition } from '~utils/element';
+
 // export const getStyle: PlasmoGetStyle = () => {
 //   const style = document.createElement("style")
 //   style.textContent = styleText
@@ -29,7 +32,7 @@ interface IDrag {
 
 const Btns = ({ pinBtnStyle, onPin, onCancel, onFlashPin, flashBoard }) => {
   return (
-    <div className="capture-btns" style={pinBtnStyle}>
+    <div className="capture-annotate" style={pinBtnStyle}>
       <button className="cancel-btn" size="large" onClick={onCancel}>
         取消
       </button>
@@ -47,16 +50,16 @@ function ElementInspector({ sharp, onClick }: { sharp: TElementPosition; onClick
         className="capture-element-inspector"
         onMouseUp={onClick}
         style={{
-          width: sharp.right - sharp.left + "px",
-          height: sharp.bottom - sharp.top + "px",
+          width: sharp.right - sharp.left + 'px',
+          height: sharp.bottom - sharp.top + 'px',
           left: sharp.left,
-          top: sharp.top
+          top: sharp.top,
         }}></div>
     );
   }
 }
 
-const Capture = ({ onCancel }: { onCancel: () => void; }) => {
+const Capture = ({ onCancel }: { onCancel: () => void }) => {
   const maskRef = useRef<HTMLElement>();
   const parentRef = useRef<HTMLElement>();
   const [hidden, setHidden] = useState(false);
@@ -93,12 +96,12 @@ const Capture = ({ onCancel }: { onCancel: () => void; }) => {
     return {
       position: {
         x: start.x < end.x ? start.x : end.x,
-        y: start.y < end.y ? start.y : end.y
+        y: start.y < end.y ? start.y : end.y,
       },
       size: {
         width: Math.abs(start.x - end.x),
-        height: Math.abs(start.y - end.y)
-      }
+        height: Math.abs(start.y - end.y),
+      },
     };
   }, [position]);
 
@@ -111,19 +114,19 @@ const Capture = ({ onCancel }: { onCancel: () => void; }) => {
     setPosition({
       start: {
         x: e.x,
-        y: e.y
+        y: e.y,
       },
       end: {
         x: e.x + e.width,
-        y: e.y + e.height
-      }
+        y: e.y + e.height,
+      },
     });
   };
 
   function resetPosition() {
     setPosition({
       start: { x: 0, y: 0 },
-      end: { x: 0, y: 0 }
+      end: { x: 0, y: 0 },
     });
   }
 
@@ -132,12 +135,12 @@ const Capture = ({ onCancel }: { onCancel: () => void; }) => {
     setPosition({
       start: {
         x: left,
-        y: top
+        y: top,
       },
       end: {
         x: right,
-        y: bottom
-      }
+        y: bottom,
+      },
     });
     clearInspectorInfo();
   }
@@ -162,7 +165,7 @@ const Capture = ({ onCancel }: { onCancel: () => void; }) => {
   }, [axis, dragging, hasCapture]);
 
   useDebounceEffect(handleGetHoverElement, [axis], {
-    wait: 10
+    wait: 10,
   });
 
   useEffect(() => {
@@ -172,7 +175,6 @@ const Capture = ({ onCancel }: { onCancel: () => void; }) => {
 
   // 获取登录状态 -> 判断是否需要滚动 -> 截图 -> 采集
   const onPin = async () => {
-
     setHidden(true);
     const result = await captureSelect(position);
     console.log(result);
@@ -181,7 +183,6 @@ const Capture = ({ onCancel }: { onCancel: () => void; }) => {
   };
 
   const onFlashPin = async () => {
-
     setHidden(true);
     // const result = await captureSelect(position);
     // flashPin({
@@ -195,7 +196,7 @@ const Capture = ({ onCancel }: { onCancel: () => void; }) => {
 
   const btnSize = {
     width: 135,
-    height: 40
+    height: 40,
   };
 
   function renderBtn(props) {
@@ -211,28 +212,23 @@ const Capture = ({ onCancel }: { onCancel: () => void; }) => {
       end.y + offset.y + btnSize.height + 12 > scrollTop + clientHeight
     ) {
       pinBtnStyle = {
-        position: "fixed",
-        bottom: "8px",
-        left: end.x + offset.x - btnSize.width - 8 + "px"
+        position: 'fixed',
+        bottom: '8px',
+        left: end.x + offset.x - btnSize.width - 8 + 'px',
       };
     } else {
       pinBtnStyle = {
-        position: "absolute",
-        bottom: "-52px",
-        right: 0
+        position: 'absolute',
+        bottom: '-52px',
+        right: 0,
       };
     }
 
     return (
       <When condition={!dragging && hasCapture}>
         {/* <button>采集按钮</button> */}
-        <Btns
-          pinBtnStyle={pinBtnStyle}
-          onPin={onPin}
-          onFlashPin={onFlashPin}
-          onCancel={onCancel}
-        />
-          {/* flashBoard={board.title} */}
+        <Btns pinBtnStyle={pinBtnStyle} onPin={onPin} onFlashPin={onFlashPin} onCancel={onCancel} />
+        {/* flashBoard={board.title} */}
       </When>
     );
   }
@@ -244,7 +240,7 @@ const Capture = ({ onCancel }: { onCancel: () => void; }) => {
           id="mask"
           className="capture-mask"
           style={{
-            height: scrollHeight + "px"
+            height: scrollHeight + 'px',
           }}
           onClick={(e) => e.preventDefault()}
           ref={maskRef}>
@@ -259,7 +255,7 @@ const Capture = ({ onCancel }: { onCancel: () => void; }) => {
           onDragStop={onDragStop}
           container={parentRef}
           style={{
-            pointerEvents: dragging ? "none" : "auto"
+            pointerEvents: dragging ? 'none' : 'auto',
           }}>
           {/* <div>x1: {position.start.x}</div>
               <div>y1: {position.start.y}</div>

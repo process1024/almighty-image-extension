@@ -1,0 +1,23 @@
+.drag-select-content {
+  .selecto-selection {
+    background: rgba(255, 89, 103, 0.2);
+    border: 1px solid #ff5967;
+    pointer-events: none;
+  }
+  .drag-select-mask {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    height: 100%;
+    cursor: move;
+  }
+  .drag-select-hidden {
+    display: none;
+  }
+  .drag-select-show {
+    display: block;
+  }
+}

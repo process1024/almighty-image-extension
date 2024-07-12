@@ -1,0 +1,88 @@
+@primary-color: #ff5967;
+
+.batch-image-card-wrapper {
+  position: relative;
+  cursor: pointer;
+  width: 240px;
+  // overflow: hidden;
+  display: inline-block;
+  transition: background-color 0.2s ease-in-out;
+
+  .batch-image-card {
+    position: relative;
+    text-align: center;
+    opacity: 0.95;
+    &::before {
+      pointer-events: none;
+      content: "";
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background-color: #00000005;
+      border-radius: 12px;
+      transition: background-color 0.2s ease-in-out;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    &:hover::before {
+      background-color: rgba(28, 31, 35, 0.25);
+    }
+  }
+
+  &-check_btn .ant-checkbox-inner:after {
+    left: 25%;
+  }
+
+  .batch-image-card-checked {
+    &::after {
+      content: "";
+      width: calc(100% + 10px);
+      height: calc(100% + 10px);
+      border: 2px solid #ff5967;
+      border-radius: 16px;
+      position: absolute;
+      top: -5px;
+      left: -5px;
+    }
+  }
+
+  .batch-image-card__img {
+    max-width: 100%;
+    border-radius: 12px;
+    background-color: #dfdfdf;
+  }
+
+  .batch-image-card__text {
+    color: rgba(30, 32, 35, 0.45);
+    margin: 8px 0 0 0;
+  }
+
+  .ant-checkbox-inner {
+    width: 20px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #fff;
+    border-radius: 4px;
+  }
+
+  .ant-checkbox-checked {
+    .ant-checkbox-inner {
+      background-color: @primary-color !important;
+      border-color: @primary-color !important;
+      &::after {
+        left: 25%;
+      }
+    }
+    &::after {
+      border-radius: 4px;
+    }
+  }
+
+  .ant-checkbox-wrapper {
+    position: absolute;
+    top: 5.5px;
+    right: 8px;
+  }
+}

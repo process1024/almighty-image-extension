@@ -1,0 +1,53 @@
+@batch-pin-prefix: batch-pin;
+
+.@{batch-pin-prefix} {
+  &-container {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    z-index: 10000;
+    user-select: none;
+    // 打包会被忽略
+    // -webkit-user-select: none;
+  }
+  &-content {
+    // overflow: scroll;
+    font-size: 12px;
+    margin: 10px auto;
+
+    .masonry {
+      overflow: initial !important;
+    }
+  }
+}
+.empty-text {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 50px;
+}
+
+#@{batch-pin-prefix}-main {
+  height: 100vh;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+}
+
+.@{batch-pin-prefix}-loading-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}

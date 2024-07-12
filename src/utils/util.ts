@@ -1,6 +1,5 @@
 import { isBase64 } from './base64';
-
-// import { cdnRule } from "./cdnRule";
+import { cdnRule } from './cdnRule';
 
 export function uniqArray(arr: any[]) {
   return [...new Set(arr)];
@@ -75,26 +74,26 @@ export function parseJwt(e) {
 /**
  * isAsync 是否支持异步
  **/
-// export function replaceCdnUrl(url: string, { isAsync } = { isAsync: false }) {
-//   if (isBase64(url)) return url;
-//   if (cdnRule && cdnRule.rules) {
-//     for (let t = 0; t < cdnRule.rules.length; t++)
-//       try {
-//         const r = cdnRule.rules[t];
-//         let n = r.urlPattern;
-//         if (RegExp(n).test(url)) {
-//           if (r.replace) {
-//             return r.replace(url);
-//           } else {
-//             return isAsync ? r.replaceAsync(url) : url;
-//           }
-//         }
-//       } catch (t) {
-//         return url;
-//       }
-//     return url;
-//   }
-// }
+export function replaceCdnUrl(url: string, { isAsync } = { isAsync: false }) {
+  if (isBase64(url)) return url;
+  if (cdnRule && cdnRule.rules) {
+    for (let t = 0; t < cdnRule.rules.length; t++)
+      try {
+        const r = cdnRule.rules[t];
+        const n = r.urlPattern;
+        if (RegExp(n).test(url)) {
+          if (r.replace) {
+            return r.replace(url);
+          } else {
+            return isAsync ? r.replaceAsync(url) : url;
+          }
+        }
+      } catch (t) {
+        return url;
+      }
+    return url;
+  }
+}
 
 export function isHuaban() {
   const urlInfo = new URL(location.href);
