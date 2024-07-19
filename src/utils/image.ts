@@ -135,3 +135,19 @@ function handlePrefixUrl(url: string) {
   }
   return url;
 }
+
+export async function copyImageFromBase64(base64Image: string) {
+  // 将 base64 数据转换为 Blob
+  const byteCharacters = atob(base64Image.split(',')[1]);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], { type: 'image/png' });
+
+  // 创建一个 ClipboardItem 并复制到剪贴板
+  const clipboardItem = new ClipboardItem({ [blob.type]: blob });
+  await navigator.clipboard.write([clipboardItem]);
+  console.log('Image copied to clipboard');
+}

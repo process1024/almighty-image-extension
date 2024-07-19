@@ -155,7 +155,6 @@ const BatchPin = (props: { onClose: () => void }) => {
             </div>
           </When>
           <When condition={!loading}>
-            {/* tracker={trackerEvent} */}
             <Header
               onClose={props.onClose}
               all={filterImgs.length}
@@ -180,7 +179,7 @@ const BatchPin = (props: { onClose: () => void }) => {
             <DragSelect
               masonryRef={masonryRef}
               container={document
-                .querySelector('#huaban-pin-shadow')
+                .querySelector('#almighty-pin-shadow')
                 .shadowRoot.querySelector('#batch-pin-main')}
               dragCondition={(e) => e.clientY > 64}
               dragCallback={dragCallback}

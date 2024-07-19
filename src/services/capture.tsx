@@ -1,6 +1,4 @@
-// import { pinMessage } from "~components/Message";
 import { sendMessageByPromise } from "~services/message";
-// import { openPinModal } from "~services/pin";
 import { getBase64Size, isBase64 } from "~utils/base64";
 import { getClearFixFn } from "~utils/element";
 import { sleep } from "~utils/util";
@@ -57,7 +55,7 @@ export function clipImage2Url(img: ClipImage) {
       const canvas = document.createElement("canvas");
       canvas.width = img.width;
       canvas.height = img.height;
-      var context = canvas.getContext("2d");
+      const context = canvas.getContext("2d");
       const dp = window.devicePixelRatio;
       context.drawImage(image, img.x * dp, img.y * dp, img.width * dp, img.height * dp, 0, 0, img.width, img.height);
       resolve(canvas.toDataURL("image/png", 1));
@@ -283,7 +281,7 @@ async function capturePage(
       break;
     }
 
-    let curPosition = pagePosition[i];
+    const curPosition = pagePosition[i];
     await pageScroll(curPosition);
     if (i > 0 || option.forceClearFix) {
       hiddenFixed();

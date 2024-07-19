@@ -6,6 +6,8 @@ import BatchPin from '~components/BatchPin';
 import Capture from '~components/Capture';
 import captureService from '~services/capture';
 
+export const getShadowHostId = () => 'almighty-pin-shadow';
+
 export const getStyle = () => {
   const style = document.createElement('style');
   style.textContent = styleText;
@@ -43,7 +45,7 @@ function IndexContent() {
   }, []);
 
   return (
-    <div>
+    <>
       <When condition={contentUiType === 'capture'}>
         <Capture onCancel={() => setContentUiType('default')} />
       </When>
@@ -51,7 +53,7 @@ function IndexContent() {
       <When condition={contentUiType === 'batchPin'}>
         <BatchPin onClose={() => setContentUiType('default')} />
       </When>
-    </div>
+    </>
   );
 }
 

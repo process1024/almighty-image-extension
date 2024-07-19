@@ -8,11 +8,13 @@ import { useDebounceEffect } from 'ahooks';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { When } from 'react-if';
 
+import { copyImageFromBase64 } from '~/utils/image';
 import Crosshair from '~components/Crosshair';
 // import PinBtn from "~components/PinBtn";
 import { Resizer } from '~components/Resizer';
 import { captureSelect } from '~services/capture';
 import { useMouseDrag, useMouseMove } from '~services/hooks';
+import { downloadBase64Image } from '~utils/download';
 // import { onFlashPin as flashPin, openPinModal, useLastBoard } from "~services/pin";
 // import type { TrackerEvent } from "~services/tracker";
 import { getMouseHoverElementPosition, TElementPosition } from '~utils/element';
@@ -30,14 +32,17 @@ interface IDrag {
   height: number;
 }
 
-const Btns = ({ pinBtnStyle, onPin, onCancel, onFlashPin, flashBoard }) => {
+const Btns = ({ pinBtnStyle, onCopy, onCancel, onDownload }) => {
   return (
     <div className="capture-annotate" style={pinBtnStyle}>
-      <button className="cancel-btn" size="large" onClick={onCancel}>
+      <button className="btn cancel" onClick={onCancel}>
         取消
       </button>
-      <button className="cancel-btn" size="large" onClick={onCancel}>
-        采集
+      <button className="btn secondary" onClick={onCopy}>
+        复制
+      </button>
+      <button className="btn primary" onClick={onDownload}>
+        下载
       </button>
     </div>
   );
@@ -150,6 +155,7 @@ const Capture = ({ onCancel }: { onCancel: () => void }) => {
   }
 
   function getHoverElement({ x, y }: typeof axis) {
+    if (resizeProps.size.height) return;
     const eleInfo = getMouseHoverElementPosition({ x, y });
     if (eleInfo) {
       setInspectorInfo(eleInfo);
@@ -169,22 +175,22 @@ const Capture = ({ onCancel }: { onCancel: () => void }) => {
   });
 
   useEffect(() => {
-    // tracker.captureDialogExpose();
     resetPosition();
   }, []);
 
   // 获取登录状态 -> 判断是否需要滚动 -> 截图 -> 采集
-  const onPin = async () => {
-    setHidden(true);
-    const result = await captureSelect(position);
-    console.log(result);
-    // openPinModal({ img_url: result }, "截图采集");
-    onCancel();
-  };
+  // const onCopy = async () => {
+  //   setHidden(true);
+  //   const result = await captureSelect(position);
+  //   console.log(result);
+  //   // openPinModal({ img_url: result }, "截图采集");
+  //   onCancel();
+  // };
 
   const onFlashPin = async () => {
     setHidden(true);
-    // const result = await captureSelect(position);
+    const result = await captureSelect(position);
+    copyImageFromBase64(result);
     // flashPin({
     //   img_url: result,
     //   text: document.title,
@@ -224,11 +230,27 @@ const Capture = ({ onCancel }: { onCancel: () => void }) => {
       };
     }
 
+    async function onCopy() {
+      setHidden(true);
+      const result = await captureSelect(position);
+      copyImageFromBase64(result);
+      onCancel();
+    }
+    async function onDownload() {
+      setHidden(true);
+      const result = await captureSelect(position);
+      downloadBase64Image(result, '截图.jpg');
+      onCancel();
+    }
+
     return (
       <When condition={!dragging && hasCapture}>
-        {/* <button>采集按钮</button> */}
-        <Btns pinBtnStyle={pinBtnStyle} onPin={onPin} onFlashPin={onFlashPin} onCancel={onCancel} />
-        {/* flashBoard={board.title} */}
+        <Btns
+          pinBtnStyle={pinBtnStyle}
+          onCopy={onCopy}
+          onDownload={onDownload}
+          onCancel={onCancel}
+        />
       </When>
     );
   }

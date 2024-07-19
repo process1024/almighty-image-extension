@@ -39,25 +39,24 @@ const FormatDropdown = ({ formats, onChange }: HeaderProps) => {
     onChange(e.key);
   }
 
-  const menu = <div>菜单</div>;
-  // const menu = <Menu selectable items={menuItems} onClick={selectFormat}></Menu>;
-
   return (
-    <div>下拉</div>
-    // <Dropdown getPopupContainer={(e) => e} overlay={menu}>
-    //   <div className="format-dropdown">
-    //     {formatName}
-    //     <span className="arrow-down"></span>
-    //   </div>
-    // </Dropdown>
+    <select name="cars" id="cars">
+      {menuItems.map((item) => {
+        return (
+          <option value={item.key} key={item.key}>
+            {item.label}
+          </option>
+        );
+      })}
+    </select>
   );
 };
 
-const trackEventKeyMap = {
-  format: '',
-  minHeight: '高度控制条',
-  minWidth: '宽度控制条',
-};
+// const trackEventKeyMap = {
+//   format: '',
+//   minHeight: '高度控制条',
+//   minWidth: '宽度控制条',
+// };
 
 export default function Header({ onClose, tracker, all, selected, onSelectAll }) {
   const { minHeight, minWidth } = globalConfig.batchPin;
@@ -70,10 +69,11 @@ export default function Header({ onClose, tracker, all, selected, onSelectAll })
   // });
 
   const onChange = (key: string, value: any) => {
+    console.log(key, value);
     config[key] = value;
     setConfig({ ...config });
 
-    tracker.batchPinClickTop(trackEventKeyMap[key] || value);
+    // tracker.batchPinClickTop(trackEventKeyMap[key] || value);
   };
 
   const formats = useMemo(() => {
@@ -129,22 +129,23 @@ export default function Header({ onClose, tracker, all, selected, onSelectAll })
           <FormatDropdown formats={formats} onChange={(v) => onChange('format', v)} />
           <div className="flex-align-center">
             <label>最小宽度</label>
-            {/* <Slider
-              value={config.minWidth}
+            <input
+              type="range"
               min={config.rangSize.minWidth}
               max={config.rangSize.maxWith}
-              onChange={(v) => onChange('minWidth', v)}
-            /> */}
+              value={config.minWidth}
+              onChange={(e) => onChange('minWidth', e.target.value)}></input>
             <span className="max-num-text">{config.minWidth}px</span>
           </div>
           <div className="flex-align-center">
             <label>最小高度</label>
-            {/* <Slider
-              value={config.minHeight}
+
+            <input
+              type="range"
               min={config.rangSize.minHeight}
               max={config.rangSize.maxHeight}
-              onChange={(v) => onChange('minHeight', v)}
-            /> */}
+              value={config.minHeight}
+              onChange={(e) => onChange('minHeight', e.target.value)}></input>
             <span className="max-num-text">{config.minHeight}px</span>
           </div>
 

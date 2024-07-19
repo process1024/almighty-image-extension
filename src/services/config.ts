@@ -19,8 +19,8 @@ export const globalConfig = {
   },
   // 批量采集的图片限制
   batchPin: {
-    minHeight: 100,
-    minWidth: 100,
+    minHeight: 10,
+    minWidth: 10,
   },
   block: ['*://www.zcool.com.cn/*', '*://*.huaban.com/*'],
   btnPositions: [
