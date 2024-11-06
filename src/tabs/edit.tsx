@@ -76,7 +76,7 @@ const ImageEditor = () => {
             onClick={() => setActiveFunction(TOOL_TYPES.ARROW)}
           />
 
-          <ToolButton
+<ToolButton
             active={activeFunction === TOOL_TYPES.RECT}
             icon={<BorderOutlined />}
             onClick={() => setActiveFunction(TOOL_TYPES.RECT)}
@@ -105,7 +105,7 @@ const ImageEditor = () => {
               selectedObject={selectedObject?.type === 'rect' ? selectedObject : null}
               defaultRectOptions={rectOptions}
               onUpdateSelected={updateObjectProperties}
-              onUpdateDefaults={(props) => setRectOptions((prev) => ({ ...prev, ...props }))}
+              onUpdateDefaults={(props) => setRectOptions(prev => ({ ...prev, ...props }))}
             />
           )}
         </Space>
