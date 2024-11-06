@@ -19,6 +19,7 @@ function isEnter(e) {
     ? e.code === "Enter" || e.code === "NumpadEnter"
     : e.keyCode === 13;
 }
+
 export default function useViewModel(props) {
   const {
     defaultValue,

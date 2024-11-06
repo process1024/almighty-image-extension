@@ -1,5 +1,6 @@
 
 import tabHelper from "~services/tabHelper";
+import { batchDownloadImages } from '~utils/image'
 
 export default {};
 
@@ -12,6 +13,21 @@ const listener = (request, _?, response?) => {
     case "event": {
       tabHelper.getActiveTab(true).then((tab) => {
         chrome.tabs.sendMessage(tab.id, request, response);
+      });
+      return true;
+    }
+    case "download": {
+      batchDownloadImages(request.urls)
+      return true;
+    }
+    case "open": {
+      tabHelper.createTab(request.url)
+      return true;
+    }
+    case "storage": {
+      const { key, data } = request.data;
+      chrome.storage.local.set({ [key]: data }, function () {
+        response({})
       });
       return true;
     }

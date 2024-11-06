@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fabric.js Text Example</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/fabric.js/5.3.1/fabric.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script> -->
+  </head>
+  <body>
+    <canvas id="canvas" width="800" height="600" style="border: 1px solid #ccc"></canvas>
+    <button id="addText">Add Text</button>
+    <script>
+      // 初始化 Fabric.js canvas
+      const canvas = new fabric.Canvas('canvas');
+
+      // 添加文本按钮点击事件
+      document.getElementById('addText').addEventListener('click', () => {
+        const text = new fabric.Text('Click to edit', {
+          left: 100,
+          top: 100,
+          fill: '#000',
+          fontSize: 20,
+          editable: true,
+        });
+        canvas.add(text);
+        canvas.setActiveObject(text);
+        text.enterEditing();
+      });
+
+      // 允许文本编辑
+      canvas.on('object:selected', (options) => {
+        const obj = options.target;
+        if (obj instanceof fabric.Text) {
+          obj.enterEditing();
+        }
+      });
+
+      canvas.on('object:modified', (options) => {
+        const obj = options.target;
+        if (obj instanceof fabric.Text) {
+          obj.exitEditing();
+        }
+      });
+    </script>
+  </body>
+</html>

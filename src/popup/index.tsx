@@ -6,7 +6,8 @@ import { sendCurrentTabMessage } from '~services/message';
 
 function Popup() {
   function showBatchPin() {
-    sendCurrentTabMessage({ type: 'batchPin' });
+    window.open('/tabs/edit.html');
+    // sendCurrentTabMessage({ type: 'batchPin' });
   }
   function showSelectCapture() {
     sendCurrentTabMessage({ type: 'showSelectCapture' });

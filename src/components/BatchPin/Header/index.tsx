@@ -1,5 +1,3 @@
-// import { Dropdown, Menu, Slider } from 'antd';
-// import huabanImg from "data-base64:~assets/with-text-logo.svg";
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 
 import { globalConfig } from '~services/config';
@@ -35,12 +33,12 @@ const FormatDropdown = ({ formats, onChange }: HeaderProps) => {
   }, [format]);
 
   function selectFormat(e) {
-    setFormat(e.key);
-    onChange(e.key);
+    setFormat(e.target.value);
+    onChange(e.target.value);
   }
 
   return (
-    <select name="cars" id="cars">
+    <select name="format" id="format" onChange={selectFormat}>
       {menuItems.map((item) => {
         return (
           <option value={item.key} key={item.key}>
@@ -52,28 +50,15 @@ const FormatDropdown = ({ formats, onChange }: HeaderProps) => {
   );
 };
 
-// const trackEventKeyMap = {
-//   format: '',
-//   minHeight: '高度控制条',
-//   minWidth: '宽度控制条',
-// };
-
 export default function Header({ onClose, tracker, all, selected, onSelectAll }) {
   const { minHeight, minWidth } = globalConfig.batchPin;
   const [config, setConfig] = useContext(AppContext);
-  // const [rangSize, setRangSize] = useState({
-  //   maxWith: minWidth,
-  //   maxHeight: minHeight,
-  //   minWidth: 1,
-  //   minHeight: 1
-  // });
 
   const onChange = (key: string, value: any) => {
     console.log(key, value);
     config[key] = value;
     setConfig({ ...config });
 
-    // tracker.batchPinClickTop(trackEventKeyMap[key] || value);
   };
 
   const formats = useMemo(() => {
@@ -81,17 +66,6 @@ export default function Header({ onClose, tracker, all, selected, onSelectAll })
       return !!type;
     });
   }, [config.allImg]);
-
-  // const rangSize = useMemo(() => {
-  //   const sortWidthImgs = config.allImg.sort((a, b) => a.width - b.width);
-  //   const sortHeightImgs = config.allImg.sort((a, b) => a.height - b.height);
-  //   return {
-  //     maxWith: sortWidthImgs[config.allImg.length - 1]?.width || minWidth,
-  //     maxHeight: sortHeightImgs[config.allImg.length - 1]?.height || minHeight,
-  //     minWidth: sortWidthImgs[0]?.width || 1,
-  //     minHeight: sortHeightImgs[0]?.height || 1
-  //   };
-  // }, [config.allImg]);
 
   useEffect(() => {
     const { rangSize } = config;
@@ -131,6 +105,7 @@ export default function Header({ onClose, tracker, all, selected, onSelectAll })
             <label>最小宽度</label>
             <input
               type="range"
+              className='range-slider__range'
               min={config.rangSize.minWidth}
               max={config.rangSize.maxWith}
               value={config.minWidth}
@@ -142,6 +117,7 @@ export default function Header({ onClose, tracker, all, selected, onSelectAll })
 
             <input
               type="range"
+              className='range-slider__range'
               min={config.rangSize.minHeight}
               max={config.rangSize.maxHeight}
               value={config.minHeight}

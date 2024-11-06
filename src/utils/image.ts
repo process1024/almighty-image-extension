@@ -151,3 +151,37 @@ export async function copyImageFromBase64(base64Image: string) {
   await navigator.clipboard.write([clipboardItem]);
   console.log('Image copied to clipboard');
 }
+
+export function batchDownloadImages(imageUrls, format = 'jpg') {
+  imageUrls.forEach((url, index) => {
+      chrome.downloads.download({
+          url: url,
+          filename: `image_${index}.${format}`,
+          saveAs: false // 设置为false以避免弹出保存对话框
+      }, (downloadId) => {
+          if (chrome.runtime.lastError) {
+              console.error(`Error downloading image ${url}:`, chrome.runtime.lastError);
+          } else {
+              console.log(`Started downloading image_${index}.${format} with ID:`, downloadId);
+          }
+      });
+  });
+}
+
+export function getBase64ImageDimensions(base64: string) {
+  return new Promise<{width: number, height: number}>((resolve, reject) => {
+      const img = new Image();
+      img.src = base64;
+
+      img.onload = () => {
+          resolve({
+              width: img.width,
+              height: img.height
+          });
+      };
+
+      img.onerror = (error) => {
+          reject(error);
+      };
+  });
+}

@@ -2,28 +2,17 @@ import React from 'react';
 
 import './index.less';
 
-// import styleText from "data-text:./index.less"
 import { useDebounceEffect } from 'ahooks';
-// import type { PlasmoGetStyle } from 'plasmo';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { When } from 'react-if';
 
 import { copyImageFromBase64 } from '~/utils/image';
 import Crosshair from '~components/Crosshair';
-// import PinBtn from "~components/PinBtn";
 import { Resizer } from '~components/Resizer';
 import { captureSelect } from '~services/capture';
 import { useMouseDrag, useMouseMove } from '~services/hooks';
 import { downloadBase64Image } from '~utils/download';
-// import { onFlashPin as flashPin, openPinModal, useLastBoard } from "~services/pin";
-// import type { TrackerEvent } from "~services/tracker";
 import { getMouseHoverElementPosition, TElementPosition } from '~utils/element';
-
-// export const getStyle: PlasmoGetStyle = () => {
-//   const style = document.createElement("style")
-//   style.textContent = styleText
-//   return style
-// }
 
 interface IDrag {
   x: number;
@@ -178,28 +167,6 @@ const Capture = ({ onCancel }: { onCancel: () => void }) => {
     resetPosition();
   }, []);
 
-  // 获取登录状态 -> 判断是否需要滚动 -> 截图 -> 采集
-  // const onCopy = async () => {
-  //   setHidden(true);
-  //   const result = await captureSelect(position);
-  //   console.log(result);
-  //   // openPinModal({ img_url: result }, "截图采集");
-  //   onCancel();
-  // };
-
-  const onFlashPin = async () => {
-    setHidden(true);
-    const result = await captureSelect(position);
-    copyImageFromBase64(result);
-    // flashPin({
-    //   img_url: result,
-    //   text: document.title,
-    //   link: window.location.href,
-    //   board_id: board.board_id
-    // });
-    onCancel();
-  };
-
   const btnSize = {
     width: 135,
     height: 40,
@@ -239,8 +206,23 @@ const Capture = ({ onCancel }: { onCancel: () => void }) => {
     async function onDownload() {
       setHidden(true);
       const result = await captureSelect(position);
-      downloadBase64Image(result, '截图.jpg');
-      onCancel();
+      console.log('result', result);
+      console.log(chrome);
+      chrome.runtime.sendMessage({ type: "storage", data: {
+        key: 'imageData',
+        data: result
+      }}, (response) => {
+        console.log('response', response);
+        chrome.runtime.sendMessage({ type: "open", url: '/tabs/edit.html' });
+      });
+
+      // chrome.storage.local.set({ key: result }, function () {
+      //   console.log('Data saved');
+      //   chrome.tabs.create({ url: '/tab/edit.html' });
+      //   // chrome.runtime.sendMessage({ type: "open", urls: '/tab/edit.html' });
+      // });
+      // downloadBase64Image(result, '截图.jpg');
+      // onCancel();
     }
 
     return (

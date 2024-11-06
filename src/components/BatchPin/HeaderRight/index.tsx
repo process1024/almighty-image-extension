@@ -1,24 +1,9 @@
-import { useMount, useRequest } from 'ahooks';
 // import { Button, Checkbox } from "antd";
-import selectArrowDownSvg from 'data-base64:~assets/select-arrow-down.svg';
-// import addSvg from "data-base64:~assets/add-gray.svg";
 import React, { useCallback, useContext, useMemo, useState } from 'react';
-
-// import { Storage } from '@plasmohq/storage';
-
-// import BoardSelect from "~components/BoardSelect";
-// import HBTagInput from "~components/HBTagInput";
-// import { EVENT } from '~constants/event';
-// import { getTags } from '~services';
-// import { getIsLogin } from '~services/login';
-// import type { TrackerEvent } from "~services/tracker";
-// import Event from '~utils/event';
 
 import AppContext from '../context';
 
 import './index.less';
-
-// import { useLoginStatus } from '~services/login';
 
 interface HeaderRightProps {
   all: number;
@@ -31,8 +16,8 @@ interface HeaderRightProps {
 export default function HeaderRight(props: HeaderRightProps) {
   const [config, setConfig] = useContext(AppContext);
   // const [loginStatus] = useLoginStatus();
-  const [boardId, setBoardId] = useState(null);
-  const { all, selected, onSelectAll, tracker } = props;
+  // const [boardId, setBoardId] = useState(null);
+  const { all, selected, onSelectAll } = props;
   // const { data: tagResult } = useRequest(async () => {
   //   const storage = new Storage();
   //   const user = await storage.get('user');
@@ -63,40 +48,12 @@ export default function HeaderRight(props: HeaderRightProps) {
     setConfig({ ...config });
   }
 
-  const onBoardChange = useCallback(
-    (e) => {
-      setBoardId(e);
-      if (JSON.stringify(e) === JSON.stringify(boardId)) return;
-      // 第一次初始化值时 不触发埋点
-      if (boardId === null) return;
-      // tracker.batchPinClickBottom('画板选择框');
-    },
-    [config],
-  );
+  async function pin() {
+    const batchData = config.selectedImgs.map((img) => img.src)
 
-  async function pin(id?) {
-    // const isLogin = await getIsLogin();
-    // if (!isLogin) return;
-    config.boardId = id ? id : boardId;
-    setConfig({ ...config });
-    const batchData = {
-      boardId: config.boardId,
-      tags: config.tags,
-      imgs: config.selectedImgs.map((img) => {
-        return {
-          src: img.src,
-          alt: img.alt,
-          height: img.height,
-          width: img.width,
-        };
-      }),
-      link: window.location.href,
-    };
+    chrome.runtime.sendMessage({ type: "download", urls: batchData });
 
     props.onClose && props.onClose();
-
-    // Event.dispatch(EVENT.BATCH_UPLOAD_MODAL_OPEN, batchData);
-    // tracker.batchPinClickBottom('采下来');
   }
 
   // const selectProps = {
@@ -122,33 +79,14 @@ export default function HeaderRight(props: HeaderRightProps) {
         </input> */}
       </div>
 
-      {/* <HBTagInput
-        {...selectProps}
-        suggestVisible={false}
-        className="hbTagInput"
-        // suggestTags={tagResult?.recent}
-        allTags={tagResult?.tags}
-        suffixIcon={<img src={selectArrowDownSvg} className="selectArrow" />}
-        tags={config.tags}
-        allowClear
-        placeholder={"标签"}
-        onChange={onTagChange}
-        dropdownMatchSelectWidth={360}
-      /> */}
-      {/* <BoardSelect
-        disabled={!loginStatus}
-        disablePin={!config.selectedImgs.length}
-        selectFirst={true}
-        {...selectProps}
-        onChange={onBoardChange}
-        onPin={pin}
-        placeholder="选择画板"
-      /> */}
       <button
         onClick={() => pin()}
-        disabled={!config.selectedImgs.length || !boardId}
-        className="batch-pin-hd-right-btn">
-        采下来({config.selectedImgs.length})
+        disabled={!config.selectedImgs.length}
+        className="batch-pin-hd-right-btn custom-btn btn-4">
+          <span>
+          采下来({config.selectedImgs.length})
+          </span>
+        
       </button>
     </div>
   );

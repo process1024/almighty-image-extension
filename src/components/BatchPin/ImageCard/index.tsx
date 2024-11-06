@@ -66,8 +66,9 @@ export const ImageCard = ({ image, checked, onChange, renderWidth, onload }: Ima
         </If>
         &nbsp;| {image.fileType}
       </p>
-      <div>确认按钮</div>
-      {/* <input type="checkbox" checked={checked} /> */}
+      <div className='check-wrapper'>
+        <input type="checkbox" checked={checked} />
+      </div>
     </div>
   );
 };
