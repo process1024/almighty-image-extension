@@ -20,6 +20,9 @@ export const useRectTool = (canvas, activeTool) => {
     const handleMouseDown = (e) => {
       if (activeTool !== TOOL_TYPES.RECT) return;
 
+      const target = e.target;
+      if (target) return;
+
       // 获取鼠标相对于画布的坐标
       const pointer = canvas.getPointer(e.e);
       

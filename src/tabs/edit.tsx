@@ -4,6 +4,9 @@ import {
   BorderOutlined,
   FontSizeOutlined,
   SelectOutlined,
+  // BorderOutlined, 
+  EditOutlined,
+  BlockOutlined 
 } from '@ant-design/icons';
 import { Space } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
@@ -17,9 +20,14 @@ import { useRectTool } from './components/RectTool/useRectTool';
 import { initTextClass } from './components/TextTool/TextBox';
 import { TextControls } from './components/TextTool/TextControls';
 import { useTextTool } from './components/TextTool/useTextTool';
+import { useBrushTool } from './components/BrushTool/useBrushTool';
+import { BrushControls } from './components/BrushTool/BrushControls';
+import { useMosaicTool } from './components/MosaicTool/useMosaicTool';
+import { MosaicControls } from './components/MosaicTool/MosaicControls';
 import { TOOL_TYPES } from './constants/tools';
 import { useCanvas } from './hooks/useCanvas';
 import { StyledContent, StyledHeader, StyledLayout } from './styles';
+
 
 const ImageEditor = () => {
   const canvasRef = useRef(null);
@@ -31,6 +39,15 @@ const ImageEditor = () => {
   const { textOptions, setTextOptions } = useTextTool(canvas, activeFunction);
 
   const { rectOptions, setRectOptions } = useRectTool(canvas, activeFunction);
+  const {
+    brushOptions,
+    setBrushOptions
+  } = useBrushTool(canvas, activeFunction);
+
+  const {
+    mosaicOptions,
+    setMosaicOptions
+  } = useMosaicTool(canvas, activeFunction);
 
   useEffect(() => {
     initArrowClass();
@@ -38,6 +55,10 @@ const ImageEditor = () => {
   }, []);
 
   const showRectControls = activeFunction === TOOL_TYPES.RECT || selectedObject?.type === 'rect';
+  // 添加显示画笔控制面板的条件
+  const showBrushControls = activeFunction === TOOL_TYPES.BRUSH;
+
+  const showMosaicControls = activeFunction === TOOL_TYPES.MOSAIC;
 
   const updateObjectProperties = (props) => {
     if (!selectedObject || !canvas) return;
@@ -49,6 +70,44 @@ const ImageEditor = () => {
     canvas.renderAll();
     canvas.fire('object:modified');
   };
+
+  useEffect(() => {
+    if (!canvas) return;
+
+    // 根据当前工具状态更新画布交互模式
+    const updateCanvasInteractivity = () => {
+      if (activeFunction === TOOL_TYPES.MOSAIC) {
+        // 禁用所有交互
+        canvas.skipTargetFind = true;
+        canvas.selection = false;
+        canvas.forEachObject(obj => {
+          obj._originalInteractivity = {
+            selectable: obj.selectable,
+            evented: obj.evented
+          };
+          obj.selectable = false;
+          obj.evented = false;
+        });
+        canvas.discardActiveObject();
+        canvas.renderAll();
+      } else {
+        // 恢复交互
+        canvas.skipTargetFind = false;
+        canvas.selection = true;
+        canvas.forEachObject(obj => {
+          if (obj._originalInteractivity) {
+            obj.selectable = obj._originalInteractivity.selectable;
+            obj.evented = obj._originalInteractivity.evented;
+            delete obj._originalInteractivity;
+          }
+        });
+        canvas.renderAll();
+      }
+    };
+
+    updateCanvasInteractivity();
+  }, [canvas, activeFunction]);
+
 
   // 显示文字控制面板的条件
   const showTextControls = activeFunction === TOOL_TYPES.TEXT || selectedObject?.type === 'textbox';
@@ -76,10 +135,22 @@ const ImageEditor = () => {
             onClick={() => setActiveFunction(TOOL_TYPES.ARROW)}
           />
 
-<ToolButton
+          <ToolButton
             active={activeFunction === TOOL_TYPES.RECT}
             icon={<BorderOutlined />}
             onClick={() => setActiveFunction(TOOL_TYPES.RECT)}
+          />
+
+          <ToolButton
+            active={activeFunction === TOOL_TYPES.BRUSH}
+            icon={<EditOutlined />}
+            onClick={() => setActiveFunction(TOOL_TYPES.BRUSH)}
+          />
+
+          <ToolButton
+            active={activeFunction === TOOL_TYPES.MOSAIC}
+            icon={<BlockOutlined />}
+            onClick={() => setActiveFunction(TOOL_TYPES.MOSAIC)}
           />
 
           {showTextControls && (
@@ -108,6 +179,21 @@ const ImageEditor = () => {
               onUpdateDefaults={(props) => setRectOptions(prev => ({ ...prev, ...props }))}
             />
           )}
+
+          {showBrushControls && (
+            <BrushControls
+              defaultBrushOptions={brushOptions}
+              onUpdateDefaults={(props) => setBrushOptions(prev => ({ ...prev, ...props }))}
+            />
+          )}
+
+        {showMosaicControls && (
+            <MosaicControls
+              options={mosaicOptions}
+              onUpdate={(props) => setMosaicOptions(prev => ({ ...prev, ...props }))}
+            />
+          )}
+
         </Space>
       </StyledHeader>
       <StyledContent>
