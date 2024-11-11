@@ -1,33 +1,36 @@
 // src/components/ImageEditor/ImageEditor.jsx
 import {
   ArrowRightOutlined,
+  BlockOutlined,
   BorderOutlined,
-  FontSizeOutlined,
-  SelectOutlined,
-  // BorderOutlined, 
   EditOutlined,
-  BlockOutlined 
+  EllipsisOutlined,
+  FontSizeOutlined,
+  RedoOutlined,
+  SelectOutlined,
+  UndoOutlined,
 } from '@ant-design/icons';
 import { Space } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { initArrowClass } from './components/ArrowTool/Arrow';
 import { ArrowControls } from './components/ArrowTool/ArrowControls';
 import { useArrowTool } from './components/ArrowTool/useArrowTool';
+import { BrushControls } from './components/BrushTool/BrushControls';
+import { useBrushTool } from './components/BrushTool/useBrushTool';
 import { ToolButton } from './components/common/ToolButton';
+import { EllipseControls } from './components/EllipseTool/EllipseControls';
+import { useEllipseTool } from './components/EllipseTool/useEllipseTool';
+import { MosaicControls } from './components/MosaicTool/MosaicControls';
+import { useMosaicTool } from './components/MosaicTool/useMosaicTool';
 import { RectControls } from './components/RectTool/RectControls';
 import { useRectTool } from './components/RectTool/useRectTool';
 import { initTextClass } from './components/TextTool/TextBox';
 import { TextControls } from './components/TextTool/TextControls';
 import { useTextTool } from './components/TextTool/useTextTool';
-import { useBrushTool } from './components/BrushTool/useBrushTool';
-import { BrushControls } from './components/BrushTool/BrushControls';
-import { useMosaicTool } from './components/MosaicTool/useMosaicTool';
-import { MosaicControls } from './components/MosaicTool/MosaicControls';
 import { TOOL_TYPES } from './constants/tools';
 import { useCanvas } from './hooks/useCanvas';
+import { useHistory } from './hooks/useHistory';
 import { StyledContent, StyledHeader, StyledLayout } from './styles';
-
 
 const ImageEditor = () => {
   const canvasRef = useRef(null);
@@ -39,18 +42,34 @@ const ImageEditor = () => {
   const { textOptions, setTextOptions } = useTextTool(canvas, activeFunction);
 
   const { rectOptions, setRectOptions } = useRectTool(canvas, activeFunction);
-  const {
-    brushOptions,
-    setBrushOptions
-  } = useBrushTool(canvas, activeFunction);
+  const { brushOptions, setBrushOptions } = useBrushTool(canvas, activeFunction);
 
-  const {
-    mosaicOptions,
-    setMosaicOptions
-  } = useMosaicTool(canvas, activeFunction);
+  const { mosaicOptions, setMosaicOptions } = useMosaicTool(canvas, activeFunction);
+  const { ellipseOptions, setEllipseOptions } = useEllipseTool(canvas, activeFunction);
+
+  const { undo, redo, canUndo, canRedo, saveState } = useHistory(canvas);
+  // 在一些关键操作后手动保存状态
+  const handleObjectModified = useCallback(
+    (e) => {
+      if (!canvas) return;
+      // 处理对象修改
+      saveState();
+    },
+    [canvas, saveState],
+  );
 
   useEffect(() => {
-    initArrowClass();
+    if (!canvas) return;
+
+    canvas.on('object:modified', handleObjectModified);
+
+    return () => {
+      canvas.off('object:modified', handleObjectModified);
+    };
+  }, [canvas, handleObjectModified]);
+
+  useEffect(() => {
+    // initArrowClass();
     initTextClass();
   }, []);
 
@@ -59,6 +78,9 @@ const ImageEditor = () => {
   const showBrushControls = activeFunction === TOOL_TYPES.BRUSH;
 
   const showMosaicControls = activeFunction === TOOL_TYPES.MOSAIC;
+
+  const isEllipse = selectedObject?.type === 'ellipse';
+  const showEllipseControls = activeFunction === TOOL_TYPES.ELLIPSE || isEllipse;
 
   const updateObjectProperties = (props) => {
     if (!selectedObject || !canvas) return;
@@ -80,10 +102,10 @@ const ImageEditor = () => {
         // 禁用所有交互
         canvas.skipTargetFind = true;
         canvas.selection = false;
-        canvas.forEachObject(obj => {
+        canvas.forEachObject((obj) => {
           obj._originalInteractivity = {
             selectable: obj.selectable,
-            evented: obj.evented
+            evented: obj.evented,
           };
           obj.selectable = false;
           obj.evented = false;
@@ -94,7 +116,7 @@ const ImageEditor = () => {
         // 恢复交互
         canvas.skipTargetFind = false;
         canvas.selection = true;
-        canvas.forEachObject(obj => {
+        canvas.forEachObject((obj) => {
           if (obj._originalInteractivity) {
             obj.selectable = obj._originalInteractivity.selectable;
             obj.evented = obj._originalInteractivity.evented;
@@ -107,7 +129,6 @@ const ImageEditor = () => {
 
     updateCanvasInteractivity();
   }, [canvas, activeFunction]);
-
 
   // 显示文字控制面板的条件
   const showTextControls = activeFunction === TOOL_TYPES.TEXT || selectedObject?.type === 'textbox';
@@ -124,6 +145,10 @@ const ImageEditor = () => {
             icon={<SelectOutlined />}
             onClick={() => setActiveFunction(TOOL_TYPES.SELECT)}
           />
+
+          <ToolButton icon={<UndoOutlined />} disabled={!canUndo} onClick={undo} />
+          <ToolButton icon={<RedoOutlined />} disabled={!canRedo} onClick={redo} />
+
           <ToolButton
             active={activeFunction === TOOL_TYPES.TEXT}
             icon={<FontSizeOutlined />}
@@ -134,11 +159,17 @@ const ImageEditor = () => {
             icon={<ArrowRightOutlined />}
             onClick={() => setActiveFunction(TOOL_TYPES.ARROW)}
           />
-
+          {/* <ArrowUpOutlined /> */}
           <ToolButton
             active={activeFunction === TOOL_TYPES.RECT}
             icon={<BorderOutlined />}
             onClick={() => setActiveFunction(TOOL_TYPES.RECT)}
+          />
+
+          <ToolButton
+            active={activeFunction === TOOL_TYPES.ELLIPSE}
+            icon={<EllipsisOutlined />}
+            onClick={() => setActiveFunction(TOOL_TYPES.ELLIPSE)}
           />
 
           <ToolButton
@@ -164,8 +195,8 @@ const ImageEditor = () => {
 
           {showArrowControls && (
             <ArrowControls
-              selectedObject={selectedObject?.type === 'arrow' ? selectedObject : null}
               defaultArrowOptions={arrowOptions}
+              selectedObject={selectedObject?.type === 'arrow' ? selectedObject : null}
               onUpdateSelected={updateObjectProperties}
               onUpdateDefaults={(props) => setArrowOptions((prev) => ({ ...prev, ...props }))}
             />
@@ -176,24 +207,32 @@ const ImageEditor = () => {
               selectedObject={selectedObject?.type === 'rect' ? selectedObject : null}
               defaultRectOptions={rectOptions}
               onUpdateSelected={updateObjectProperties}
-              onUpdateDefaults={(props) => setRectOptions(prev => ({ ...prev, ...props }))}
+              onUpdateDefaults={(props) => setRectOptions((prev) => ({ ...prev, ...props }))}
             />
           )}
 
           {showBrushControls && (
             <BrushControls
               defaultBrushOptions={brushOptions}
-              onUpdateDefaults={(props) => setBrushOptions(prev => ({ ...prev, ...props }))}
+              onUpdateDefaults={(props) => setBrushOptions((prev) => ({ ...prev, ...props }))}
             />
           )}
 
-        {showMosaicControls && (
+          {showMosaicControls && (
             <MosaicControls
               options={mosaicOptions}
-              onUpdate={(props) => setMosaicOptions(prev => ({ ...prev, ...props }))}
+              onUpdate={(props) => setMosaicOptions((prev) => ({ ...prev, ...props }))}
             />
           )}
 
+          {showEllipseControls && (
+            <EllipseControls
+              selectedObject={isEllipse ? selectedObject : null}
+              defaultEllipseOptions={ellipseOptions}
+              onUpdateSelected={updateObjectProperties}
+              onUpdateDefaults={(props) => setEllipseOptions((prev) => ({ ...prev, ...props }))}
+            />
+          )}
         </Space>
       </StyledHeader>
       <StyledContent>

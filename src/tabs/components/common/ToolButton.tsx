@@ -3,14 +3,21 @@ import React from 'react';
 import { Button } from 'antd';
 import styled from 'styled-components';
 
-export const ToolButton = ({ active, icon, onClick, children }) => {
+
+export const ToolButton = ({
+  icon,
+  active,
+  disabled,
+  onClick
+}) => {
   return (
     <StyledButton
-      type={active ? 'primary' : 'default'}
-      icon={icon}
+      type="button"
+      className={active ? 'active' : ''}
+      disabled={disabled}
       onClick={onClick}
     >
-      {children}
+      {icon}
     </StyledButton>
   );
 };
@@ -27,5 +34,9 @@ const StyledButton = styled(Button)`
     .anticon {
       font-size: 16px;
     }
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 `;

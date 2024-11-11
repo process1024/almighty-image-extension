@@ -1,5 +1,5 @@
 // src/components/ImageEditor/components/ArrowTool/ArrowControls.jsx
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const StyledControls = styled.div`
@@ -16,57 +16,59 @@ const ControlGroup = styled.div`
 `;
 
 export const ArrowControls = ({
-  selectedObject,
   defaultArrowOptions,
+  selectedObject,
   onUpdateSelected,
   onUpdateDefaults
 }) => {
-  const [arrowProps, setArrowProps] = useState({
-    stroke: '#000000',
-    strokeWidth: 2
-  });
-
-  useEffect(() => {
+  const handleChange = (property, value) => {
     if (selectedObject) {
-      setArrowProps({
-        stroke: selectedObject.stroke || '#000000',
-        strokeWidth: selectedObject.strokeWidth || 2
-      });
+      onUpdateSelected({ [property]: value });
     } else {
-      setArrowProps(defaultArrowOptions);
-    }
-  }, [selectedObject, defaultArrowOptions]);
-
-  const handleUpdate = (property, value) => {
-    console.log(property, value);
-    const newProps = { [property]: value };
-    setArrowProps(prev => ({ ...prev, ...newProps }));
-    
-    if (selectedObject) {
-      onUpdateSelected(newProps);
-    } else {
-      onUpdateDefaults(newProps);
+      onUpdateDefaults({ [property]: value });
     }
   };
+
+  const options = selectedObject || defaultArrowOptions;
 
   return (
     <StyledControls>
       <ControlGroup>
-        <label>箭头颜色：</label>
+        <label>颜色：</label>
         <input
           type="color"
-          value={arrowProps.stroke}
-          onChange={(e) => handleUpdate('stroke', e.target.value)}
+          value={options.stroke}
+          onChange={(e) => handleChange('stroke', e.target.value)}
         />
       </ControlGroup>
       <ControlGroup>
-        <label>箭头粗细：</label>
+        <label>线宽：</label>
         <input
           type="number"
           min="1"
-          max="20"
-          value={arrowProps.strokeWidth}
-          onChange={(e) => handleUpdate('strokeWidth', parseInt(e.target.value))}
+          max="50"
+          value={options.strokeWidth}
+          onChange={(e) => handleChange('strokeWidth', parseInt(e.target.value))}
+        />
+      </ControlGroup>
+      <ControlGroup>
+        <label>箭头长度：</label>
+        <input
+          type="number"
+          min="10"
+          max="50"
+          value={options.arrowHeadLength}
+          onChange={(e) => handleChange('arrowHeadLength', parseInt(e.target.value))}
+        />
+      </ControlGroup>
+      <ControlGroup>
+        <label>箭头宽度：</label>
+        <input
+          type="number"
+          min="10"
+          max="50"
+          value={options.arrowHeadWidth}
+          onChange={(e) => handleChange('arrowHeadWidth', parseInt(e.target.value))}
         />
       </ControlGroup>
     </StyledControls>
