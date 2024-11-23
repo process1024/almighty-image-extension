@@ -20,6 +20,9 @@ export const useEllipseTool = (canvas, activeTool) => {
     const handleMouseDown = (e) => {
       if (activeTool !== TOOL_TYPES.ELLIPSE) return;
 
+      const target = e.target;
+      if (target) return;
+
       const pointer = canvas.getPointer(e.e);
       isDrawingRef.current = true;
       startPointRef.current = pointer;
