@@ -12,6 +12,7 @@ import {
 } from '@ant-design/icons';
 import { Space } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import './styles/global.css';
 
 import { ArrowControls } from './components/ArrowTool/ArrowControls';
 import { useArrowTool } from './components/ArrowTool/useArrowTool';

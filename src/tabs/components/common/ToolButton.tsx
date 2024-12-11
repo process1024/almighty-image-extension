@@ -7,7 +7,7 @@ import styled from 'styled-components';
 export const ToolButton = ({
   icon,
   active,
-  disabled,
+  disabled = false,
   onClick
 }) => {
   return (

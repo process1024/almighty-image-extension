@@ -5,22 +5,24 @@ export const StyledLayout = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background: #000;
 `;
 
 export const StyledHeader = styled.div`
-  height: 64px;
+  height: 56px;
   padding: 0 16px;
   background: #fff;
   border-bottom: 1px solid #f0f0f0;
   display: flex;
   align-items: center;
+  position: relative;
 `;
 
 export const StyledContent = styled.div`
   flex: 1;
   position: relative;
-  background: #f0f0f0;
   overflow: hidden;
+  margin-top: 46px;
 
   canvas {
     position: absolute;
