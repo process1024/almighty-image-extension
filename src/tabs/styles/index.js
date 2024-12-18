@@ -16,6 +16,7 @@ export const StyledHeader = styled.div`
   display: flex;
   align-items: center;
   position: relative;
+  justify-content: center;
 `;
 
 export const StyledContent = styled.div`

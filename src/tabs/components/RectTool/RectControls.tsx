@@ -3,10 +3,16 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const StyledControls = styled.div`
+  position: absolute;
+  top: 60px;
+  right: 50%;
+  background: white;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   gap: 16px;
   align-items: center;
-  padding: 0 16px;
 `;
 
 const ControlGroup = styled.div`

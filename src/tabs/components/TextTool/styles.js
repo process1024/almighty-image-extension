@@ -3,12 +3,15 @@ import styled from 'styled-components';
 
 export const StyledControls = styled.div`
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 60px;
+  right: 50%;
   background: white;
   padding: 10px;
   border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  display: flex;
+  gap: 8px;
 
   div {
     margin-bottom: 8px;
