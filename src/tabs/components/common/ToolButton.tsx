@@ -35,6 +35,10 @@ const StyledButton = styled(Button)`
       font-size: 16px;
     }
   }
+  &.active  {
+    background: rgba(0, 0, 0, .5);
+    color: #fff;
+  }
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
