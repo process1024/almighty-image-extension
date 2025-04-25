@@ -13,13 +13,13 @@ export const useMosaicTool = (canvas, activeTool) => {
   const lastPosRef = useRef(null);
   const tempCanvasRef = useRef(null);
   const mosaicLayerRef = useRef(null);
+  const updatePendingRef = useRef(false);
 
   // 初始化临时画布
   useEffect(() => {
     if (!canvas) return;
 
     tempCanvasRef.current = document.createElement('canvas');
-    const ctx = tempCanvasRef.current.getContext('2d');
     
     // 设置临时画布尺寸与主画布相同
     tempCanvasRef.current.width = canvas.width;
@@ -59,21 +59,19 @@ export const useMosaicTool = (canvas, activeTool) => {
         const imageData = mainCtx.getImageData(bx, by, bw, bh);
         const data = imageData.data;
         let r = 0, g = 0, b = 0, a = 0;
-        let count = 0;
 
         for (let i = 0; i < data.length; i += 4) {
           r += data[i];
           g += data[i + 1];
           b += data[i + 2];
           a += data[i + 3];
-          count++;
         }
 
-        // 计算平均值
-        r = Math.round(r / count);
-        g = Math.round(g / count);
-        b = Math.round(b / count);
-        a = Math.round(a / count);
+        const pixelCount = data.length / 4;
+        r = Math.round(r / pixelCount);
+        g = Math.round(g / pixelCount);
+        b = Math.round(b / pixelCount);
+        a = Math.round(a / pixelCount);
 
         // 填充马赛克块
         ctx.fillStyle = `rgba(${r},${g},${b},${a / 255})`;
@@ -81,9 +79,15 @@ export const useMosaicTool = (canvas, activeTool) => {
       }
     }
 
-    // 更新马赛克图层
-    mosaicLayerRef.current.setElement(tempCanvasRef.current);
-    canvas.renderAll();
+    // Instead of updating the mosaic layer immediately, batch updates
+    if (!updatePendingRef.current) {
+      updatePendingRef.current = true;
+      requestAnimationFrame(() => {
+        mosaicLayerRef.current.setElement(tempCanvasRef.current);
+        canvas.renderAll();
+        updatePendingRef.current = false;
+      });
+    }
   };
 
   useEffect(() => {
@@ -169,6 +173,12 @@ export const useMosaicTool = (canvas, activeTool) => {
       canvas.off('mouse:up', handleMouseUp);
     };
   }, [canvas, activeTool, mosaicOptions]);
+
+  useEffect(() => {
+    return () => {
+      updatePendingRef.current = false;
+    };
+  }, []);
 
   return {
     mosaicOptions,
