@@ -1,14 +1,8 @@
-// src/components/ImageEditor/ImageEditor.jsx
 import {
   ArrowRightOutlined,
-  BlockOutlined,
   BorderOutlined,
-  EditOutlined,
-  EllipsisOutlined,
   FontSizeOutlined,
-  RedoOutlined,
   SelectOutlined,
-  UndoOutlined,
 } from '@ant-design/icons';
 import { Space } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -30,8 +24,9 @@ import { TextControls } from './components/TextTool/TextControls';
 import { useTextTool } from './components/TextTool/useTextTool';
 import { TOOL_TYPES } from './constants/tools';
 import { useCanvas } from './hooks/useCanvas';
-import { useHistory } from './hooks/useHistory';
+// import { useHistory } from './hooks/useHistory';
 import { StyledContent, StyledHeader, StyledLayout } from './styles';
+import { EllipseIcon, MosaicIcon } from './components/Icon';
 
 const ImageEditor = () => {
   const canvasRef = useRef(null);
@@ -48,26 +43,26 @@ const ImageEditor = () => {
   const { mosaicOptions, setMosaicOptions } = useMosaicTool(canvas, activeFunction);
   const { ellipseOptions, setEllipseOptions } = useEllipseTool(canvas, activeFunction);
 
-  const { undo, redo, canUndo, canRedo, saveState } = useHistory(canvas);
+  // const { undo, redo, canUndo, canRedo, saveState } = useHistory(canvas);
   // 在一些关键操作后手动保存状态
-  const handleObjectModified = useCallback(
-    (e) => {
-      if (!canvas) return;
-      // 处理对象修改
-      saveState();
-    },
-    [canvas, saveState],
-  );
+  // const handleObjectModified = useCallback(
+  //   (e) => {
+  //     if (!canvas) return;
+  //     // 处理对象修改
+  //     saveState();
+  //   },
+  //   [canvas, saveState],
+  // );
 
-  useEffect(() => {
-    if (!canvas) return;
+  // useEffect(() => {
+  //   if (!canvas) return;
 
-    canvas.on('object:modified', handleObjectModified);
+  //   canvas.on('object:modified', handleObjectModified);
 
-    return () => {
-      canvas.off('object:modified', handleObjectModified);
-    };
-  }, [canvas, handleObjectModified]);
+  //   return () => {
+  //     canvas.off('object:modified', handleObjectModified);
+  //   };
+  // }, [canvas, handleObjectModified]);
 
   useEffect(() => {
     // initArrowClass();
@@ -147,9 +142,6 @@ const ImageEditor = () => {
             onClick={() => setActiveFunction(TOOL_TYPES.SELECT)}
           />
 
-          <ToolButton icon={<UndoOutlined />} disabled={!canUndo} onClick={undo} />
-          <ToolButton icon={<RedoOutlined />} disabled={!canRedo} onClick={redo} />
-
           <ToolButton
             active={activeFunction === TOOL_TYPES.TEXT}
             icon={<FontSizeOutlined />}
@@ -160,7 +152,7 @@ const ImageEditor = () => {
             icon={<ArrowRightOutlined />}
             onClick={() => setActiveFunction(TOOL_TYPES.ARROW)}
           />
-          {/* <ArrowUpOutlined /> */}
+
           <ToolButton
             active={activeFunction === TOOL_TYPES.RECT}
             icon={<BorderOutlined />}
@@ -169,19 +161,13 @@ const ImageEditor = () => {
 
           <ToolButton
             active={activeFunction === TOOL_TYPES.ELLIPSE}
-            icon={<EllipsisOutlined />}
+            icon={<EllipseIcon />}  // 椭圆轮廓图标
             onClick={() => setActiveFunction(TOOL_TYPES.ELLIPSE)}
           />
 
           <ToolButton
-            active={activeFunction === TOOL_TYPES.BRUSH}
-            icon={<EditOutlined />}
-            onClick={() => setActiveFunction(TOOL_TYPES.BRUSH)}
-          />
-
-          <ToolButton
             active={activeFunction === TOOL_TYPES.MOSAIC}
-            icon={<BlockOutlined />}
+            icon={<MosaicIcon />}  // 网格图标
             onClick={() => setActiveFunction(TOOL_TYPES.MOSAIC)}
           />
 
