@@ -3,9 +3,12 @@ import {
   BorderOutlined,
   FontSizeOutlined,
   SelectOutlined,
+  UndoOutlined,
+  RedoOutlined,
 } from '@ant-design/icons';
 import { Space } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+
 import './styles/global.css';
 
 import { ArrowControls } from './components/ArrowTool/ArrowControls';
@@ -15,6 +18,7 @@ import { useBrushTool } from './components/BrushTool/useBrushTool';
 import { ToolButton } from './components/common/ToolButton';
 import { EllipseControls } from './components/EllipseTool/EllipseControls';
 import { useEllipseTool } from './components/EllipseTool/useEllipseTool';
+import { EllipseIcon, MosaicIcon } from './components/Icons';
 import { MosaicControls } from './components/MosaicTool/MosaicControls';
 import { useMosaicTool } from './components/MosaicTool/useMosaicTool';
 import { RectControls } from './components/RectTool/RectControls';
@@ -24,9 +28,8 @@ import { TextControls } from './components/TextTool/TextControls';
 import { useTextTool } from './components/TextTool/useTextTool';
 import { TOOL_TYPES } from './constants/tools';
 import { useCanvas } from './hooks/useCanvas';
-// import { useHistory } from './hooks/useHistory';
+import { useHistory } from './hooks/useHistory';
 import { StyledContent, StyledHeader, StyledLayout } from './styles';
-import { EllipseIcon, MosaicIcon } from './components/Icon';
 
 const ImageEditor = () => {
   const canvasRef = useRef(null);
@@ -42,27 +45,6 @@ const ImageEditor = () => {
 
   const { mosaicOptions, setMosaicOptions } = useMosaicTool(canvas, activeFunction);
   const { ellipseOptions, setEllipseOptions } = useEllipseTool(canvas, activeFunction);
-
-  // const { undo, redo, canUndo, canRedo, saveState } = useHistory(canvas);
-  // 在一些关键操作后手动保存状态
-  // const handleObjectModified = useCallback(
-  //   (e) => {
-  //     if (!canvas) return;
-  //     // 处理对象修改
-  //     saveState();
-  //   },
-  //   [canvas, saveState],
-  // );
-
-  // useEffect(() => {
-  //   if (!canvas) return;
-
-  //   canvas.on('object:modified', handleObjectModified);
-
-  //   return () => {
-  //     canvas.off('object:modified', handleObjectModified);
-  //   };
-  // }, [canvas, handleObjectModified]);
 
   useEffect(() => {
     // initArrowClass();
@@ -89,53 +71,64 @@ const ImageEditor = () => {
     canvas.fire('object:modified');
   };
 
-  useEffect(() => {
-    if (!canvas) return;
-
-    // 根据当前工具状态更新画布交互模式
-    const updateCanvasInteractivity = () => {
-      if (activeFunction === TOOL_TYPES.MOSAIC) {
-        // 禁用所有交互
-        canvas.skipTargetFind = true;
-        canvas.selection = false;
-        canvas.forEachObject((obj) => {
-          obj._originalInteractivity = {
-            selectable: obj.selectable,
-            evented: obj.evented,
-          };
-          obj.selectable = false;
-          obj.evented = false;
-        });
-        canvas.discardActiveObject();
-        canvas.renderAll();
-      } else {
-        // 恢复交互
-        canvas.skipTargetFind = false;
-        canvas.selection = true;
-        canvas.forEachObject((obj) => {
-          if (obj._originalInteractivity) {
-            obj.selectable = obj._originalInteractivity.selectable;
-            obj.evented = obj._originalInteractivity.evented;
-            delete obj._originalInteractivity;
-          }
-        });
-        canvas.renderAll();
-      }
-    };
-
-    updateCanvasInteractivity();
-  }, [canvas, activeFunction]);
-
-  // 显示文字控制面板的条件
   const showTextControls = activeFunction === TOOL_TYPES.TEXT || selectedObject?.type === 'textbox';
-
   // 显示箭头控制面板的条件
   const showArrowControls = activeFunction === TOOL_TYPES.ARROW || selectedObject?.type === 'arrow';
 
+  // 取消注释并修改历史钩子调用
+  const { undo, redo, canUndo, canRedo, saveState } = useHistory(canvas);
+
+  // 启用对象修改事件监听
+  const handleObjectModified = useCallback(
+    () => {
+      if (!canvas) return;
+      saveState();
+    },
+    [canvas, saveState],
+  );
+
+  useEffect(() => {
+    if (!canvas) return;
+
+    const events = [
+      'object:modified',
+      'object:added',
+      'object:removed',
+      'path:created',
+      'selection:created',
+      'selection:updated',
+      'selection:cleared'
+    ];
+
+    events.forEach(event => {
+      canvas.on(event, handleObjectModified);
+    });
+
+    return () => {
+      events.forEach(event => {
+        canvas.off(event, handleObjectModified);
+      });
+    };
+  }, [canvas, handleObjectModified]);
+
+  // 在工具栏添加撤销/重做按钮
   return (
     <StyledLayout>
       <StyledHeader>
         <Space>
+          {/* 在现有工具按钮后添加 */}
+          <ToolButton 
+            disabled={!canUndo} 
+            active={false}
+            icon={<UndoOutlined />} 
+            onClick={undo} 
+          />
+          <ToolButton 
+            disabled={!canRedo} 
+            active={false}
+            icon={<RedoOutlined />} 
+            onClick={redo} 
+          />
           <ToolButton
             active={activeFunction === TOOL_TYPES.SELECT}
             icon={<SelectOutlined />}
@@ -161,7 +154,7 @@ const ImageEditor = () => {
 
           <ToolButton
             active={activeFunction === TOOL_TYPES.ELLIPSE}
-            icon={<EllipseIcon />}  // 椭圆轮廓图标
+            icon={<EllipseIcon />} // 椭圆轮廓图标
             onClick={() => setActiveFunction(TOOL_TYPES.ELLIPSE)}
           />
 
