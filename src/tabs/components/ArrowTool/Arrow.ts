@@ -17,7 +17,7 @@ export const initArrowClass = () => {
     },
 
     _render: function(ctx) {
-      const headLength = 15;  // 箭头头部长度
+      const headLength = 20;  // 箭头头部长度
       const headAngle = Math.PI / 6; // 30度角
 
       // 计算主线条方向

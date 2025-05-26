@@ -43,10 +43,8 @@ const createArrowClass = () => {
 };
 export const useArrowTool = (canvas, activeTool) => {
   const [arrowOptions, setArrowOptions] = useState({
-    stroke: '#000000',
-    strokeWidth: 2,
-    arrowHeadLength: 15,
-    arrowHeadWidth: 15,
+    stroke: '#ff0000',
+    strokeWidth: 6,
   });
   const isDrawingRef = useRef(false);
   const arrowRef = useRef(null);

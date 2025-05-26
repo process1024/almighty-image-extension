@@ -24,6 +24,9 @@ export const StyledContent = styled.div`
   position: relative;
   overflow: hidden;
   margin-top: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   canvas {
     position: absolute;

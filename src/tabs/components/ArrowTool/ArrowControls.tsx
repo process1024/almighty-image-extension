@@ -57,26 +57,6 @@ export const ArrowControls = ({
           onChange={(e) => handleChange('strokeWidth', parseInt(e.target.value))}
         />
       </ControlGroup>
-      <ControlGroup>
-        <label>箭头长度：</label>
-        <input
-          type="number"
-          min="10"
-          max="50"
-          value={options.arrowHeadLength}
-          onChange={(e) => handleChange('arrowHeadLength', parseInt(e.target.value))}
-        />
-      </ControlGroup>
-      <ControlGroup>
-        <label>箭头宽度：</label>
-        <input
-          type="number"
-          min="10"
-          max="50"
-          value={options.arrowHeadWidth}
-          onChange={(e) => handleChange('arrowHeadWidth', parseInt(e.target.value))}
-        />
-      </ControlGroup>
     </StyledControls>
   );
 };

@@ -76,14 +76,14 @@ export const RectControls = ({
           onChange={(e) => handleUpdate('strokeWidth', parseInt(e.target.value))}
         />
       </ControlGroup>
-      <ControlGroup>
+      {/* <ControlGroup>
         <label>填充颜色：</label>
         <input
           type="color"
           value={rectProps.fill}
           onChange={(e) => handleUpdate('fill', e.target.value)}
         />
-      </ControlGroup>
+      </ControlGroup> */}
     </StyledControls>
   );
 };

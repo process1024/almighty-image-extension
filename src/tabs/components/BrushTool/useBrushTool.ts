@@ -4,8 +4,8 @@ import { TOOL_TYPES } from '../../constants/tools';
 
 export const useBrushTool = (canvas, activeTool) => {
   const [brushOptions, setBrushOptions] = useState({
-    color: '#000000',
-    width: 2
+    color: '#ff0000',
+    width: 8
   });
 
   useEffect(() => {

@@ -76,7 +76,7 @@ export const EllipseControls = ({
           onChange={(e) => handleUpdate('strokeWidth', parseInt(e.target.value))}
         />
       </ControlGroup>
-      <ControlGroup>
+      {/* <ControlGroup>
         <label>填充颜色：</label>
         <input
           type="color"
@@ -97,7 +97,7 @@ export const EllipseControls = ({
             handleUpdate('fill', `${color}, ${e.target.value})`);
           }}
         />
-      </ControlGroup>
+      </ControlGroup> */}
     </StyledControls>
   );
 };

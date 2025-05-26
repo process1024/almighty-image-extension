@@ -1,5 +1,7 @@
 This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
 
+主色调：#5e4580
+
 ## Getting Started
 
 First, run the development server:

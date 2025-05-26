@@ -75,8 +75,7 @@ export const TextControls = ({
           <option value="Microsoft YaHei">微软雅黑</option>
         </select>
       </div>
-      <div>
-        {/* <label>对齐：</label> */}
+      {/* <div>
         <select
           value={textProps.textAlign}
           onChange={(e) => handleUpdate('textAlign', e.target.value)}
@@ -85,7 +84,7 @@ export const TextControls = ({
           <option value="center">居中</option>
           <option value="right">右对齐</option>
         </select>
-      </div>
+      </div> */}
     </StyledControls>
   );
 };

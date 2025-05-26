@@ -5,9 +5,9 @@ import { TOOL_TYPES } from '../../constants/tools';
 
 export const useEllipseTool = (canvas, activeTool) => {
   const [ellipseOptions, setEllipseOptions] = useState({
-    stroke: '#000000',
+    stroke: '#ff0000',
     strokeWidth: 2,
-    fill: 'rgba(255, 255, 255, 0.3)'
+    // fill: 'rgba(255, 255, 255, 0.3)'
   });
 
   const isDrawingRef = useRef(false);
