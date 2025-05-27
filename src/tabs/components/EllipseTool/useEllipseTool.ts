@@ -6,7 +6,7 @@ import { TOOL_TYPES } from '../../constants/tools';
 export const useEllipseTool = (canvas, activeTool) => {
   const [ellipseOptions, setEllipseOptions] = useState({
     stroke: '#ff0000',
-    strokeWidth: 2,
+    strokeWidth: 4,
     // fill: 'rgba(255, 255, 255, 0.3)'
   });
 

@@ -1,8 +1,8 @@
 import {
-  ArrowRightOutlined,
+  // ArrowRightOutlined,
   BorderOutlined,
   FontSizeOutlined,
-  SelectOutlined,
+  // SelectOutlined,
   UndoOutlined,
   RedoOutlined,
 } from '@ant-design/icons';
@@ -18,7 +18,7 @@ import { useBrushTool } from './components/BrushTool/useBrushTool';
 import { ToolButton } from './components/common/ToolButton';
 import { EllipseControls } from './components/EllipseTool/EllipseControls';
 import { useEllipseTool } from './components/EllipseTool/useEllipseTool';
-import { EllipseIcon, MosaicIcon, BrushIcon } from './components/Icons';
+import { EllipseIcon, MosaicIcon, BrushIcon, LineArrowIcon } from './components/Icons';
 import { MosaicControls } from './components/MosaicTool/MosaicControls';
 import { useMosaicTool } from './components/MosaicTool/useMosaicTool';
 import { RectControls } from './components/RectTool/RectControls';
@@ -204,7 +204,7 @@ const ImageEditor = () => {
 
           <ToolButton
             active={activeFunction === TOOL_TYPES.ARROW}
-            icon={<ArrowRightOutlined />}
+            icon={<LineArrowIcon />}
             onClick={() => handleToolClick(TOOL_TYPES.ARROW)}
           />
 
