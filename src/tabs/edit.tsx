@@ -1,10 +1,10 @@
 import {
   // ArrowRightOutlined,
   BorderOutlined,
-  FontSizeOutlined,
+  EditOutlined,
   // SelectOutlined,
-  UndoOutlined,
-  RedoOutlined,
+  // UndoOutlined,
+  // RedoOutlined,
 } from '@ant-design/icons';
 import { Space } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -18,7 +18,7 @@ import { useBrushTool } from './components/BrushTool/useBrushTool';
 import { ToolButton } from './components/common/ToolButton';
 import { EllipseControls } from './components/EllipseTool/EllipseControls';
 import { useEllipseTool } from './components/EllipseTool/useEllipseTool';
-import { EllipseIcon, MosaicIcon, BrushIcon, LineArrowIcon } from './components/Icons';
+import { EllipseIcon, MosaicIcon, LineArrowIcon, TextIcon, UndoIcon, RedoIcon } from './components/Icons';
 import { MosaicControls } from './components/MosaicTool/MosaicControls';
 import { useMosaicTool } from './components/MosaicTool/useMosaicTool';
 import { RectControls } from './components/RectTool/RectControls';
@@ -185,20 +185,20 @@ const ImageEditor = () => {
           <ToolButton 
             disabled={!canUndo} 
             active={false}
-            icon={<UndoOutlined />} 
+            icon={<UndoIcon />} 
             onClick={undo} 
           />
 
           <ToolButton 
             disabled={!canRedo} 
             active={false}
-            icon={<RedoOutlined />} 
+            icon={<RedoIcon />} 
             onClick={redo} 
           />
 
           <ToolButton
             active={activeFunction === TOOL_TYPES.TEXT}
-            icon={<FontSizeOutlined />}
+            icon={<TextIcon />}
             onClick={() => handleToolClick(TOOL_TYPES.TEXT)}
           />
 
@@ -211,7 +211,7 @@ const ImageEditor = () => {
           {/* 画笔工具 */}
           <ToolButton
             active={activeFunction === TOOL_TYPES.BRUSH}
-            icon={<BrushIcon />}
+            icon={<EditOutlined />}
             onClick={() => handleToolClick(TOOL_TYPES.BRUSH)}
           />
 
@@ -232,6 +232,7 @@ const ImageEditor = () => {
             icon={<MosaicIcon />}  // 网格图标
             onClick={() => handleToolClick(TOOL_TYPES.MOSAIC)}
           />
+        </Space>
 
           {showTextControls && (
             <TextControls
@@ -282,7 +283,6 @@ const ImageEditor = () => {
               onUpdateDefaults={(props) => setEllipseOptions((prev) => ({ ...prev, ...props }))}
             />
           )}
-        </Space>
       </StyledHeader>
       <StyledContent>
         <canvas ref={canvasRef} />
