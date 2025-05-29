@@ -53,8 +53,13 @@ export const useArrowTool = (canvas, activeTool) => {
     if (!canvas) return;
     const ArrowClass = createArrowClass();
     fabric.Arrow = ArrowClass;
+
+    let prevSelection = canvas.selection;
     const handleMouseDown = (e) => {
       if (activeTool !== TOOL_TYPES.ARROW) return;
+
+      prevSelection = canvas.selection;
+      canvas.selection = false;
       const pointer = canvas.getPointer(e.e);
       startPointRef.current = pointer;
       arrowRef.current = new fabric.Arrow([pointer.x, pointer.y, pointer.x, pointer.y], {
@@ -64,6 +69,11 @@ export const useArrowTool = (canvas, activeTool) => {
       });
       isDrawingRef.current = true;
       canvas.add(arrowRef.current);
+      canvas.discardActiveObject();
+      canvas.getObjects().forEach((obj) => {
+        obj.selectable = false;
+        obj.hasControls = false;
+      });
       canvas.requestRenderAll();
     };
     const handleMouseMove = (e) => {
@@ -72,7 +82,9 @@ export const useArrowTool = (canvas, activeTool) => {
       const x2 = Math.min(Math.max(pointer.x, 0), canvas.width);
       const y2 = Math.min(Math.max(pointer.y, 0), canvas.height);
       arrowRef.current.set({ x2: x2, y2: y2 });
-      canvas.requestRenderAll();
+      canvas.discardActiveObject();
+      // canvas.requestRenderAll();
+      canvas.renderAll();
     };
     const handleMouseUp = (e) => {
       if (!isDrawingRef.current) return;
@@ -87,7 +99,10 @@ export const useArrowTool = (canvas, activeTool) => {
         arrowRef.current.set({ selectable: true, evented: true });
         canvas.setActiveObject(arrowRef.current);
       }
+      canvas.discardActiveObject();
       canvas.requestRenderAll();
+
+      canvas.selection = prevSelection;
       arrowRef.current = null;
       startPointRef.current = null;
     };
