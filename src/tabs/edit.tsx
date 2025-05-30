@@ -199,12 +199,14 @@ const ImageEditor = () => {
           <ToolButton
             active={activeFunction === TOOL_TYPES.TEXT}
             icon={<TextIcon />}
+            tooltip="文本"
             onClick={() => handleToolClick(TOOL_TYPES.TEXT)}
           />
 
           <ToolButton
             active={activeFunction === TOOL_TYPES.ARROW}
             icon={<LineArrowIcon />}
+            tooltip="箭头"
             onClick={() => handleToolClick(TOOL_TYPES.ARROW)}
           />
 
@@ -212,24 +214,28 @@ const ImageEditor = () => {
           <ToolButton
             active={activeFunction === TOOL_TYPES.BRUSH}
             icon={<EditOutlined />}
+            tooltip="画笔"
             onClick={() => handleToolClick(TOOL_TYPES.BRUSH)}
           />
 
           <ToolButton
             active={activeFunction === TOOL_TYPES.RECT}
             icon={<BorderOutlined />}
+            tooltip="矩形"
             onClick={() => handleToolClick(TOOL_TYPES.RECT)}
           />
 
           <ToolButton
             active={activeFunction === TOOL_TYPES.ELLIPSE}
             icon={<EllipseIcon />} // 椭圆轮廓图标
+            tooltip="圆"
             onClick={() => handleToolClick(TOOL_TYPES.ELLIPSE)}
           />
 
           <ToolButton
             active={activeFunction === TOOL_TYPES.MOSAIC}
             icon={<MosaicIcon />}  // 网格图标
+            tooltip="马赛克笔"
             onClick={() => handleToolClick(TOOL_TYPES.MOSAIC)}
           />
         </Space>

@@ -5,7 +5,7 @@ export const StyledLayout = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #000;
+  background: #212224;
 `;
 
 export const StyledHeader = styled.div`
