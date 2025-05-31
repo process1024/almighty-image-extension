@@ -9,10 +9,10 @@ export const StyledLayout = styled.div`
 `;
 
 export const StyledHeader = styled.div`
-  height: 56px;
+  height: 46px;
   padding: 0 16px;
-  background: #fff;
-  border-bottom: 1px solid #f0f0f0;
+  background: #32343e;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
   display: flex;
   align-items: center;
   position: relative;

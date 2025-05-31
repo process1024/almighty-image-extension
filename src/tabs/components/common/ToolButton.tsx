@@ -33,6 +33,7 @@ const StyledButton = styled(Button)`
     width: 32px;
     height: 32px;
     padding: 0;
+    color: #fff;
     
     .anticon {
       font-size: 16px;
