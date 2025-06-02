@@ -3,19 +3,40 @@ import { useEffect, useState } from 'react';
 import { fabric } from 'fabric';
 import { getBase64ImageDimensions } from '~utils/image';
 
-export const useCanvas = (canvasRef) => {
-  const [canvas, setCanvas] = useState(null);
+type FabricCanvas = fabric.Canvas;
+
+export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
+  const [canvas, setCanvas] = useState<FabricCanvas | null>(null);
   const [selectedObject, setSelectedObject] = useState(null);
 
   useEffect(() => {
     if (!canvasRef.current) return;
-    // const [size, setSize] = useState({width: 0, height: 0});
 
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      width: window.innerWidth,
-      height: window.innerHeight - 110,
-      backgroundColor: '#ffffff'
-    });
+    const initCanvas = () => {
+      const canvas = new fabric.Canvas(canvasRef.current!, {
+        width: window.innerWidth,
+        height: window.innerHeight - 110,
+        backgroundColor: '#ffffff'
+      }) as FabricCanvas;
+
+      return canvas;
+    };
+
+    const loadImageData = async (canvas: FabricCanvas) => {
+      try {
+        const res = await chrome.storage.local.get(['imageData']);
+        const { imageData } = res;
+        const { width, height } = await getBase64ImageDimensions(imageData);
+        
+        canvas.setDimensions({ width, height });
+        canvas.setBackgroundImage(imageData, canvas.renderAll.bind(canvas));
+      } catch (error) {
+        console.error('Failed to load image:', error);
+      }
+    };
+
+    const canvas = initCanvas();
+    loadImageData(canvas);
 
     chrome.storage.local.get(['imageData']).then(async res => {
       // console.log(res);

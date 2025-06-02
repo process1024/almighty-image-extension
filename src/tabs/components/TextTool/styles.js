@@ -2,34 +2,22 @@ import styled from 'styled-components';
 
 export const StyledControls = styled.div`
   position: absolute;
-  top: 60px;
-  right: 50%;
+  top: 46px;
+  left: 50%;
+  transform: translateX(-50%);
   background-color: #32343d;
-  background: white;
-  padding: 10px;
+  padding: 6px;
   border-radius: 4px;
   z-index: 1;
   display: flex;
-  gap: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid #e5e5e5;
   gap: 12px;
-  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
-  div {
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  label {
-    min-width: 80px;
-  }
-  
   div {
     margin: 0;
     position: relative;
+    display: flex;
+    align-items: center;
   }
 
   input, select {
@@ -60,6 +48,7 @@ export const StyledToolbarControls = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+  position: relative;
 
   div {
     display: flex;

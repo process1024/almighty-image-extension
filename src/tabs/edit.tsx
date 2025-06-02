@@ -181,7 +181,6 @@ const ImageEditor = () => {
     <StyledLayout>
       <StyledHeader>
         <Space>
-          {/* 在现有工具按钮后添加 */}
           <ToolButton 
             disabled={!canUndo} 
             active={false}
@@ -196,99 +195,104 @@ const ImageEditor = () => {
             onClick={redo} 
           />
 
-          <ToolButton
-            active={activeFunction === TOOL_TYPES.TEXT}
-            icon={<TextIcon />}
-            tooltip="文本"
-            onClick={() => handleToolClick(TOOL_TYPES.TEXT)}
-          />
+          <div style={{ position: 'relative' }}>
+            <ToolButton
+              active={activeFunction === TOOL_TYPES.TEXT}
+              icon={<TextIcon />}
+              tooltip="文本"
+              onClick={() => handleToolClick(TOOL_TYPES.TEXT)}
+            />
+            {showTextControls && (
+              <TextControls
+                selectedObject={selectedObject?.type === 'textbox' ? selectedObject : null}
+                defaultTextOptions={textOptions}
+                onUpdateSelected={updateObjectProperties}
+                onUpdateDefaults={(props) => setTextOptions((prev) => ({ ...prev, ...props }))}
+              />
+            )}
+          </div>
 
-          <ToolButton
-            active={activeFunction === TOOL_TYPES.ARROW}
-            icon={<LineArrowIcon />}
-            tooltip="箭头"
-            onClick={() => handleToolClick(TOOL_TYPES.ARROW)}
-          />
+          <div style={{ position: 'relative' }}>
+            <ToolButton
+              active={activeFunction === TOOL_TYPES.ARROW}
+              icon={<LineArrowIcon />}
+              tooltip="箭头"
+              onClick={() => handleToolClick(TOOL_TYPES.ARROW)}
+            />
+            {showArrowControls && (
+              <ArrowControls
+                defaultArrowOptions={arrowOptions}
+                selectedObject={selectedObject?.type === 'arrow' ? selectedObject : null}
+                onUpdateSelected={updateObjectProperties}
+                onUpdateDefaults={(props) => setArrowOptions((prev) => ({ ...prev, ...props }))}
+              />
+            )}
+          </div>
 
-          {/* 画笔工具 */}
-          <ToolButton
-            active={activeFunction === TOOL_TYPES.BRUSH}
-            icon={<EditOutlined />}
-            tooltip="画笔"
-            onClick={() => handleToolClick(TOOL_TYPES.BRUSH)}
-          />
+          <div style={{ position: 'relative' }}>
+            <ToolButton
+              active={activeFunction === TOOL_TYPES.BRUSH}
+              icon={<EditOutlined />}
+              tooltip="画笔"
+              onClick={() => handleToolClick(TOOL_TYPES.BRUSH)}
+            />
+            {showBrushControls && (
+              <BrushControls
+                defaultBrushOptions={brushOptions}
+                onUpdateDefaults={(props) => setBrushOptions((prev) => ({ ...prev, ...props }))}
+              />
+            )}
+          </div>
 
-          <ToolButton
-            active={activeFunction === TOOL_TYPES.RECT}
-            icon={<BorderOutlined />}
-            tooltip="矩形"
-            onClick={() => handleToolClick(TOOL_TYPES.RECT)}
-          />
+          <div style={{ position: 'relative' }}>
+            <ToolButton
+              active={activeFunction === TOOL_TYPES.RECT}
+              icon={<BorderOutlined />}
+              tooltip="矩形"
+              onClick={() => handleToolClick(TOOL_TYPES.RECT)}
+            />
+            {showRectControls && (
+              <RectControls
+                selectedObject={selectedObject?.type === 'rect' ? selectedObject : null}
+                defaultRectOptions={rectOptions}
+                onUpdateSelected={updateObjectProperties}
+                onUpdateDefaults={(props) => setRectOptions((prev) => ({ ...prev, ...props }))}
+              />
+            )}
+          </div>
 
-          <ToolButton
-            active={activeFunction === TOOL_TYPES.ELLIPSE}
-            icon={<EllipseIcon />} // 椭圆轮廓图标
-            tooltip="圆"
-            onClick={() => handleToolClick(TOOL_TYPES.ELLIPSE)}
-          />
+          <div style={{ position: 'relative' }}>
+            <ToolButton
+              active={activeFunction === TOOL_TYPES.ELLIPSE}
+              icon={<EllipseIcon />}
+              tooltip="圆"
+              onClick={() => handleToolClick(TOOL_TYPES.ELLIPSE)}
+            />
+            {showEllipseControls && (
+              <EllipseControls
+                selectedObject={isEllipse ? selectedObject : null}
+                defaultEllipseOptions={ellipseOptions}
+                onUpdateSelected={updateObjectProperties}
+                onUpdateDefaults={(props) => setEllipseOptions((prev) => ({ ...prev, ...props }))}
+              />
+            )}
+          </div>
 
-          <ToolButton
-            active={activeFunction === TOOL_TYPES.MOSAIC}
-            icon={<MosaicIcon />}  // 网格图标
-            tooltip="马赛克笔"
-            onClick={() => handleToolClick(TOOL_TYPES.MOSAIC)}
-          />
+          <div style={{ position: 'relative' }}>
+            <ToolButton
+              active={activeFunction === TOOL_TYPES.MOSAIC}
+              icon={<MosaicIcon />}
+              tooltip="马赛克笔"
+              onClick={() => handleToolClick(TOOL_TYPES.MOSAIC)}
+            />
+            {showMosaicControls && (
+              <MosaicControls
+                options={mosaicOptions}
+                onUpdate={(props) => setMosaicOptions((prev) => ({ ...prev, ...props }))}
+              />
+            )}
+          </div>
         </Space>
-
-          {showTextControls && (
-            <TextControls
-              selectedObject={selectedObject?.type === 'textbox' ? selectedObject : null}
-              defaultTextOptions={textOptions}
-              onUpdateSelected={updateObjectProperties}
-              onUpdateDefaults={(props) => setTextOptions((prev) => ({ ...prev, ...props }))}
-            />
-          )}
-
-          {showArrowControls && (
-            <ArrowControls
-              defaultArrowOptions={arrowOptions}
-              selectedObject={selectedObject?.type === 'arrow' ? selectedObject : null}
-              onUpdateSelected={updateObjectProperties}
-              onUpdateDefaults={(props) => setArrowOptions((prev) => ({ ...prev, ...props }))}
-            />
-          )}
-
-          {showRectControls && (
-            <RectControls
-              selectedObject={selectedObject?.type === 'rect' ? selectedObject : null}
-              defaultRectOptions={rectOptions}
-              onUpdateSelected={updateObjectProperties}
-              onUpdateDefaults={(props) => setRectOptions((prev) => ({ ...prev, ...props }))}
-            />
-          )}
-
-          {showBrushControls && (
-            <BrushControls
-              defaultBrushOptions={brushOptions}
-              onUpdateDefaults={(props) => setBrushOptions((prev) => ({ ...prev, ...props }))}
-            />
-          )}
-
-          {showMosaicControls && (
-            <MosaicControls
-              options={mosaicOptions}
-              onUpdate={(props) => setMosaicOptions((prev) => ({ ...prev, ...props }))}
-            />
-          )}
-
-          {showEllipseControls && (
-            <EllipseControls
-              selectedObject={isEllipse ? selectedObject : null}
-              defaultEllipseOptions={ellipseOptions}
-              onUpdateSelected={updateObjectProperties}
-              onUpdateDefaults={(props) => setEllipseOptions((prev) => ({ ...prev, ...props }))}
-            />
-          )}
       </StyledHeader>
       <StyledContent>
         <canvas ref={canvasRef} />
