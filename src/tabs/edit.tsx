@@ -48,6 +48,25 @@ const ImageEditor = () => {
     initTextClass();
   }, []);
 
+  // 根据选中对象类型自动设置活动工具
+  useEffect(() => {
+    if (!selectedObject) {
+      setActiveFunction(TOOL_TYPES.SELECT);
+      return;
+    }
+
+    const toolMap = {
+      'rect': TOOL_TYPES.RECT,
+      'ellipse': TOOL_TYPES.ELLIPSE,
+      'arrow': TOOL_TYPES.ARROW,
+      'textbox': TOOL_TYPES.TEXT,
+      'path': TOOL_TYPES.BRUSH,
+      'mosaic': TOOL_TYPES.MOSAIC
+    };
+
+    setActiveFunction(toolMap[selectedObject.type] || TOOL_TYPES.SELECT);
+  }, [selectedObject]);
+
   const showRectControls = activeFunction === TOOL_TYPES.RECT || selectedObject?.type === 'rect';
   // 添加显示画笔控制面板的条件
   const showBrushControls = activeFunction === TOOL_TYPES.BRUSH;
@@ -85,7 +104,7 @@ const ImageEditor = () => {
       canvas?.discardActiveObject();
     } else {
       setActiveFunction(toolType);
-      canvas?.discardActiveObject(); // 新增：点击工具时取消元素选择
+      canvas?.discardActiveObject();
     }
   };
   
@@ -157,12 +176,15 @@ const ImageEditor = () => {
     canvas.on('selection:created', (e) => {
       if (e.selected?.length === 1) {
         const type = e.selected[0].type;
-        setActiveFunction({
+        const toolMap = {
           'rect': TOOL_TYPES.RECT,
           'ellipse': TOOL_TYPES.ELLIPSE,
           'arrow': TOOL_TYPES.ARROW,
-          'textbox': TOOL_TYPES.TEXT
-        }[type] || TOOL_TYPES.SELECT);
+          'textbox': TOOL_TYPES.TEXT,
+          'path': TOOL_TYPES.BRUSH,
+          'mosaic': TOOL_TYPES.MOSAIC
+        };
+        setActiveFunction(toolMap[type] || TOOL_TYPES.SELECT);
       }
     });
   
@@ -282,7 +304,7 @@ const ImageEditor = () => {
             <ToolButton
               active={activeFunction === TOOL_TYPES.MOSAIC}
               icon={<MosaicIcon />}
-              tooltip="马赛克笔"
+              tooltip="马赛克"
               onClick={() => handleToolClick(TOOL_TYPES.MOSAIC)}
             />
             {showMosaicControls && (

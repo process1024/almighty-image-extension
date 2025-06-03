@@ -14,6 +14,16 @@ export const useTextTool = (canvas, activeFunction) => {
     if (!canvas) return;
 
     const handleMouseDown = (options) => {
+      if (!canvas) return;
+
+      // 当存在激活对象时，取消激活并阻止新建文本
+      const activeObject = canvas.getActiveObject();
+      if (activeObject) {
+        canvas.discardActiveObject();
+        canvas.requestRenderAll();
+        return;
+      }
+
       if (options.target || activeFunction !== TOOL_TYPES.TEXT) return;
 
       const pointer = canvas.getPointer(options.e);

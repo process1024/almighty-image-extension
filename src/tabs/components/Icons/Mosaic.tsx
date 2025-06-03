@@ -1,14 +1,7 @@
 export const MosaicIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-    {/* 马赛克效果由多个小方块组成 */}
-    <rect x="3" y="3" width="4" height="4" fill="currentColor" />
-    <rect x="9" y="3" width="4" height="4" fill="currentColor" opacity="0.7" />
-    <rect x="15" y="3" width="4" height="4" fill="currentColor" opacity="0.5" />
-    <rect x="3" y="9" width="4" height="4" fill="currentColor" opacity="0.7" />
-    <rect x="9" y="9" width="4" height="4" fill="currentColor" opacity="0.5" />
-    <rect x="15" y="9" width="4" height="4" fill="currentColor" opacity="0.3" />
-    <rect x="3" y="15" width="4" height="4" fill="currentColor" opacity="0.5" />
-    <rect x="9" y="15" width="4" height="4" fill="currentColor" opacity="0.3" />
-    <rect x="15" y="15" width="4" height="4" fill="currentColor" opacity="0.2" />
+  <svg viewBox="0 0 1024 1024" width="16" height="16" fill="currentColor">
+    <path
+      d="M115.392 0h793.152C973.44 0 1024 50.816 1024 116.224v791.552C1024 973.184 973.44 1024 908.544 1024H115.392C50.496 1016.704 0 965.888 0 907.776V116.224C0 50.816 50.496 0 115.392 0z m814.784 137.984a49.472 49.472 0 0 0-50.432-50.816H512V512H86.528v374.016c0 29.056 21.632 50.816 50.496 50.816H512V512h418.176V137.984z"
+      fill="currentColor"></path>
   </svg>
 );
