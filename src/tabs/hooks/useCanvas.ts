@@ -7,7 +7,7 @@ type FabricCanvas = fabric.Canvas;
 
 export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
   const [canvas, setCanvas] = useState<FabricCanvas | null>(null);
-  const [selectedObject, setSelectedObject] = useState(null);
+  const [selectedObject, setSelectedObject] = useState<fabric.Object | null>(null);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -16,7 +16,12 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
       const canvas = new fabric.Canvas(canvasRef.current!, {
         width: window.innerWidth,
         height: window.innerHeight - 110,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        selection: true,
+        selectionColor: 'rgba(100, 149, 237, 0.3)',
+        selectionBorderColor: 'rgba(100, 149, 237, 0.8)',
+        selectionLineWidth: 2,
+        selectionDashArray: [10, 5],
       }) as FabricCanvas;
 
       return canvas;
@@ -39,20 +44,18 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
     loadImageData(canvas);
 
     chrome.storage.local.get(['imageData']).then(async res => {
-      // console.log(res);
       const { imageData } = res;
-      const { width, height }  = await getBase64ImageDimensions(imageData);
+      const { width, height } = await getBase64ImageDimensions(imageData);
       console.log(width, height);
 
-      // setSize({width, height});
       canvas.setWidth(width);
       canvas.setHeight(height);
 
       canvas.setBackgroundImage(
-          imageData,
-          canvas.renderAll.bind(canvas)
-      )
-  });
+        imageData,
+        canvas.renderAll.bind(canvas)
+      );
+    });
 
     setCanvas(canvas);
 
@@ -74,26 +77,22 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
   useEffect(() => {
     if (!canvas) return;
 
-    console.log(canvas, 'canvas');
-
-    const handleSelection = () => {
-
-      const actives = canvas.getActiveObjects()
-      console.log('actives', actives);
-      console.log('actives', actives[0].type);
-      if(actives.length === 1) {
-        console.log('actives', actives[0].type);
-        setSelectedObject(actives[0]);
+    const handleSelection = (e) => {
+      const activeObjects = canvas.getActiveObjects();
+      
+      if (activeObjects.length === 1) {
+        const obj = activeObjects[0];
+        setSelectedObject(obj);
+      } else {
+        setSelectedObject(null);
       }
-      // console.log('e.target', e);
-      // console.log('actives', actives);
-      // console.log('actives', actives[0].type);
-      // setSelectedObject(e.target);
     };
 
     canvas.on('selection:created', handleSelection);
     canvas.on('selection:updated', handleSelection);
-    canvas.on('selection:cleared', () => setSelectedObject(null));
+    canvas.on('selection:cleared', () => {
+      setSelectedObject(null);
+    });
 
     return () => {
       canvas.off('selection:created', handleSelection);

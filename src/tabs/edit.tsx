@@ -49,23 +49,23 @@ const ImageEditor = () => {
   }, []);
 
   // 根据选中对象类型自动设置活动工具
-  useEffect(() => {
-    if (!selectedObject) {
-      setActiveFunction(TOOL_TYPES.SELECT);
-      return;
-    }
+  // useEffect(() => {
+  //   if (!selectedObject) {
+  //     setActiveFunction(TOOL_TYPES.SELECT);
+  //     return;
+  //   }
 
-    const toolMap = {
-      'rect': TOOL_TYPES.RECT,
-      'ellipse': TOOL_TYPES.ELLIPSE,
-      'arrow': TOOL_TYPES.ARROW,
-      'textbox': TOOL_TYPES.TEXT,
-      'path': TOOL_TYPES.BRUSH,
-      'mosaic': TOOL_TYPES.MOSAIC
-    };
+  //   const toolMap = {
+  //     'rect': TOOL_TYPES.RECT,
+  //     'ellipse': TOOL_TYPES.ELLIPSE,
+  //     'arrow': TOOL_TYPES.ARROW,
+  //     'textbox': TOOL_TYPES.TEXT,
+  //     'path': TOOL_TYPES.BRUSH,
+  //     'mosaic': TOOL_TYPES.MOSAIC
+  //   };
 
-    setActiveFunction(toolMap[selectedObject.type] || TOOL_TYPES.SELECT);
-  }, [selectedObject]);
+  //   setActiveFunction(toolMap[selectedObject.type] || TOOL_TYPES.SELECT);
+  // }, [selectedObject]);
 
   const showRectControls = activeFunction === TOOL_TYPES.RECT || selectedObject?.type === 'rect';
   // 添加显示画笔控制面板的条件
@@ -100,11 +100,14 @@ const ImageEditor = () => {
 
   const handleToolClick = (toolType: string) => {
     if (activeFunction === toolType) {
+      // 如果点击的是当前激活的工具，切换到选择模式
       setActiveFunction(TOOL_TYPES.SELECT);
+      // 只有在切换到选择模式时才清除选中对象
       canvas?.discardActiveObject();
+      canvas?.renderAll();
     } else {
+      // 切换到新工具时，不清除当前选中的对象
       setActiveFunction(toolType);
-      canvas?.discardActiveObject();
     }
   };
   
@@ -117,13 +120,13 @@ const ImageEditor = () => {
     });
   
     // 增加删除状态同步
-    if (props.isDeleted) {
-      canvas.remove(selectedObject);
-      canvas.discardActiveObject();
-      if (activeFunction === selectedObject.type) {
-        setActiveFunction(TOOL_TYPES.SELECT);
-      }
-    }
+    // if (props.isDeleted) {
+    //   canvas.remove(selectedObject);
+    //   canvas.discardActiveObject();
+    //   if (activeFunction === selectedObject.type) {
+    //     setActiveFunction(TOOL_TYPES.SELECT);
+    //   }
+    // }
   
     canvas.renderAll();
     canvas.fire('object:modified');
@@ -153,9 +156,6 @@ const ImageEditor = () => {
       'object:added',
       'object:removed',
       'path:created',
-      'selection:created',
-      'selection:updated',
-      'selection:cleared'
     ];
 
     events.forEach(event => {
@@ -174,6 +174,7 @@ const ImageEditor = () => {
     if (!canvas) return;
   
     canvas.on('selection:created', (e) => {
+      console.log('selection:created', e);
       if (e.selected?.length === 1) {
         const type = e.selected[0].type;
         const toolMap = {
@@ -188,9 +189,9 @@ const ImageEditor = () => {
       }
     });
   
-    canvas.on('selection:cleared', () => {
-      setActiveFunction(TOOL_TYPES.SELECT);
-    });
+    // canvas.on('selection:cleared', () => {
+    //   setActiveFunction(TOOL_TYPES.SELECT);
+    // });
   
     return () => {
       canvas.off('selection:created');
@@ -198,7 +199,6 @@ const ImageEditor = () => {
     };
   }, [canvas]);
 
-  // 在工具栏添加撤销/重做按钮
   return (
     <StyledLayout>
       <StyledHeader>

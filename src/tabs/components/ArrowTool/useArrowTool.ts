@@ -64,16 +64,16 @@ export const useArrowTool = (canvas, activeTool) => {
       startPointRef.current = pointer;
       arrowRef.current = new fabric.Arrow([pointer.x, pointer.y, pointer.x, pointer.y], {
         ...arrowOptions,
-        selectable: false,
-        evented: false,
+        // selectable: false,
+        // evented: false,
       });
       isDrawingRef.current = true;
       canvas.add(arrowRef.current);
       canvas.discardActiveObject();
-      canvas.getObjects().forEach((obj) => {
-        obj.selectable = false;
-        obj.hasControls = false;
-      });
+      // canvas.getObjects().forEach((obj) => {
+      //   obj.selectable = false;
+      //   obj.hasControls = false;
+      // });
       canvas.requestRenderAll();
     };
     const handleMouseMove = (e) => {
