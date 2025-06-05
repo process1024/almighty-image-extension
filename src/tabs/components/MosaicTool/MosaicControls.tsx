@@ -1,30 +1,15 @@
 // src/components/ImageEditor/components/MosaicTool/MosaicControls.jsx
 import React from 'react';
-import styled from 'styled-components';
+import { StyledControls } from '../../styles/toolControls';
 
-const StyledControls = styled.div`
-  position: absolute;
-  top: 60px;
-  right: 50%;
-  background: white;
-  padding: 10px;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  gap: 16px;
-  align-items: center;
-`;
 
-const ControlGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
+
+
 
 export const MosaicControls = ({ options, onUpdate }) => {
   return (
     <StyledControls>
-      <ControlGroup>
+      <div>
         <label>马赛克大小：</label>
         <input
           type="number"
@@ -33,8 +18,8 @@ export const MosaicControls = ({ options, onUpdate }) => {
           value={options.blockSize}
           onChange={(e) => onUpdate({ blockSize: parseInt(e.target.value) })}
         />
-      </ControlGroup>
-      <ControlGroup>
+      </div>
+      <div>
         <label>笔刷大小：</label>
         <input
           type="number"
@@ -43,7 +28,7 @@ export const MosaicControls = ({ options, onUpdate }) => {
           value={options.brushSize}
           onChange={(e) => onUpdate({ brushSize: parseInt(e.target.value) })}
         />
-      </ControlGroup>
+      </div>
     </StyledControls>
   );
 };

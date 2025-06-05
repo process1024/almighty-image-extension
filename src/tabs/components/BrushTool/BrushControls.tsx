@@ -1,25 +1,6 @@
 // src/components/ImageEditor/components/BrushTool/BrushControls.jsx
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-
-const StyledControls = styled.div`
-  position: absolute;
-  top: 60px;
-  right: 50%;
-  background: white;
-  padding: 10px;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  gap: 16px;
-  align-items: center;
-`;
-
-const ControlGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
+import { StyledControls } from '../../styles/toolControls';
 
 export const BrushControls = ({
   defaultBrushOptions,
@@ -42,15 +23,15 @@ export const BrushControls = ({
 
   return (
     <StyledControls>
-      <ControlGroup>
+      <div>
         <label>画笔颜色：</label>
         <input
           type="color"
           value={brushProps.color}
           onChange={(e) => handleUpdate('color', e.target.value)}
         />
-      </ControlGroup>
-      <ControlGroup>
+      </div>
+      <div>
         <label>画笔粗细：</label>
         <input
           type="number"
@@ -59,7 +40,7 @@ export const BrushControls = ({
           value={brushProps.width}
           onChange={(e) => handleUpdate('width', parseInt(e.target.value))}
         />
-      </ControlGroup>
+      </div>
     </StyledControls>
   );
 };

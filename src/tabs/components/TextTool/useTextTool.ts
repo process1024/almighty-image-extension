@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { TOOL_TYPES } from '../../constants/tools';
 import { fabric } from 'fabric';
+import { createTextClass } from './TextBox';
 
 export const useTextTool = (canvas, activeFunction) => {
   const [textOptions, setTextOptions] = useState({
@@ -13,6 +14,8 @@ export const useTextTool = (canvas, activeFunction) => {
 
   useEffect(() => {
     if (!canvas) return;
+    const TextClass = createTextClass();
+    fabric.TextBox = TextClass;
 
     const handleMouseDown = (options) => {
       if (!canvas) return;
@@ -28,34 +31,54 @@ export const useTextTool = (canvas, activeFunction) => {
       if (options.target || activeFunction !== TOOL_TYPES.TEXT) return;
 
       const pointer = canvas.getPointer(options.e);
-      const text = new fabric.TextBox('双击编辑文字', {
+      const text = new fabric.Textbox('1双击编辑文字', {
         left: pointer.x,
         top: pointer.y,
         ...textOptions,
         // 设置选中框样式
-        borderColor: textOptions.fill,
-        cornerColor: textOptions.fill,
-        cornerStyle: 'circle',
-        transparentCorners: false,
-        borderDashArray: [5, 5],
-        // 只显示旋转控制点
-        hasControls: true,
-        hasBorders: true,
-        lockScalingX: true,
-        lockScalingY: true,
-        lockMovementX: false,
-        lockMovementY: false,
-        lockRotation: false,
-        lockUniScaling: true,
-        // 设置控制点大小
-        cornerSize: 10,
-        // 设置控制点距离边界的距离
-        padding: 5
+        // borderColor: textOptions.fill,
+        // cornerColor: textOptions.fill,
+        // cornerStyle: 'circle',
+        // transparentCorners: false,
+        // borderDashArray: [5, 5],
+        // // 设置控制点
+        // hasControls: true,
+        // hasBorders: true,
+        // lockScalingX: false,
+        // lockScalingY: false,
+        // lockMovementX: false,
+        // lockMovementY: false,
+        // lockRotation: false,
+        // lockUniScaling: true,
+        // // 设置控制点大小
+        // cornerSize: 10,
+        // // 设置控制点距离边界的距离
+        // padding: 5,
+        // // 确保可以编辑
+        // editable: true,
+        // // 设置选中框样式
+        // borderScaleFactor: 2,
+        // // 设置最小尺寸
+        // minScaleLimit: 0.1,
+        // // 设置最大尺寸
+        // maxScaleLimit: 10
       });
 
+      // 添加文本到画布
       canvas.add(text);
+      
+      // 设置为活动对象
       canvas.setActiveObject(text);
-      canvas.renderAll();
+      
+      // 强制渲染
+      canvas.requestRenderAll();
+      
+      // 延迟进入编辑模式
+      // setTimeout(() => {
+      //   text.enterEditing();
+      //   text.selectAll();
+      //   canvas.requestRenderAll();
+      // }, 100);
     };
 
     canvas.on('mouse:down', handleMouseDown);

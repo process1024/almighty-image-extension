@@ -23,7 +23,6 @@ import { MosaicControls } from './components/MosaicTool/MosaicControls';
 import { useMosaicTool } from './components/MosaicTool/useMosaicTool';
 import { RectControls } from './components/RectTool/RectControls';
 import { useRectTool } from './components/RectTool/useRectTool';
-import { initTextClass } from './components/TextTool/TextBox';
 import { TextControls } from './components/TextTool/TextControls';
 import { useTextTool } from './components/TextTool/useTextTool';
 import { TOOL_TYPES } from './constants/tools';
@@ -42,11 +41,6 @@ const ImageEditor = () => {
   const { brushOptions, setBrushOptions } = useBrushTool(canvas, activeFunction);
   const { mosaicOptions, setMosaicOptions } = useMosaicTool(canvas, activeFunction);
   const { ellipseOptions, setEllipseOptions } = useEllipseTool(canvas, activeFunction);
-
-  useEffect(() => {
-    // initArrowClass();
-    initTextClass();
-  }, []);
 
   // 根据选中对象类型自动设置活动工具
   // useEffect(() => {
@@ -174,19 +168,19 @@ const ImageEditor = () => {
     if (!canvas) return;
   
     canvas.on('selection:created', (e) => {
-      console.log('selection:created', e);
-      if (e.selected?.length === 1) {
-        const type = e.selected[0].type;
-        const toolMap = {
-          'rect': TOOL_TYPES.RECT,
-          'ellipse': TOOL_TYPES.ELLIPSE,
-          'arrow': TOOL_TYPES.ARROW,
-          'textbox': TOOL_TYPES.TEXT,
-          'path': TOOL_TYPES.BRUSH,
-          'mosaic': TOOL_TYPES.MOSAIC
-        };
-        setActiveFunction(toolMap[type] || TOOL_TYPES.SELECT);
-      }
+      // console.log('selection:created', e);
+      // if (e.selected?.length === 1) {
+      //   const type = e.selected[0].type;
+      //   const toolMap = {
+      //     'rect': TOOL_TYPES.RECT,
+      //     'ellipse': TOOL_TYPES.ELLIPSE,
+      //     'arrow': TOOL_TYPES.ARROW,
+      //     'textbox': TOOL_TYPES.TEXT,
+      //     'path': TOOL_TYPES.BRUSH,
+      //     'mosaic': TOOL_TYPES.MOSAIC
+      //   };
+      //   setActiveFunction(toolMap[type] || TOOL_TYPES.SELECT);
+      // }
     });
   
     // canvas.on('selection:cleared', () => {

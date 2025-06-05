@@ -1,3 +1,4 @@
+// src/components/ImageEditor/components/ArrowTool/styles.js
 import styled from 'styled-components';
 
 export const StyledControls = styled.div`
@@ -12,6 +13,8 @@ export const StyledControls = styled.div`
   display: flex;
   gap: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: #fff;
+  white-space: nowrap;
 
   div {
     margin: 0;
@@ -43,31 +46,3 @@ export const StyledControls = styled.div`
     cursor: pointer;
   }
 `;
-
-export const StyledToolbarControls = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  position: relative;
-
-  div {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  label {
-    color: #666;
-  }
-
-  gap: 24px;
-  padding: 8px 16px;
-  background: #f5f5f5;
-  border-radius: 6px;
-  
-  label {
-    font-weight: 500;
-    color: #333;
-  }
-`;
-

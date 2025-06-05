@@ -24,6 +24,19 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
         selectionDashArray: [10, 5],
       }) as FabricCanvas;
 
+      // 设置默认对象样式
+      fabric.Object.prototype.set({
+        transparentCorners: false,
+        borderColor: '#4169E1',
+        cornerColor: '#4169E1',
+        cornerSize: 8,
+        cornerStyle: 'circle',
+        borderDashArray: [5, 5],
+        padding: 5,
+        hasControls: true,
+        hasBorders: true
+      });
+
       return canvas;
     };
 
@@ -78,26 +91,32 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
     if (!canvas) return;
 
     const handleSelection = (e) => {
+      // console.log('Selection event:', e.type, e);
       const activeObjects = canvas.getActiveObjects();
       
       if (activeObjects.length === 1) {
         const obj = activeObjects[0];
         setSelectedObject(obj);
+        // console.log('Object selected:', obj.type, obj);
       } else {
         setSelectedObject(null);
+        // console.log('Selection cleared');
       }
+    };
+
+    const handleSelectionCleared = () => {
+      // console.log('Selection cleared event');
+      setSelectedObject(null);
     };
 
     canvas.on('selection:created', handleSelection);
     canvas.on('selection:updated', handleSelection);
-    canvas.on('selection:cleared', () => {
-      setSelectedObject(null);
-    });
+    canvas.on('selection:cleared', handleSelectionCleared);
 
     return () => {
       canvas.off('selection:created', handleSelection);
       canvas.off('selection:updated', handleSelection);
-      canvas.off('selection:cleared');
+      canvas.off('selection:cleared', handleSelectionCleared);
     };
   }, [canvas]);
 

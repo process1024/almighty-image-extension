@@ -1,6 +1,6 @@
 // src/components/ImageEditor/components/TextTool/TextControls.jsx
 import React, { useEffect, useState } from 'react';
-import { StyledControls } from './styles';
+import { StyledControls } from '../../styles/toolControls';
 
 export const TextControls = ({ 
   selectedObject, 

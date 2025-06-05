@@ -1,25 +1,6 @@
 // src/components/ImageEditor/components/RectTool/RectControls.jsx
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-
-const StyledControls = styled.div`
-  position: absolute;
-  top: 60px;
-  right: 50%;
-  background: white;
-  padding: 10px;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  gap: 16px;
-  align-items: center;
-`;
-
-const ControlGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
+import { StyledControls } from '../../styles/toolControls';
 
 export const RectControls = ({
   selectedObject,
@@ -58,16 +39,16 @@ export const RectControls = ({
 
   return (
     <StyledControls>
-      <ControlGroup>
-        <label>边框颜色：</label>
+      <div>
+        <div>边框颜色：</div>
         <input
           type="color"
           value={rectProps.stroke}
           onChange={(e) => handleUpdate('stroke', e.target.value)}
         />
-      </ControlGroup>
-      <ControlGroup>
-        <label>边框粗细：</label>
+      </div>
+      <div>
+        <div>边框粗细：</div>
         <input
           type="number"
           min="1"
@@ -75,7 +56,7 @@ export const RectControls = ({
           value={rectProps.strokeWidth}
           onChange={(e) => handleUpdate('strokeWidth', parseInt(e.target.value))}
         />
-      </ControlGroup>
+      </div>
       {/* <ControlGroup>
         <label>填充颜色：</label>
         <input
