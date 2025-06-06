@@ -11,7 +11,7 @@ export const EllipseControls = ({
 }) => {
   const [ellipseProps, setEllipseProps] = useState({
     stroke: '#000000',
-    strokeWidth: 2,
+    strokeWidth: 4,
     fill: 'rgba(255, 255, 255, 0.3)'
   });
 

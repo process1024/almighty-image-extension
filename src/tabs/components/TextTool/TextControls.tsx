@@ -47,7 +47,7 @@ export const TextControls = ({
   return (
     <StyledControls>
       <div>
-        {/* <label>字体大小：</label> */}
+        <div>字体大小：</div>
         <input
           type="number"
           min="12"
@@ -57,7 +57,7 @@ export const TextControls = ({
         />
       </div>
       <div>
-        {/* <label>字体颜色：</label> */}
+        <div>字体颜色：</div>
         <input
           type="color"
           value={textProps.fill}
@@ -65,7 +65,7 @@ export const TextControls = ({
         />
       </div>
       <div>
-        {/* <label>字体：</label> */}
+        <div>字体：</div>
         <select
           value={textProps.fontFamily}
           onChange={(e) => handleUpdate('fontFamily', e.target.value)}

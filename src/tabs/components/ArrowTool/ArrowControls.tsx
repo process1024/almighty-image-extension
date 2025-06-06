@@ -21,7 +21,7 @@ export const ArrowControls = ({
   return (
     <StyledControls>
       <div>
-        {/* <label>颜色：</label> */}
+        <div>颜色：</div>
         <input
           type="color"
           value={options.stroke}
@@ -29,7 +29,7 @@ export const ArrowControls = ({
         />
       </div>
       <div>
-        {/* <label>线宽：</label> */}
+        <div>线宽：</div>
         <input
           type="number"
           min="1"
