@@ -23,8 +23,8 @@ export const useTextTool = (canvas, activeFunction) => {
       // 当存在激活对象时，取消激活并阻止新建文本
       const activeObject = canvas.getActiveObject();
       if (activeObject) {
-        canvas.discardActiveObject();
-        canvas.requestRenderAll();
+        // canvas.discardActiveObject();
+        // canvas.requestRenderAll();
         return;
       }
 
