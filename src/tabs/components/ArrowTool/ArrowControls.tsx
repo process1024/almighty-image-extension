@@ -33,9 +33,10 @@ export const ArrowControls = ({
         <input
           type="number"
           min="1"
-          max="50"
+          max="100"  // 扩大最大线宽范围
+          step="0.5" // 允许小数输入
           value={options.strokeWidth}
-          onChange={(e) => handleChange('strokeWidth', parseInt(e.target.value))}
+          onChange={(e) => handleChange('strokeWidth', parseFloat(e.target.value))}
         />
       </div>
     </StyledControls>
