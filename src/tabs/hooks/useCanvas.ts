@@ -13,40 +13,25 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
     if (!canvasRef.current) return;
 
     const initCanvas = () => {
-      const canvas = new fabric.Canvas(canvasRef.current!, {
-        width: window.innerWidth,
-        height: window.innerHeight - 110,
+      return new fabric.Canvas(canvasRef.current!, {
         backgroundColor: '#ffffff',
         selection: true,
         selectionColor: 'rgba(100, 149, 237, 0.3)',
-        selectionBorderColor: 'rgba(100, 149, 237, 0.8)',
-        selectionLineWidth: 2,
-        selectionDashArray: [10, 5],
+        // 移除初始窗口尺寸设置
       }) as FabricCanvas;
-
-      // 设置默认对象样式
-      fabric.Object.prototype.set({
-        transparentCorners: false,
-        borderColor: '#4169E1',
-        cornerColor: '#4169E1',
-        cornerSize: 8,
-        cornerStyle: 'circle',
-        borderDashArray: [5, 5],
-        padding: 5,
-        hasControls: true,
-        hasBorders: true
-      });
-
-      return canvas;
     };
 
     const loadImageData = async (canvas: FabricCanvas) => {
       try {
-        const res = await chrome.storage.local.get(['imageData']);
-        const { imageData } = res;
+        const { imageData } = await chrome.storage.local.get(['imageData']);
         const { width, height } = await getBase64ImageDimensions(imageData);
         
-        canvas.setDimensions({ width, height });
+        // 统一设置画布尺寸
+        canvas.setDimensions({ 
+          width,
+          height,
+          backstoreOnly: true 
+        });
         canvas.setBackgroundImage(imageData, canvas.renderAll.bind(canvas));
       } catch (error) {
         console.error('Failed to load image:', error);
@@ -55,35 +40,11 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
 
     const canvas = initCanvas();
     loadImageData(canvas);
-
-    chrome.storage.local.get(['imageData']).then(async res => {
-      const { imageData } = res;
-      const { width, height } = await getBase64ImageDimensions(imageData);
-      console.log(width, height);
-
-      canvas.setWidth(width);
-      canvas.setHeight(height);
-
-      canvas.setBackgroundImage(
-        imageData,
-        canvas.renderAll.bind(canvas)
-      );
-    });
-
     setCanvas(canvas);
 
-    const handleResize = () => {
-      canvas.setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight - 64
-      });
-    };
-
-    window.addEventListener('resize', handleResize);
-
+    // 移除窗口resize事件监听
     return () => {
       canvas.dispose();
-      window.removeEventListener('resize', handleResize);
     };
   }, []);
 

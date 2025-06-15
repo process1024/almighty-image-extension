@@ -169,23 +169,23 @@ const ImageEditor = () => {
   
     canvas.on('selection:created', (e) => {
       // console.log('selection:created', e);
-      // if (e.selected?.length === 1) {
-      //   const type = e.selected[0].type;
-      //   const toolMap = {
-      //     'rect': TOOL_TYPES.RECT,
-      //     'ellipse': TOOL_TYPES.ELLIPSE,
-      //     'arrow': TOOL_TYPES.ARROW,
-      //     'textbox': TOOL_TYPES.TEXT,
-      //     'path': TOOL_TYPES.BRUSH,
-      //     'mosaic': TOOL_TYPES.MOSAIC
-      //   };
-      //   setActiveFunction(toolMap[type] || TOOL_TYPES.SELECT);
-      // }
+      if (e.selected?.length === 1) {
+        const type = e.selected[0].type;
+        const toolMap = {
+          'rect': TOOL_TYPES.RECT,
+          'ellipse': TOOL_TYPES.ELLIPSE,
+          'arrow': TOOL_TYPES.ARROW,
+          'textbox': TOOL_TYPES.TEXT,
+          'path': TOOL_TYPES.BRUSH,
+          'mosaic': TOOL_TYPES.MOSAIC
+        };
+        setActiveFunction(toolMap[type] || TOOL_TYPES.SELECT);
+      }
     });
   
-    // canvas.on('selection:cleared', () => {
-    //   setActiveFunction(TOOL_TYPES.SELECT);
-    // });
+    canvas.on('selection:cleared', () => {
+      setActiveFunction(TOOL_TYPES.SELECT);
+    });
   
     return () => {
       canvas.off('selection:created');
