@@ -70,7 +70,67 @@ const ImageEditor = () => {
   const isEllipse = selectedObject?.type === 'ellipse';
   const showEllipseControls = activeFunction === TOOL_TYPES.ELLIPSE || isEllipse;
 
-  // 新增删除逻辑
+  // 取消注释并修改历史钩子调用
+  const { undo, redo, canUndo, canRedo, saveState, debouncedSaveState } = useHistory(canvas);
+
+  // 启用对象修改事件监听
+  const handleObjectModified = useCallback(
+    () => {
+      if (!canvas) return;
+      // 使用防抖保存，避免频繁的小改动触发过多保存
+      debouncedSaveState();
+    },
+    [canvas, debouncedSaveState],
+  );
+
+  // 处理重要操作的立即保存
+  const handleImportantChange = useCallback(
+    () => {
+      if (!canvas) return;
+      // 立即保存重要操作
+      saveState();
+    },
+    [canvas, saveState],
+  );
+
+  useEffect(() => {
+    if (!canvas) return;
+
+    // 监听对象的修改、移动、缩放等操作（使用防抖）
+    const modifyEvents = [
+      'object:modified',
+      'object:scaling',
+      'object:moving',
+      'object:rotating',
+      'object:skewing',
+    ];
+
+    // 监听重要操作（立即保存）
+    const importantEvents = [
+      'object:added',
+      'object:removed',
+      'path:created',
+    ];
+
+    modifyEvents.forEach(event => {
+      canvas.on(event, handleObjectModified);
+    });
+
+    importantEvents.forEach(event => {
+      canvas.on(event, handleImportantChange);
+    });
+
+    return () => {
+      modifyEvents.forEach(event => {
+        canvas.off(event, handleObjectModified);
+      });
+      importantEvents.forEach(event => {
+        canvas.off(event, handleImportantChange);
+      });
+    };
+  }, [canvas, handleObjectModified, handleImportantChange]);
+
+  // 处理删除操作
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // 检测是否在文本输入状态
@@ -87,12 +147,15 @@ const ImageEditor = () => {
         if (activeFunction === selectedObject.type) {
           setActiveFunction(TOOL_TYPES.SELECT);
         }
+        
+        // 删除操作后立即保存
+        handleImportantChange();
       }
     };
   
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [canvas, selectedObject, activeFunction]);
+  }, [canvas, selectedObject, activeFunction, handleImportantChange]);
 
   const handleToolClick = (toolType: string) => {
     if (activeFunction === toolType) {
@@ -132,39 +195,6 @@ const ImageEditor = () => {
   // 显示箭头控制面板的条件
   const showArrowControls = activeFunction === TOOL_TYPES.ARROW || selectedObject?.type === 'arrow';
 
-  // 取消注释并修改历史钩子调用
-  const { undo, redo, canUndo, canRedo, saveState } = useHistory(canvas);
-
-  // 启用对象修改事件监听
-  const handleObjectModified = useCallback(
-    () => {
-      if (!canvas) return;
-      saveState();
-    },
-    [canvas, saveState],
-  );
-
-  useEffect(() => {
-    if (!canvas) return;
-
-    const events = [
-      'object:modified',
-      'object:added',
-      'object:removed',
-      'path:created',
-    ];
-
-    events.forEach(event => {
-      canvas.on(event, handleObjectModified);
-    });
-
-    return () => {
-      events.forEach(event => {
-        canvas.off(event, handleObjectModified);
-      });
-    };
-  }, [canvas, handleObjectModified]);
-  
   // 在useEffect中添加画布选择监听
   useEffect(() => {
     if (!canvas) return;

@@ -1,6 +1,13 @@
 import styled from 'styled-components';
 
-export const ActionButton = styled.button`
+interface ActionButtonProps {
+  primary?: boolean;
+  isLast?: boolean;
+}
+
+export const ActionButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => !['primary', 'isLast'].includes(prop),
+})<ActionButtonProps>`
   color: #fff;
   padding: 2px 12px;
   height: 30px;
