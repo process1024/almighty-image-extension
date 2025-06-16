@@ -28,7 +28,9 @@ import { useTextTool } from './components/TextTool/useTextTool';
 import { TOOL_TYPES } from './constants/tools';
 import { useCanvas } from './hooks/useCanvas';
 import { useHistory } from './hooks/useHistory';
+import { useCanvasActions } from './hooks/useCanvasActions';
 import { StyledContent, StyledHeader, StyledLayout } from './styles';
+import { ActionButton } from './styles/actionButtons';
 
 const ImageEditor = () => {
   const canvasRef = useRef(null);
@@ -193,6 +195,8 @@ const ImageEditor = () => {
     };
   }, [canvas]);
 
+  const { copyCanvas, downloadCanvas } = useCanvasActions(canvas);
+
   return (
     <StyledLayout>
       <StyledHeader>
@@ -308,6 +312,15 @@ const ImageEditor = () => {
               />
             )}
           </div>
+        </Space>
+
+        <Space style={{ position: 'absolute', right: '24px' }}>
+          <ActionButton onClick={copyCanvas}>
+            复制
+          </ActionButton>
+          <ActionButton onClick={downloadCanvas} isLast={true} primary={true}>
+            下载
+          </ActionButton>
         </Space>
       </StyledHeader>
       <StyledContent>
