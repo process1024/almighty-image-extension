@@ -3,6 +3,17 @@ import { useEffect, useState } from 'react';
 import { fabric } from 'fabric';
 import { getBase64ImageDimensions } from '~utils/image';
 
+// 声明Chrome扩展API类型
+declare global {
+  const chrome: {
+    storage: {
+      local: {
+        get: (keys: string[]) => Promise<{ [key: string]: string }>;
+      };
+    };
+  };
+}
+
 type FabricCanvas = fabric.Canvas;
 
 export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
@@ -12,7 +23,7 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    const initCanvas = () => {
+    const initCanvas = (): FabricCanvas => {
       return new fabric.Canvas(canvasRef.current!, {
         backgroundColor: '#ffffff',
         selection: true,
@@ -21,17 +32,13 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
       }) as FabricCanvas;
     };
 
-    const loadImageData = async (canvas: FabricCanvas) => {
+    const loadImageData = async (canvas: FabricCanvas): Promise<void> => {
       try {
         const { imageData } = await chrome.storage.local.get(['imageData']);
         const { width, height } = await getBase64ImageDimensions(imageData);
-        
+
         // 统一设置画布尺寸
-        canvas.setDimensions({ 
-          width,
-          height,
-          backstoreOnly: true 
-        });
+        canvas.setDimensions({ width, height });
         canvas.setBackgroundImage(imageData, canvas.renderAll.bind(canvas));
       } catch (error) {
         console.error('Failed to load image:', error);
@@ -51,7 +58,7 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
   useEffect(() => {
     if (!canvas) return;
 
-    const handleSelection = (e) => {
+    const handleSelection = (): void => {
       // console.log('Selection event:', e.type, e);
       const activeObjects = canvas.getActiveObjects();
       
@@ -65,7 +72,7 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
       }
     };
 
-    const handleSelectionCleared = () => {
+    const handleSelectionCleared = (): void => {
       // console.log('Selection cleared event');
       setSelectedObject(null);
     };

@@ -41,7 +41,7 @@ const createArrowClass = () => {
     },
   });
 };
-export const useArrowTool = (canvas, activeTool) => {
+export const useArrowTool = (canvas: fabric.Canvas, activeTool: string) => {
   const [arrowOptions, setArrowOptions] = useState({
     stroke: '#ff0000',
     strokeWidth: 6,
@@ -58,6 +58,11 @@ export const useArrowTool = (canvas, activeTool) => {
     const handleMouseDown = (e) => {
       if (activeTool !== TOOL_TYPES.ARROW) return;
 
+      console.log('handleMouseDown', e);
+
+      const target = e.target;
+      if (target) return;
+
       prevSelection = canvas.selection;
       canvas.selection = false;
       const pointer = canvas.getPointer(e.e);
@@ -69,12 +74,12 @@ export const useArrowTool = (canvas, activeTool) => {
       });
       isDrawingRef.current = true;
       canvas.add(arrowRef.current);
-      canvas.discardActiveObject();
+      // canvas.discardActiveObject();
       // canvas.getObjects().forEach((obj) => {
       //   obj.selectable = false;
       //   obj.hasControls = false;
       // });
-      canvas.requestRenderAll();
+      // canvas.requestRenderAll();
     };
     const handleMouseMove = (e) => {
       if (!isDrawingRef.current || !arrowRef.current) return;
@@ -82,7 +87,7 @@ export const useArrowTool = (canvas, activeTool) => {
       const x2 = Math.min(Math.max(pointer.x, 0), canvas.width);
       const y2 = Math.min(Math.max(pointer.y, 0), canvas.height);
       arrowRef.current.set({ x2: x2, y2: y2 });
-      canvas.discardActiveObject();
+      // canvas.discardActiveObject();
       // canvas.requestRenderAll();
       canvas.renderAll();
     };
@@ -99,7 +104,7 @@ export const useArrowTool = (canvas, activeTool) => {
         arrowRef.current.set({ selectable: true, evented: true });
         canvas.setActiveObject(arrowRef.current);
       }
-      canvas.discardActiveObject();
+      // canvas.discardActiveObject();
       canvas.requestRenderAll();
 
       canvas.selection = prevSelection;

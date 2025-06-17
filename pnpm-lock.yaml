@@ -69,6 +69,9 @@ importers:
       '@types/chrome':
         specifier: 0.0.258
         version: 0.0.258
+      '@types/fabric':
+        specifier: ^5.3.10
+        version: 5.3.10
       '@types/node':
         specifier: 20.11.5
         version: 20.11.5
@@ -1674,6 +1677,9 @@ packages:
 
   '@types/estree@1.0.5':
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
+
+  '@types/fabric@5.3.10':
+    resolution: {integrity: sha512-fsJIuVkU+B2AnmQh+Ml2X0ax3NmRIqLvEXmZ+squX60HaF89TvdIP6tI6Uk5srXaauswTwPOOfWE7k2QboUZCg==}
 
   '@types/filesystem@0.0.36':
     resolution: {integrity: sha512-vPDXOZuannb9FZdxgHnqSwAG/jvdGM8Wq+6N4D/d80z+D4HWH+bItqsZaVRQykAn6WEVeEkLm2oQigyHtgb0RA==}
@@ -6685,6 +6691,8 @@ snapshots:
       '@types/har-format': 1.2.15
 
   '@types/estree@1.0.5': {}
+
+  '@types/fabric@5.3.10': {}
 
   '@types/filesystem@0.0.36':
     dependencies:
