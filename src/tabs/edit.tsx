@@ -7,6 +7,7 @@ import {
   // RedoOutlined,
 } from '@ant-design/icons';
 import { Space } from 'antd';
+import { fabric } from 'fabric';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import './styles/global.css';
@@ -18,7 +19,14 @@ import { useBrushTool } from './components/BrushTool/useBrushTool';
 import { ToolButton } from './components/common/ToolButton';
 import { EllipseControls } from './components/EllipseTool/EllipseControls';
 import { useEllipseTool } from './components/EllipseTool/useEllipseTool';
-import { EllipseIcon, MosaicIcon, LineArrowIcon, TextIcon, UndoIcon, RedoIcon } from './components/Icons';
+import {
+  EllipseIcon,
+  LineArrowIcon,
+  MosaicIcon,
+  RedoIcon,
+  TextIcon,
+  UndoIcon,
+} from './components/Icons';
 import { MosaicControls } from './components/MosaicTool/MosaicControls';
 import { useMosaicTool } from './components/MosaicTool/useMosaicTool';
 import { RectControls } from './components/RectTool/RectControls';
@@ -27,14 +35,26 @@ import { TextControls } from './components/TextTool/TextControls';
 import { useTextTool } from './components/TextTool/useTextTool';
 import { TOOL_TYPES } from './constants/tools';
 import { useCanvas } from './hooks/useCanvas';
-import { useHistory } from './hooks/useHistory';
 import { useCanvasActions } from './hooks/useCanvasActions';
+import { useHistory } from './hooks/useHistory';
 import { StyledContent, StyledHeader, StyledLayout } from './styles';
 import { ActionButton } from './styles/actionButtons';
 
+// 定义类型接口
+interface EditableObject extends fabric.Object {
+  isEditing?: boolean;
+}
+
 const ImageEditor = () => {
-  const canvasRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [activeFunction, setActiveFunction] = useState(TOOL_TYPES.SELECT);
+  // 用户主动选择的工具 - 这是用户真正想要使用的工具
+  const [userSelectedTool, setUserSelectedTool] = useState(TOOL_TYPES.SELECT);
+  // 是否处于临时显示状态（因选中元素而显示对应工具）
+  const [isTemporaryDisplay, setIsTemporaryDisplay] = useState(false);
+  // 标志是否正在处理用户主动的工具切换操作
+  const [isUserAction, setIsUserAction] = useState(false);
+
   const { canvas, selectedObject } = useCanvas(canvasRef);
 
   const { arrowOptions, setArrowOptions } = useArrowTool(canvas, activeFunction);
@@ -44,54 +64,30 @@ const ImageEditor = () => {
   const { mosaicOptions, setMosaicOptions } = useMosaicTool(canvas, activeFunction);
   const { ellipseOptions, setEllipseOptions } = useEllipseTool(canvas, activeFunction);
 
-  // 根据选中对象类型自动设置活动工具
-  // useEffect(() => {
-  //   if (!selectedObject) {
-  //     setActiveFunction(TOOL_TYPES.SELECT);
-  //     return;
-  //   }
-
-  //   const toolMap = {
-  //     'rect': TOOL_TYPES.RECT,
-  //     'ellipse': TOOL_TYPES.ELLIPSE,
-  //     'arrow': TOOL_TYPES.ARROW,
-  //     'textbox': TOOL_TYPES.TEXT,
-  //     'path': TOOL_TYPES.BRUSH,
-  //     'mosaic': TOOL_TYPES.MOSAIC
-  //   };
-
-  //   setActiveFunction(toolMap[selectedObject.type] || TOOL_TYPES.SELECT);
-  // }, [selectedObject]);
-
-  const showRectControls = activeFunction === TOOL_TYPES.RECT || selectedObject?.type === 'rect';
-  // 添加显示画笔控制面板的条件
+  // 控制面板显示逻辑 - 基于当前激活的工具类型
+  const showRectControls = activeFunction === TOOL_TYPES.RECT;
   const showBrushControls = activeFunction === TOOL_TYPES.BRUSH;
   const showMosaicControls = activeFunction === TOOL_TYPES.MOSAIC;
-  const isEllipse = selectedObject?.type === 'ellipse';
-  const showEllipseControls = activeFunction === TOOL_TYPES.ELLIPSE || isEllipse;
+  const showEllipseControls = activeFunction === TOOL_TYPES.ELLIPSE;
+  const showTextControls = activeFunction === TOOL_TYPES.TEXT;
+  const showArrowControls = activeFunction === TOOL_TYPES.ARROW;
 
   // 取消注释并修改历史钩子调用
   const { undo, redo, canUndo, canRedo, saveState, debouncedSaveState } = useHistory(canvas);
 
   // 启用对象修改事件监听
-  const handleObjectModified = useCallback(
-    () => {
-      if (!canvas) return;
-      // 使用防抖保存，避免频繁的小改动触发过多保存
-      debouncedSaveState();
-    },
-    [canvas, debouncedSaveState],
-  );
+  const handleObjectModified = useCallback(() => {
+    if (!canvas) return;
+    // 使用防抖保存，避免频繁的小改动触发过多保存
+    debouncedSaveState();
+  }, [canvas, debouncedSaveState]);
 
   // 处理重要操作的立即保存
-  const handleImportantChange = useCallback(
-    () => {
-      if (!canvas) return;
-      // 立即保存重要操作
-      saveState();
-    },
-    [canvas, saveState],
-  );
+  const handleImportantChange = useCallback(() => {
+    if (!canvas) return;
+    // 立即保存重要操作
+    saveState();
+  }, [canvas, saveState]);
 
   useEffect(() => {
     if (!canvas) return;
@@ -106,25 +102,21 @@ const ImageEditor = () => {
     ];
 
     // 监听重要操作（立即保存）
-    const importantEvents = [
-      'object:added',
-      'object:removed',
-      'path:created',
-    ];
+    const importantEvents = ['object:added', 'object:removed', 'path:created'];
 
-    modifyEvents.forEach(event => {
+    modifyEvents.forEach((event) => {
       canvas.on(event, handleObjectModified);
     });
 
-    importantEvents.forEach(event => {
+    importantEvents.forEach((event) => {
       canvas.on(event, handleImportantChange);
     });
 
     return () => {
-      modifyEvents.forEach(event => {
+      modifyEvents.forEach((event) => {
         canvas.off(event, handleObjectModified);
       });
-      importantEvents.forEach(event => {
+      importantEvents.forEach((event) => {
         canvas.off(event, handleImportantChange);
       });
     };
@@ -134,96 +126,132 @@ const ImageEditor = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // 检测是否在文本输入状态
-      const isEditingText = 
-        selectedObject?.isEditing ||
+      const isEditingText =
+        (selectedObject as EditableObject)?.isEditing ||
         (e.target instanceof HTMLElement && e.target.tagName === 'INPUT');
-  
+
       if (['Backspace', 'Delete'].includes(e.key) && canvas && selectedObject && !isEditingText) {
         canvas.remove(selectedObject);
         canvas.discardActiveObject();
         canvas.fire('object:removed');
         canvas.renderAll();
-  
+
         if (activeFunction === selectedObject.type) {
           setActiveFunction(TOOL_TYPES.SELECT);
         }
-        
+
         // 删除操作后立即保存
         handleImportantChange();
       }
     };
-  
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [canvas, selectedObject, activeFunction, handleImportantChange]);
 
+  // 处理用户主动点击工具按钮
   const handleToolClick = (toolType: string) => {
-    if (activeFunction === toolType) {
-      // 如果点击的是当前激活的工具，切换到选择模式
+    console.log('handleToolClick', toolType);
+    console.log('userSelectedTool', userSelectedTool);
+    console.log('isTemporaryDisplay', isTemporaryDisplay);
+
+    // 标记这是用户主动操作
+    setIsUserAction(true);
+
+    if (userSelectedTool === toolType) {
+      //   // 如果点击的是当前用户选择的工具，切换到选择模式
+      setUserSelectedTool(TOOL_TYPES.SELECT);
       setActiveFunction(TOOL_TYPES.SELECT);
-      // 只有在切换到选择模式时才清除选中对象
+      setIsTemporaryDisplay(false);
+      //   // 清除选中对象
       canvas?.discardActiveObject();
       canvas?.renderAll();
     } else {
-      // 切换到新工具时，不清除当前选中的对象
+      // 用户主动选择新工具
+      setUserSelectedTool(toolType);
       setActiveFunction(toolType);
+      setIsTemporaryDisplay(false);
+      // 清除选中对象，准备使用新工具
+      canvas?.discardActiveObject();
+      canvas?.renderAll();
     }
   };
-  
+
   // 修改updateObjectProperties方法
-  const updateObjectProperties = (props) => {
+  const updateObjectProperties = (props: Record<string, unknown>) => {
     if (!selectedObject || !canvas) return;
 
     Object.keys(props).forEach((key) => {
-      selectedObject.set(key, props[key]);
+      (selectedObject as fabric.Object & { set: (key: string, value: unknown) => void }).set(
+        key,
+        props[key],
+      );
     });
-  
-    // 增加删除状态同步
-    // if (props.isDeleted) {
-    //   canvas.remove(selectedObject);
-    //   canvas.discardActiveObject();
-    //   if (activeFunction === selectedObject.type) {
-    //     setActiveFunction(TOOL_TYPES.SELECT);
-    //   }
-    // }
-  
+
     canvas.renderAll();
     canvas.fire('object:modified');
   };
 
-  const showTextControls = activeFunction === TOOL_TYPES.TEXT || selectedObject?.type === 'textbox';
-  // 显示箭头控制面板的条件
-  const showArrowControls = activeFunction === TOOL_TYPES.ARROW || selectedObject?.type === 'arrow';
-
-  // 在useEffect中添加画布选择监听
+  // 画布选择事件监听
   useEffect(() => {
     if (!canvas) return;
-  
-    canvas.on('selection:created', (e) => {
-      // console.log('selection:created', e);
-      if (e.selected?.length === 1) {
-        const type = e.selected[0].type;
-        const toolMap = {
-          'rect': TOOL_TYPES.RECT,
-          'ellipse': TOOL_TYPES.ELLIPSE,
-          'arrow': TOOL_TYPES.ARROW,
-          'textbox': TOOL_TYPES.TEXT,
-          'path': TOOL_TYPES.BRUSH,
-          'mosaic': TOOL_TYPES.MOSAIC
+
+    // 处理选中对象
+    const handleSelectionCreated = (e: fabric.IEvent<Event>) => {
+      const event = e as fabric.IEvent<Event> & { selected?: fabric.Object[] };
+      if (event.selected?.length === 1) {
+        const selectedObj = event.selected[0];
+        const type = selectedObj.type;
+
+        const toolMap: Record<string, string> = {
+          rect: TOOL_TYPES.RECT,
+          ellipse: TOOL_TYPES.ELLIPSE,
+          arrow: TOOL_TYPES.ARROW,
+          textbox: TOOL_TYPES.TEXT,
+          path: TOOL_TYPES.BRUSH,
+          mosaic: TOOL_TYPES.MOSAIC,
         };
-        setActiveFunction(toolMap[type] || TOOL_TYPES.SELECT);
+
+        const mappedTool = toolMap[type];
+        if (mappedTool) {
+          // 临时显示对应工具的控制面板，用于修改元素属性
+          setActiveFunction(mappedTool);
+          setIsTemporaryDisplay(true);
+        }
       }
-    });
-  
-    canvas.on('selection:cleared', () => {
-      setActiveFunction(TOOL_TYPES.SELECT);
-    });
-  
-    return () => {
-      canvas.off('selection:created');
-      canvas.off('selection:cleared');
     };
-  }, [canvas]);
+
+    // 处理选择更新（从一个对象切换到另一个对象）
+    const handleSelectionUpdated = (e: fabric.IEvent<Event>) => {
+      handleSelectionCreated(e); // 使用相同的逻辑
+    };
+
+    // 处理取消选择
+    const handleSelectionCleared = () => {
+
+      // 如果是用户主动操作导致的选择清除，不要恢复工具状态
+      if (isUserAction) {
+        return;
+      }
+
+      if (isTemporaryDisplay) {
+        // 如果当前是临时显示状态，恢复到用户主动选择的工具
+        setActiveFunction(userSelectedTool);
+        setIsTemporaryDisplay(false);
+      }
+      // 如果不是临时显示状态，保持当前工具状态
+    };
+
+    canvas.on('selection:created', handleSelectionCreated);
+    canvas.on('selection:updated', handleSelectionUpdated);
+    canvas.on('selection:cleared', handleSelectionCleared);
+
+    return () => {
+      canvas.off('selection:created', handleSelectionCreated);
+      canvas.off('selection:updated', handleSelectionUpdated);
+      canvas.off('selection:cleared', handleSelectionCleared);
+    };
+  }, [canvas, userSelectedTool, isTemporaryDisplay, isUserAction]);
 
   const { copyCanvas, downloadCanvas } = useCanvasActions(canvas);
 
@@ -231,19 +259,9 @@ const ImageEditor = () => {
     <StyledLayout>
       <StyledHeader>
         <Space>
-          <ToolButton 
-            disabled={!canUndo} 
-            active={false}
-            icon={<UndoIcon />} 
-            onClick={undo} 
-          />
+          <ToolButton disabled={!canUndo} active={false} icon={<UndoIcon />} onClick={undo} />
 
-          <ToolButton 
-            disabled={!canRedo} 
-            active={false}
-            icon={<RedoIcon />} 
-            onClick={redo} 
-          />
+          <ToolButton disabled={!canRedo} active={false} icon={<RedoIcon />} onClick={redo} />
 
           <div style={{ position: 'relative' }}>
             <ToolButton
@@ -320,7 +338,7 @@ const ImageEditor = () => {
             />
             {showEllipseControls && (
               <EllipseControls
-                selectedObject={isEllipse ? selectedObject : null}
+                selectedObject={selectedObject?.type === 'ellipse' ? selectedObject : null}
                 defaultEllipseOptions={ellipseOptions}
                 onUpdateSelected={updateObjectProperties}
                 onUpdateDefaults={(props) => setEllipseOptions((prev) => ({ ...prev, ...props }))}
@@ -345,9 +363,7 @@ const ImageEditor = () => {
         </Space>
 
         <Space style={{ position: 'absolute', right: '24px' }}>
-          <ActionButton onClick={copyCanvas}>
-            复制
-          </ActionButton>
+          <ActionButton onClick={copyCanvas}>复制</ActionButton>
           <ActionButton onClick={downloadCanvas} isLast={true} primary={true}>
             下载
           </ActionButton>
