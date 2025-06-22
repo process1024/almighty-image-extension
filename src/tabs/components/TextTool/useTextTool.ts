@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { TOOL_TYPES } from '../../constants/tools';
 import { fabric } from 'fabric';
-import { createTextClass } from './TextBox';
+import { registerCustomFabricTypes } from '../../utils/fabricCustomTypes';
 
 export const useTextTool = (canvas, activeFunction) => {
   const [textOptions, setTextOptions] = useState({
@@ -14,8 +14,9 @@ export const useTextTool = (canvas, activeFunction) => {
 
   useEffect(() => {
     if (!canvas) return;
-    const TextClass = createTextClass();
-    fabric.TextBox = TextClass;
+    
+    // 使用统一的自定义类型注册
+    registerCustomFabricTypes();
 
     const handleMouseDown = (options) => {
       if (!canvas) return;
@@ -31,7 +32,8 @@ export const useTextTool = (canvas, activeFunction) => {
       if (options.target || activeFunction !== TOOL_TYPES.TEXT) return;
 
       const pointer = canvas.getPointer(options.e);
-      const text = new fabric.Textbox('1双击编辑文字', {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const text = new (fabric as any).TextBox('1双击编辑文字', {
         left: pointer.x,
         top: pointer.y,
         ...textOptions,

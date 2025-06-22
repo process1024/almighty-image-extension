@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons';
 import { Space } from 'antd';
 import { fabric } from 'fabric';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import './styles/global.css';
 
@@ -73,54 +73,55 @@ const ImageEditor = () => {
   const showArrowControls = activeFunction === TOOL_TYPES.ARROW;
 
   // 取消注释并修改历史钩子调用
-  const { undo, redo, canUndo, canRedo, saveState, debouncedSaveState } = useHistory(canvas);
+  const { undo, redo, canUndo, canRedo } = useHistory(canvas);
 
-  // 启用对象修改事件监听
-  const handleObjectModified = useCallback(() => {
-    if (!canvas) return;
-    // 使用防抖保存，避免频繁的小改动触发过多保存
-    debouncedSaveState();
-  }, [canvas, debouncedSaveState]);
+  // 启用对象修改事件监听 - 现在由useHistory自动处理
+  // const handleObjectModified = useCallback(() => {
+  //   if (!canvas) return;
+  //   // 使用防抖保存，避免频繁的小改动触发过多保存
+  //   debouncedSaveState();
+  // }, [canvas, debouncedSaveState]);
 
-  // 处理重要操作的立即保存
-  const handleImportantChange = useCallback(() => {
-    if (!canvas) return;
-    // 立即保存重要操作
-    saveState();
-  }, [canvas, saveState]);
+  // 处理重要操作的立即保存 - 现在由useHistory自动处理
+  // const handleImportantChange = useCallback(() => {
+  //   if (!canvas) return;
+  //   // 立即保存重要操作
+  //   saveState();
+  // }, [canvas, saveState]);
 
-  useEffect(() => {
-    if (!canvas) return;
+  // useHistory现在自动处理所有事件监听
+  // useEffect(() => {
+  //   if (!canvas) return;
 
-    // 监听对象的修改、移动、缩放等操作（使用防抖）
-    const modifyEvents = [
-      'object:modified',
-      'object:scaling',
-      'object:moving',
-      'object:rotating',
-      'object:skewing',
-    ];
+  //   // 监听对象的修改、移动、缩放等操作（使用防抖）
+  //   const modifyEvents = [
+  //     'object:modified',
+  //     'object:scaling',
+  //     'object:moving',
+  //     'object:rotating',
+  //     'object:skewing',
+  //   ];
 
-    // 监听重要操作（立即保存）
-    const importantEvents = ['object:added', 'object:removed', 'path:created'];
+  //   // 监听重要操作（立即保存）
+  //   const importantEvents = ['object:added', 'object:removed', 'path:created'];
 
-    modifyEvents.forEach((event) => {
-      canvas.on(event, handleObjectModified);
-    });
+  //   modifyEvents.forEach((event) => {
+  //     canvas.on(event, handleObjectModified);
+  //   });
 
-    importantEvents.forEach((event) => {
-      canvas.on(event, handleImportantChange);
-    });
+  //   importantEvents.forEach((event) => {
+  //     canvas.on(event, handleImportantChange);
+  //   });
 
-    return () => {
-      modifyEvents.forEach((event) => {
-        canvas.off(event, handleObjectModified);
-      });
-      importantEvents.forEach((event) => {
-        canvas.off(event, handleImportantChange);
-      });
-    };
-  }, [canvas, handleObjectModified, handleImportantChange]);
+  //   return () => {
+  //     modifyEvents.forEach((event) => {
+  //       canvas.off(event, handleObjectModified);
+  //     });
+  //     importantEvents.forEach((event) => {
+  //       canvas.off(event, handleImportantChange);
+  //     });
+  //   };
+  // }, [canvas, handleObjectModified, handleImportantChange]);
 
   // 处理删除操作
   useEffect(() => {
@@ -133,21 +134,19 @@ const ImageEditor = () => {
       if (['Backspace', 'Delete'].includes(e.key) && canvas && selectedObject && !isEditingText) {
         canvas.remove(selectedObject);
         canvas.discardActiveObject();
-        canvas.fire('object:removed');
         canvas.renderAll();
 
         if (activeFunction === selectedObject.type) {
           setActiveFunction(TOOL_TYPES.SELECT);
         }
 
-        // 删除操作后立即保存
-        handleImportantChange();
+        // 删除操作会被useHistory自动记录，无需手动保存
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [canvas, selectedObject, activeFunction, handleImportantChange]);
+  }, [canvas, selectedObject, activeFunction]);
 
   // 处理用户主动点击工具按钮
   const handleToolClick = (toolType: string) => {
