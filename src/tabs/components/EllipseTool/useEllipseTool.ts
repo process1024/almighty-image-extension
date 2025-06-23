@@ -7,7 +7,7 @@ export const useEllipseTool = (canvas, activeTool) => {
   const [ellipseOptions, setEllipseOptions] = useState({
     stroke: '#ff0000',
     strokeWidth: 4,
-    // fill: 'rgba(255, 255, 255, 0.3)'
+    fill: 'transparent'
   });
 
   const isDrawingRef = useRef(false);

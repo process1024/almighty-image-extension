@@ -7,7 +7,7 @@ export const useRectTool = (canvas, activeTool) => {
   const [rectOptions, setRectOptions] = useState({
     stroke: '#ff0000',
     strokeWidth: 2,
-    fill: 'rgba(255, 255, 255, 0.3)'
+    fill: 'transparent'
   });
 
   const isDrawingRef = useRef(false);
