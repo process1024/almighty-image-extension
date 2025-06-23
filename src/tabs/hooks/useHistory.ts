@@ -14,10 +14,12 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
   const isLoadingRef = useRef(false);
   const lastSavedStateRef = useRef<string>('');
   const isRecordingRef = useRef(true);
+  const isInitializedRef = useRef(false);
+  const isDrawingRef = useRef(false);
 
   // 保存历史记录状态
   const saveState = useCallback((action: string = 'unknown') => {
-    if (!canvas || isLoadingRef.current || !isRecordingRef.current) return;
+    if (!canvas || isLoadingRef.current || !isRecordingRef.current || isDrawingRef.current) return;
     
     try {
       // 确保自定义类型已注册
@@ -61,25 +63,45 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
     }
   }, [canvas, currentIndex]);
 
-  // 初始化时保存画布状态
+  // 初始化时保存画布状态（只执行一次）
   useEffect(() => {
-    if (canvas) {
+    if (canvas && !isInitializedRef.current) {
       // 确保自定义类型已注册
       registerCustomFabricTypes();
+      
+      // 标记已初始化
+      isInitializedRef.current = true;
+      
       // 延迟初始化，确保画布完全加载
       setTimeout(() => {
-        saveState('初始化');
+        if (canvas && !isLoadingRef.current) {
+          saveState('初始化');
+        }
       }, 100);
     }
-  }, [canvas, saveState]);
+  }, [canvas]); // 移除saveState依赖，避免循环
 
   // 监听画布事件并自动记录历史
   useEffect(() => {
     if (!canvas) return;
 
+    // 绘制开始事件（鼠标按下）
+    const handleMouseDown = () => {
+      isDrawingRef.current = true;
+    };
+
+    // 绘制结束事件（鼠标抬起）
+    const handleMouseUp = () => {
+      // 延迟标记绘制结束，确保对象已完全添加
+      setTimeout(() => {
+        isDrawingRef.current = false;
+      }, 50);
+    };
+
     // 对象添加完成（绘制完成）
     const handleObjectAdded = (e: fabric.IEvent<Event>) => {
       if (isLoadingRef.current) return;
+      
       const obj = (e as fabric.IEvent<Event> & { target?: fabric.Object }).target;
       const actionMap: Record<string, string> = {
         'rect': '创建矩形',
@@ -89,8 +111,24 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
         'arrow': '创建箭头'
       };
       const action = actionMap[obj?.type || ''] || '添加对象';
-      // 延迟保存，确保对象完全添加
-      setTimeout(() => saveState(action), 10);
+      
+      // 如果正在绘制中，延迟保存直到绘制完成
+      // 如果不在绘制中，立即保存（比如通过代码添加的对象）
+      if (isDrawingRef.current) {
+        // 等待绘制完成后保存
+        const checkAndSave = () => {
+          if (!isDrawingRef.current) {
+            saveState(action);
+          } else {
+            // 如果还在绘制中，继续等待
+            setTimeout(checkAndSave, 20);
+          }
+        };
+        setTimeout(checkAndSave, 60); // 给mouse:up事件足够时间执行
+      } else {
+        // 不在绘制中，立即保存
+        setTimeout(() => saveState(action), 10);
+      }
     };
 
     // 对象删除完成
@@ -119,10 +157,25 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
     // 路径绘制完成
     const handlePathCreated = () => {
       if (isLoadingRef.current) return;
-      setTimeout(() => saveState('绘制完成'), 10);
+      
+      // 对于画笔工具，绘制完成后立即保存
+      if (isDrawingRef.current) {
+        const checkAndSave = () => {
+          if (!isDrawingRef.current) {
+            saveState('绘制完成');
+          } else {
+            setTimeout(checkAndSave, 20);
+          }
+        };
+        setTimeout(checkAndSave, 60);
+      } else {
+        setTimeout(() => saveState('绘制完成'), 10);
+      }
     };
 
     // 添加事件监听
+    canvas.on('mouse:down', handleMouseDown);
+    canvas.on('mouse:up', handleMouseUp);
     canvas.on('object:added', handleObjectAdded);
     canvas.on('object:removed', handleObjectRemoved);
     canvas.on('object:modified', handleObjectModified);
@@ -130,6 +183,8 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
 
     // 清理事件监听
     return () => {
+      canvas.off('mouse:down', handleMouseDown);
+      canvas.off('mouse:up', handleMouseUp);
       canvas.off('object:added', handleObjectAdded);
       canvas.off('object:removed', handleObjectRemoved);
       canvas.off('object:modified', handleObjectModified);
@@ -151,8 +206,6 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
       const prevState = history[newIndex];
       
       console.log(`撤销操作: ${history[currentIndex]?.action} → ${prevState.action}`);
-
-      console.log('prevState', prevState);
       
       // 使用Promise包装loadFromJSON以更好地处理错误
       const loadPromise = new Promise((resolve, reject) => {
