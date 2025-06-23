@@ -254,6 +254,24 @@ const ImageEditor = () => {
 
   const { copyCanvas, downloadCanvas } = useCanvasActions(canvas);
 
+  // 处理复制操作的异步调用
+  const handleCopyCanvas = async () => {
+    try {
+      await copyCanvas();
+    } catch (error) {
+      console.error('复制操作异常:', error);
+    }
+  };
+
+  // 处理下载操作的调用
+  const handleDownloadCanvas = () => {
+    try {
+      downloadCanvas();
+    } catch (error) {
+      console.error('下载操作异常:', error);
+    }
+  };
+
   return (
     <StyledLayout>
       <StyledHeader>
@@ -362,8 +380,8 @@ const ImageEditor = () => {
         </Space>
 
         <Space style={{ position: 'absolute', right: '24px' }}>
-          <ActionButton onClick={copyCanvas}>复制</ActionButton>
-          <ActionButton onClick={downloadCanvas} isLast={true} primary={true}>
+          <ActionButton onClick={handleCopyCanvas}>复制</ActionButton>
+          <ActionButton onClick={handleDownloadCanvas} isLast={true} primary={true}>
             下载
           </ActionButton>
         </Space>
