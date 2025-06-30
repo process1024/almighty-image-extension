@@ -33,7 +33,6 @@ export function getClearFixFn() {
   style.type = "text/css";
 
   // 移除固定定位的元素样式
-  // const unFixStyle = ".huaban-hidden {visibility: hidden !important;overflow: hidden !important;opacity: 0 !important}";
   document.head.appendChild(style);
 
   style.textContent = "";

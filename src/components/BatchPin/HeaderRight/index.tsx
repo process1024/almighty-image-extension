@@ -1,5 +1,6 @@
 // import { Button, Checkbox } from "antd";
 import React, { useCallback, useContext, useMemo, useState } from 'react';
+import { CheckOutlined, DownloadOutlined, LoadingOutlined } from '@ant-design/icons';
 
 import AppContext from '../context';
 
@@ -8,15 +9,13 @@ import './index.less';
 interface HeaderRightProps {
   all: number;
   selected: number;
-  onSelectAll: Function;
-  onClose: Function;
-  // tracker: TrackerEvent;
+  onSelectAll: (checked: boolean) => void;
+  onClose: () => void;
 }
 
 export default function HeaderRight(props: HeaderRightProps) {
   const [config, setConfig] = useContext(AppContext);
-  // const [loginStatus] = useLoginStatus();
-  // const [boardId, setBoardId] = useState(null);
+  const [isDownloading, setIsDownloading] = useState(false);
   const { all, selected, onSelectAll } = props;
   // const { data: tagResult } = useRequest(async () => {
   //   const storage = new Storage();
@@ -37,57 +36,85 @@ export default function HeaderRight(props: HeaderRightProps) {
     return !!(selected && selected === all);
   }, [selected, all]);
 
-  function onAllChange(e) {
-    onSelectAll(e.target.checked);
+  const handleSelectAll = useCallback((checked: boolean) => {
+    onSelectAll(checked);
+  }, [onSelectAll]);
 
-    tracker.batchPinClickBottom('全选');
-  }
+  const handleDownload = useCallback(async () => {
+    if (!config.selectedImgs.length) return;
+    
+    setIsDownloading(true);
+    
+    try {
+      const batchData = config.selectedImgs.map((img) => img.src);
+      
+      // 发送下载请求
+      if (window.chrome?.runtime) {
+        window.chrome.runtime.sendMessage({ 
+          type: "download", 
+          urls: batchData 
+        });
+      }
 
-  function onTagChange(e) {
-    config.tags = e;
-    setConfig({ ...config });
-  }
-
-  async function pin() {
-    const batchData = config.selectedImgs.map((img) => img.src)
-
-    chrome.runtime.sendMessage({ type: "download", urls: batchData });
-
-    props.onClose && props.onClose();
-  }
-
-  // const selectProps = {
-  //   size: 'large',
-  //   getPopupContainer: () =>
-  //     document.getElementById('huaban-pin-shadow').shadowRoot.querySelector('.batch-pin-container'),
-  //   style: { width: '160px' },
-  //   placement: 'bottomLeft',
-  //   className: 'batch-pin-hd-right-select',
-  // };
+      // 显示成功提示
+      console.log(`开始下载 ${config.selectedImgs.length} 张图片`);
+      
+      // 延迟关闭，给用户反馈时间
+      setTimeout(() => {
+        props.onClose && props.onClose();
+      }, 1000);
+      
+    } catch (error) {
+      console.error('下载失败:', error);
+    } finally {
+      setTimeout(() => {
+        setIsDownloading(false);
+      }, 1000);
+    }
+  }, [config.selectedImgs, props.onClose]);
 
   return (
-    <div className="batch-pin-hd-right">
-      <div className="no-margin-right">
-        {/* indeterminate={indeterminate} */}
-        <div>全选按钮</div>
-        {/* <input
-          type="checkbox"
-          className="batch-pin-hd-right-check_btn"
-          checked={checkAll}
-          onChange={onAllChange}>
-          <span className="batch-pin-hd-right-text">全选</span>
-        </input> */}
+    <div className="header-right-container">
+      <div className="selection-controls">
+        <div className="selection-info">
+          <span className="selected-count">
+            已选择 <strong>{selected}</strong> / {all}
+          </span>
+        </div>
+        
+        <button
+          className={`select-all-btn ${checkAll ? 'checked' : ''} ${indeterminate ? 'indeterminate' : ''}`}
+          onClick={() => handleSelectAll(!checkAll)}
+        >
+          <div className="checkbox-icon">
+            {checkAll ? (
+              <CheckOutlined />
+            ) : indeterminate ? (
+              <div className="indeterminate-icon" />
+            ) : null}
+          </div>
+          <span>全选</span>
+        </button>
       </div>
 
-      <button
-        onClick={() => pin()}
-        disabled={!config.selectedImgs.length}
-        className="batch-pin-hd-right-btn custom-btn btn-4">
-          <span>
-          采下来({config.selectedImgs.length})
+      <div className="action-controls">
+        <button
+          className={`download-btn ${!config.selectedImgs.length ? 'disabled' : ''} ${isDownloading ? 'loading' : ''}`}
+          onClick={handleDownload}
+          disabled={!config.selectedImgs.length || isDownloading}
+        >
+          <div className="btn-icon">
+            {isDownloading ? (
+              <LoadingOutlined spin />
+            ) : (
+              <DownloadOutlined />
+            )}
+          </div>
+          <span className="btn-text">
+            {isDownloading ? '下载中...' : `下载 (${config.selectedImgs.length})`}
           </span>
-        
-      </button>
+        </button>
+      </div>
     </div>
   );
 }

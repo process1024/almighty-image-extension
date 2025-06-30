@@ -63,7 +63,6 @@ export function useBatchPin(config) {
     const imagesArr = Array.from(images);
 
     let result: ImageType[] = uniqWith(imagesArr, isSomeImage)
-      .filter((img) => filterNoPin(img))
       .filter((img) => filterSize(img))
       .map((img) => {
         // FIX: getComputedStyle(img).getPropertyValue("src")，解决src为空浏览器返回当前地址的问题
@@ -113,9 +112,9 @@ export function useBatchPin(config) {
     }
 
     // 过滤属性huaban = nopin 的图片
-    function filterNoPin(img) {
-      return img.getAttribute('huaban') !== 'nopin';
-    }
+    // function filterNoPin(img) {
+    //   return img.getAttribute('huaban') !== 'nopin';
+    // }
 
     if (isSortByRender()) {
       result = result.sort((a, b) => b.img.height * b.img.width - a.img.height * a.img.width);
@@ -183,12 +182,12 @@ export function useBatchPin(config) {
     // 禁止页面滚动
     const styleElement = document.createElement('style');
     styleElement.type = 'text/css';
-    styleElement.textContent = '.huaban-no-scroll{ overflow: hidden }';
+    styleElement.textContent = '.tutu-no-scroll{ overflow: hidden }';
     document.head.appendChild(styleElement);
-    document.documentElement.classList.add('huaban-no-scroll');
+    document.documentElement.classList.add('tutu-no-scroll');
 
     return () => {
-      document.documentElement.classList.remove('huaban-no-scroll');
+      document.documentElement.classList.remove('tutu-no-scroll');
       document.head.removeChild(styleElement);
     };
   }, []);

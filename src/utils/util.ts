@@ -95,11 +95,6 @@ export function replaceCdnUrl(url: string, { isAsync } = { isAsync: false }) {
   }
 }
 
-export function isHuaban() {
-  const urlInfo = new URL(location.href);
-  return urlInfo.hostname.endsWith('huaban.com');
-}
-
 /** 返回时差，单位小时 */
 export function getTime2now(dateStart: number) {
   return (new Date().getTime() - new Date(dateStart).getTime()) / 60000 / 60;

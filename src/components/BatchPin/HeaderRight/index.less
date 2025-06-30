@@ -1,6 +1,18 @@
 // @import "antd/lib/checkbox/style/index.less";
 // @import "antd/lib/select/style/index.less";
-@primary-color: #ff5967;
+@primary-color: #4f46e5;
+@primary-color-hover: #4338ca;
+@success-color: #10b981;
+@success-color-hover: #059669;
+@text-color: #374151;
+@text-color-secondary: #6b7280;
+@border-color: #e5e7eb;
+@bg-color: #ffffff;
+@bg-color-secondary: #f9fafb;
+@shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+@shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+@border-radius: 8px;
+@border-radius-sm: 6px;
 
 @main-text-color: #1e2023;
 @batch-pin-prefix: batch-pin;
@@ -259,4 +271,198 @@ background-image: linear-gradient(315deg, #89d8d3 0%, #03c8a8 74%);
 }
 .btn-4 span:hover:after {
   width: 100%;
+}
+
+.header-right-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  .selection-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .selection-info {
+      .selected-count {
+        font-size: 14px;
+        color: @text-color-secondary;
+
+        strong {
+          color: @primary-color;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .select-all-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: @bg-color;
+      border: 1px solid @border-color;
+      border-radius: @border-radius;
+      cursor: pointer;
+      font-size: 14px;
+      color: @text-color;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: @primary-color;
+        color: @primary-color;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      }
+
+      &.checked {
+        background: @primary-color;
+        border-color: @primary-color;
+        color: white;
+
+        &:hover {
+          background: @primary-color-hover;
+          border-color: @primary-color-hover;
+        }
+      }
+
+      &.indeterminate {
+        background: rgba(79, 70, 229, 0.1);
+        border-color: @primary-color;
+        color: @primary-color;
+      }
+
+      .checkbox-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        font-size: 12px;
+
+        .indeterminate-icon {
+          width: 8px;
+          height: 2px;
+          background: @primary-color;
+          border-radius: 1px;
+        }
+      }
+    }
+  }
+
+  .action-controls {
+    .download-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      background: @success-color;
+      border: 1px solid @success-color;
+      border-radius: @border-radius;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: white;
+      transition: all 0.2s ease;
+      min-width: 140px;
+      justify-content: center;
+
+      &:hover:not(.disabled):not(.loading) {
+        background: @success-color-hover;
+        border-color: @success-color-hover;
+        transform: translateY(-1px);
+        box-shadow: @shadow-md;
+      }
+
+      &.disabled {
+        background: #d1d5db;
+        border-color: #d1d5db;
+        color: #9ca3af;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      &.loading {
+        background: @primary-color;
+        border-color: @primary-color;
+        cursor: not-allowed;
+
+        .btn-icon {
+          animation: spin 1s linear infinite;
+        }
+      }
+
+      .btn-icon {
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      }
+
+      .btn-text {
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media screen and (max-width: 768px) {
+  .header-right-container {
+    gap: 12px;
+
+    .selection-controls {
+      gap: 12px;
+
+      .selection-info {
+        .selected-count {
+          font-size: 12px;
+        }
+      }
+
+      .select-all-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+    }
+
+    .action-controls {
+      .download-btn {
+        padding: 10px 16px;
+        font-size: 12px;
+        min-width: 120px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .header-right-container {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+
+    .selection-controls {
+      flex-direction: column;
+      gap: 8px;
+      align-items: stretch;
+
+      .select-all-btn {
+        justify-content: center;
+      }
+    }
+
+    .action-controls {
+      .download-btn {
+        width: 100%;
+      }
+    }
+  }
 }

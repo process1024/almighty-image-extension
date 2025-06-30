@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState, useRef } from 'react';
+import { DownOutlined, FilterOutlined, SettingOutlined } from '@ant-design/icons';
 
 import { globalConfig } from '~services/config';
 import { uniqArray } from '~utils/util';
@@ -8,13 +9,30 @@ import HeaderRight from '../HeaderRight';
 
 import './index.less';
 
-interface HeaderProps {
+interface FormatDropdownProps {
   formats: string[];
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (format: string) => void;
 }
 
-const FormatDropdown = ({ formats, onChange }: HeaderProps) => {
+interface HeaderProps {
+  onClose: () => void;
+  all: number;
+  selected: number;
+  onSelectAll: (checked: boolean) => void;
+}
+
+interface RangeSliderProps {
+  label: string;
+  min: number;
+  max: number;
+  value: number;
+  onChange: (value: number) => void;
+}
+
+const FormatDropdown = ({ formats, onChange }: FormatDropdownProps) => {
   const [format, setFormat] = useState('all');
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const menuItems = useMemo(() => {
     const formatAll = { label: '全部格式', key: 'all' };
@@ -29,36 +47,215 @@ const FormatDropdown = ({ formats, onChange }: HeaderProps) => {
   }, [formats]);
 
   const formatName = useMemo(() => {
-    return menuItems.find((menu) => menu.key === format).label;
-  }, [format]);
+    return menuItems.find((menu) => menu.key === format)?.label || '全部格式';
+  }, [format, menuItems]);
 
-  function selectFormat(e) {
-    setFormat(e.target.value);
-    onChange(e.target.value);
+  function selectFormat(key: string) {
+    setFormat(key);
+    onChange(key);
+    setIsOpen(false);
   }
 
+  // 点击外部关闭下拉菜单
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
-    <select name="format" id="format" onChange={selectFormat}>
-      {menuItems.map((item) => {
-        return (
-          <option value={item.key} key={item.key}>
-            {item.label}
-          </option>
-        );
-      })}
-    </select>
+    <div className="format-dropdown-container" ref={dropdownRef}>
+      <div className="dropdown-trigger" onClick={() => setIsOpen(!isOpen)}>
+        <FilterOutlined className="filter-icon" />
+        <span className="format-text">{formatName}</span>
+        <DownOutlined className={`arrow-icon ${isOpen ? 'arrow-up' : ''}`} />
+      </div>
+      {isOpen && (
+        <div 
+          className="dropdown-menu" 
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onMouseUp={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onMouseMove={(e) => {
+            e.stopPropagation();
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+          style={{ pointerEvents: 'auto', userSelect: 'none' }}
+        >
+          {menuItems.map((item) => (
+            <div
+              key={item.key}
+              className={`dropdown-item ${format === item.key ? 'selected' : ''}`}
+              onClick={() => selectFormat(item.key)}
+            >
+              <span>{item.label}</span>
+              {format === item.key && <span className="check-icon">✓</span>}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
-export default function Header({ onClose, tracker, all, selected, onSelectAll }) {
+const RangeSlider = ({ label, min, max, value, onChange }: RangeSliderProps) => {
+  return (
+    <div className="range-slider-container">
+      <label className="range-label">{label}</label>
+      <div 
+        className="slider-wrapper"
+        onPointerDown={(e) => {
+          // 只对滑块thumb允许事件，阻止其他区域
+          const isSliderThumb = (e.target as HTMLElement)?.matches('input[type="range"]::-webkit-slider-thumb') ||
+                               (e.target as HTMLElement)?.tagName === 'INPUT';
+          if (!isSliderThumb) {
+            e.stopPropagation();
+          }
+        }}
+      >
+        <input
+          type="range"
+          className="range-slider"
+          min={min}
+          max={max}
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+          }}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+          }}
+        />
+        <div className="value-display">
+          <span className="value-text">{value}px</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SettingsDropdown = ({ config, onChange }: { 
+  config: {
+    rangSize: {
+      minWidth: number;
+      maxWith: number;
+      minHeight: number;
+      maxHeight: number;
+    };
+    minWidth: number;
+    minHeight: number;
+  }; 
+  onChange: (key: string, value: string | number) => void; 
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // 点击外部关闭下拉菜单
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div className="settings-dropdown-container" ref={dropdownRef}>
+      <button 
+        className={`settings-btn ${isOpen ? 'active' : ''}`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <SettingOutlined className="settings-icon" />
+        <span>筛选设置</span>
+        <DownOutlined className={`arrow-icon ${isOpen ? 'arrow-up' : ''}`} />
+      </button>
+      
+      {isOpen && (
+        <div 
+          className="settings-dropdown-menu" 
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onMouseUp={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onMouseMove={(e) => {
+            e.stopPropagation();
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+          style={{ pointerEvents: 'auto', userSelect: 'none' }}
+        >
+          <div className="settings-dropdown-content">
+            <div className="settings-header">
+              <h4>图片尺寸筛选</h4>
+              <p>设置图片的最小尺寸要求</p>
+            </div>
+            
+            <div className="settings-controls">
+              <RangeSlider
+                label="最小宽度"
+                min={config.rangSize.minWidth}
+                max={config.rangSize.maxWith}
+                value={config.minWidth}
+                onChange={(value) => onChange('minWidth', value)}
+              />
+              <RangeSlider
+                label="最小高度"
+                min={config.rangSize.minHeight}
+                max={config.rangSize.maxHeight}
+                value={config.minHeight}
+                onChange={(value) => onChange('minHeight', value)}
+              />
+            </div>
+            
+            <div className="settings-footer">
+              <span className="hint-text">
+                只显示符合尺寸要求的图片
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default function Header({ onClose, all, selected, onSelectAll }: HeaderProps) {
   const { minHeight, minWidth } = globalConfig.batchPin;
   const [config, setConfig] = useContext(AppContext);
 
-  const onChange = (key: string, value: any) => {
+  const onChange = (key: string, value: string | number) => {
     console.log(key, value);
     config[key] = value;
     setConfig({ ...config });
-
   };
 
   const formats = useMemo(() => {
@@ -95,61 +292,42 @@ export default function Header({ onClose, tracker, all, selected, onSelectAll })
 
   return (
     <header className="batch-pin-header">
-      {/* <span className="batch-pin-header-logo">
-        <img src={huabanImg} alt="logo" />
-      </span> */}
-      <div className="operate-setting">
-        <div className="test">
-          <FormatDropdown formats={formats} onChange={(v) => onChange('format', v)} />
-          <div className="flex-align-center">
-            <label>最小宽度</label>
-            <input
-              type="range"
-              className='range-slider__range'
-              min={config.rangSize.minWidth}
-              max={config.rangSize.maxWith}
-              value={config.minWidth}
-              onChange={(e) => onChange('minWidth', e.target.value)}></input>
-            <span className="max-num-text">{config.minWidth}px</span>
+      <div className="header-left">
+        <div className="app-title">
+          <h2 className="title-text">批量图片处理</h2>
+          <div className="stats-info">
+            共找到 {all} 张图片
           </div>
-          <div className="flex-align-center">
-            <label>最小高度</label>
-
-            <input
-              type="range"
-              className='range-slider__range'
-              min={config.rangSize.minHeight}
-              max={config.rangSize.maxHeight}
-              value={config.minHeight}
-              onChange={(e) => onChange('minHeight', e.target.value)}></input>
-            <span className="max-num-text">{config.minHeight}px</span>
-          </div>
-
-          <HeaderRight
-            // tracker={tracker}
-            all={all}
-            selected={selected}
-            onSelectAll={onSelectAll}
-            onClose={onClose}
-          />
         </div>
       </div>
 
-      <svg
-        className="batch-pin-header-close-btn"
-        onClick={onClose}
-        width="32"
-        height="32"
-        viewBox="0 0 32 32"
-        fill="none">
-        <rect width="32" height="32" rx="16" fill="#1C1F23" fillOpacity="0.29" />
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M17.7143 16L24 22.2857L22.2857 24L16 17.7143L9.71429 24L8 22.2857L14.2857 16L8 9.71429L9.71429 8L16 14.2857L22.2857 8L24 9.71429L17.7143 16Z"
-          fill="white"
+      <div className="header-center">
+        <div className="control-group">
+          <FormatDropdown formats={formats} onChange={(v) => onChange('format', v)} />
+          <SettingsDropdown config={config} onChange={onChange} />
+        </div>
+      </div>
+
+      <div className="header-right">
+        <HeaderRight
+          all={all}
+          selected={selected}
+          onSelectAll={onSelectAll}
+          onClose={onClose}
         />
-      </svg>
+        
+        <button className="close-button" onClick={onClose}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M18 6L6 18M6 6L18 18"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
     </header>
   );
 }

@@ -181,19 +181,43 @@ const BatchPin = (props: { onClose: () => void }) => {
               container={document
                 .querySelector('#almighty-pin-shadow')
                 .shadowRoot.querySelector('#batch-pin-main')}
-              dragCondition={(e) => e.clientY > 64}
+              dragCondition={(e) => {
+                // 基本条件：距离顶部64px以下才允许拖拽
+                if (e.clientY <= 64) {
+                  return false;
+                }
+                
+                // 检查事件目标元素
+                const target = e.inputEvent?.target;
+                if (target) {
+                  // 检查是否在下拉菜单内
+                  const isInDropdown = target.closest('.settings-dropdown-menu') || 
+                                     target.closest('.dropdown-menu') ||
+                                     target.closest('.format-dropdown-container') ||
+                                     target.closest('.settings-dropdown-container');
+                  
+                  if (isInDropdown) {
+                    return false;
+                  }
+                  
+                  // 检查是否在header交互元素内
+                  const isInHeaderControl = target.closest('.header-right-container') ||
+                                           target.closest('.dropdown-trigger') ||
+                                           target.closest('.settings-btn') ||
+                                           target.closest('.close-button');
+                  
+                  if (isInHeaderControl) {
+                    return false;
+                  }
+                }
+                
+                return true;
+              }}
               dragCallback={dragCallback}
               dragEndCallback={dragEndCallback}
             />
           </When>
         </main>
-        {/* <Footer
-          tracker={trackerEvent}
-          all={filterImgs.length}
-          selected={selected.length}
-          onSelectAll={selectAll}
-          onClose={props.onClose}
-        /> */}
       </div>
     </AppContext.Provider>
   );

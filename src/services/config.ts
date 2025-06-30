@@ -22,15 +22,12 @@ export const globalConfig = {
     minHeight: 10,
     minWidth: 10,
   },
-  block: ['*://www.zcool.com.cn/*', '*://*.huaban.com/*'],
   btnPositions: [
     {
       rule: [/behance.net/],
       btnPosition: '12, 40',
     },
   ],
-  background: 'https://grocery-cdn.huaban.com/file/a8ab2fa0-4df9-11ed-9568-6da6a93f31f3.png',
-  backgroundJump: 'https://www.huaban.com',
   backgroundMark: '',
   backgroundMarkJump: '',
   sortImgByRenderSize: [/behance.net/],
