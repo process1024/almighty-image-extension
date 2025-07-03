@@ -70,7 +70,15 @@ const FormatDropdown = ({ formats, onChange }: FormatDropdownProps) => {
 
   return (
     <div className="format-dropdown-container" ref={dropdownRef}>
-      <div className="dropdown-trigger" onClick={() => setIsOpen(!isOpen)}>
+      <div className="dropdown-trigger" 
+        onMouseDown={(e) => {
+          e.stopPropagation();
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
+      >
         <FilterOutlined className="filter-icon" />
         <span className="format-text">{formatName}</span>
         <DownOutlined className={`arrow-icon ${isOpen ? 'arrow-up' : ''}`} />
@@ -183,7 +191,13 @@ const SettingsDropdown = ({ config, onChange }: {
     <div className="settings-dropdown-container" ref={dropdownRef}>
       <button 
         className={`settings-btn ${isOpen ? 'active' : ''}`}
-        onClick={() => setIsOpen(!isOpen)}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
       >
         <SettingOutlined className="settings-icon" />
         <span>筛选设置</span>
@@ -294,7 +308,7 @@ export default function Header({ onClose, all, selected, onSelectAll }: HeaderPr
     <header className="batch-pin-header">
       <div className="header-left">
         <div className="app-title">
-          <h2 className="title-text">批量图片处理</h2>
+          <h2 className="title-text">图片批量下载</h2>
           <div className="stats-info">
             共找到 {all} 张图片
           </div>

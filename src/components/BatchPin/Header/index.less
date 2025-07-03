@@ -15,8 +15,8 @@
 @slider-handle-color-focus: #ff5967;
 
 // 现代化UI变量
-@primary-color: #4f46e5;
-@primary-color-hover: #4338ca;
+// @primary-color: #4f46e5;
+// @primary-color-hover: #4338ca;
 @text-color: #374151;
 @text-color-secondary: #6b7280;
 @border-color: #e5e7eb;
@@ -105,12 +105,12 @@
           min-width: 140px;
 
           &:hover {
-            border-color: @primary-color;
+            border-color: var(--main-color);
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
           }
 
           .filter-icon {
-            color: @primary-color;
+            color: var(--main-color);
             font-size: 16px;
           }
 
@@ -159,11 +159,11 @@
 
             &.selected {
               background-color: rgba(79, 70, 229, 0.1);
-              color: @primary-color;
+              color: var(--main-color);
               font-weight: 500;
 
               .check-icon {
-                color: @primary-color;
+                color: var(--main-color);
                 font-weight: bold;
               }
             }
@@ -188,14 +188,14 @@
           color: @text-color;
 
           &:hover {
-            border-color: @primary-color;
-            color: @primary-color;
+            border-color: var(--main-color);
+            color: var(--main-color);
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
           }
 
           &.active {
-            background: @primary-color;
-            border-color: @primary-color;
+            background: var(--main-color);
+            border-color: var(--main-color);
             color: white;
           }
 
@@ -287,14 +287,14 @@
                       -webkit-appearance: none;
                       width: 20px;
                       height: 20px;
-                      background: @primary-color;
+                      background: var(--main-color);
                       border-radius: 50%;
                       cursor: pointer;
                       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                       transition: all 0.2s ease;
 
                       &:hover {
-                        background: @primary-color-hover;
+                        // background: @primary-color-hover;
                         transform: scale(1.1);
                       }
                     }
@@ -302,7 +302,7 @@
                     &::-moz-range-thumb {
                       width: 20px;
                       height: 20px;
-                      background: @primary-color;
+                      background: var(--main-color);
                       border-radius: 50%;
                       cursor: pointer;
                       border: none;
@@ -310,7 +310,7 @@
                       transition: all 0.2s ease;
 
                       &:hover {
-                        background: @primary-color-hover;
+                        // background: @primary-color-hover;
                         transform: scale(1.1);
                       }
                     }
@@ -323,7 +323,7 @@
                     .value-text {
                       font-size: 14px;
                       font-weight: 600;
-                      color: @primary-color;
+                      color: var(--main-color);
                       background: rgba(79, 70, 229, 0.1);
                       padding: 4px 8px;
                       border-radius: @border-radius-sm;
@@ -370,9 +370,9 @@
       color: @text-color-secondary;
 
       &:hover {
-        background: #fee2e2;
-        border-color: #fecaca;
-        color: #dc2626;
+        background: #c9e5ff;
+        border-color: var(--main-color);
+        color: var(--main-color);
       }
 
       svg {

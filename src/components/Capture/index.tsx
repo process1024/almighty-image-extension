@@ -11,8 +11,8 @@ import Crosshair from '~components/Crosshair';
 import { Resizer } from '~components/Resizer';
 import { captureSelect } from '~services/capture';
 import { useMouseDrag, useMouseMove } from '~services/hooks';
-import { downloadBase64Image } from '~utils/download';
 import { getMouseHoverElementPosition, TElementPosition } from '~utils/element';
+import { message } from 'antd';
 
 interface IDrag {
   x: number;
@@ -21,17 +21,17 @@ interface IDrag {
   height: number;
 }
 
-const Btns = ({ pinBtnStyle, onCopy, onCancel, onDownload }) => {
+const Btns = ({ pinBtnStyle, onCopy, onCancel, toEdit }) => {
   return (
     <div className="capture-annotate" style={pinBtnStyle}>
       <button className="btn cancel" onClick={onCancel}>
         取消
       </button>
-      <button className="btn secondary" onClick={onCopy}>
+      <button className="btn primary" onClick={onCopy}>
         复制
       </button>
-      <button className="btn primary" onClick={onDownload}>
-        下载
+      <button className="btn primary" onClick={toEdit}>
+        完成
       </button>
     </div>
   );
@@ -201,9 +201,10 @@ const Capture = ({ onCancel }: { onCancel: () => void }) => {
       setHidden(true);
       const result = await captureSelect(position);
       copyImageFromBase64(result);
+      message.success('复制成功');
       onCancel();
     }
-    async function onDownload() {
+    async function toEdit() {
       setHidden(true);
       const result = await captureSelect(position);
       console.log('result', result);
@@ -230,7 +231,7 @@ const Capture = ({ onCancel }: { onCancel: () => void }) => {
         <Btns
           pinBtnStyle={pinBtnStyle}
           onCopy={onCopy}
-          onDownload={onDownload}
+          toEdit={toEdit}
           onCancel={onCancel}
         />
       </When>
