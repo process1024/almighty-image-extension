@@ -1,0 +1,55 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 图图插件 (Almighty Image Extension) - 项目概述
+
+这是一个功能强大的Chrome浏览器扩展项目，主要提供图片批量选择下载、智能截图、图片编辑标注等功能。
+
+## 核心功能
+
+- **智能截图**: 区域截图、整页截图、当前页面截图
+- **批量图片管理**: 批量选择、瀑布流展示、批量下载
+- **图片编辑标注**: 文本标注、箭头工具、画笔工具、矩形工具、椭圆工具、马赛克工具
+
+## 技术栈
+
+- **框架**: Plasmo (现代化浏览器扩展开发框架)
+- **前端**: React 18 + TypeScript
+- **UI库**: Ant Design + Material-UI + Styled Components
+- **图像处理**: Fabric.js
+- **工具库**: ahooks、lodash-es、react-selecto
+
+## 项目结构
+
+主要目录和文件：
+
+- [package.json](mdc:package.json) - 项目配置和依赖
+- [tsconfig.json](mdc:tsconfig.json) - TypeScript配置
+- [src/](mdc:src) - 源代码目录
+  - [background/](mdc:src/background) - 后台脚本
+  - [content.tsx](mdc:src/content.tsx) - 内容脚本
+  - [popup/](mdc:src/popup) - 弹窗界面
+  - [tabs/](mdc:src/tabs) - 图片编辑器
+  - [components/](mdc:src/components) - 通用组件
+  - [services/](mdc:src/services) - 服务层
+  - [utils/](mdc:src/utils) - 工具函数
+  - [types/](mdc:src/types) - 类型定义
+  - [styles/](mdc:src/styles) - 全局样式
+  - [assets/](mdc:src/assets) - 静态资源
+
+## 入口文件
+
+- **弹窗入口**: [src/popup/index.tsx](mdc:src/popup/index.tsx)
+- **内容脚本**: [src/content.tsx](mdc:src/content.tsx)
+- **后台脚本**: [src/background/index.ts](mdc:src/background/index.ts)
+- **编辑器**: [src/tabs/edit.tsx](mdc:src/tabs/edit.tsx)
+
+## 开发命令
+
+```bash
+pnpm dev      # 开发模式
+pnpm build    # 构建打包
+pnpm package  # 打包扩展
+```

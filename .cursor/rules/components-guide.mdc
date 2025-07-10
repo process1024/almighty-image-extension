@@ -1,0 +1,143 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 组件和功能模块指南
+
+## 通用组件
+
+### 批量图片选择组件
+[src/components/BatchPin/](mdc:src/components/BatchPin) - 批量选择和管理页面中的图片
+
+### 截图组件
+[src/components/Capture/](mdc:src/components/Capture) - 处理各种类型的截图功能
+
+### 拖拽选择组件
+[src/components/DragSelect/](mdc:src/components/DragSelect) - 实现拖拽框选功能
+
+### 瀑布流布局
+[src/components/Masonry/](mdc:src/components/Masonry) - 图片网格瀑布流展示
+
+### 十字光标
+[src/components/Crosshair/](mdc:src/components/Crosshair) - 截图时的十字光标指示器
+
+### 加载组件
+[src/components/Loading/](mdc:src/components/Loading) - 通用的加载状态组件
+
+### 尺寸调整
+[src/components/Resizer/](mdc:src/components/Resizer) - 元素大小调整工具
+
+## 图片编辑器组件
+
+### 编辑工具组件
+位于 [src/tabs/components/](mdc:src/tabs/components) 目录：
+
+#### 箭头工具
+[src/tabs/components/ArrowTool/](mdc:src/tabs/components/ArrowTool) - 绘制各种样式的箭头
+
+#### 文本工具
+[src/tabs/components/TextTool/](mdc:src/tabs/components/TextTool) - 添加和编辑文本标注
+
+#### 画笔工具
+[src/tabs/components/BrushTool/](mdc:src/tabs/components/BrushTool) - 自由绘制画笔
+
+#### 矩形工具
+[src/tabs/components/RectTool/](mdc:src/tabs/components/RectTool) - 绘制矩形和正方形
+
+#### 椭圆工具
+[src/tabs/components/EllipseTool/](mdc:src/tabs/components/EllipseTool) - 绘制椭圆和圆形
+
+#### 马赛克工具
+[src/tabs/components/MosaicTool/](mdc:src/tabs/components/MosaicTool) - 添加马赛克效果
+
+#### 图标组件
+[src/tabs/components/Icons/](mdc:src/tabs/components/Icons) - 工具栏图标
+
+#### 通用组件
+[src/tabs/components/common/](mdc:src/tabs/components/common) - 编辑器通用组件
+
+### 编辑器 Hooks
+位于 [src/tabs/hooks/](mdc:src/tabs/hooks) 目录：
+
+#### 画布管理
+[src/tabs/hooks/useCanvas.ts](mdc:src/tabs/hooks/useCanvas.ts) - 管理 Fabric.js 画布实例
+
+#### 历史记录管理
+[src/tabs/hooks/useHistory.ts](mdc:src/tabs/hooks/useHistory.ts) - 撤销/重做功能
+
+#### 画布操作
+[src/tabs/hooks/useCanvasActions.ts](mdc:src/tabs/hooks/useCanvasActions.ts) - 画布操作相关的 Hook
+
+## 服务层
+
+### 服务模块
+[src/services/](mdc:src/services) - 业务逻辑和 API 调用
+
+## 工具函数
+
+### 通用工具
+[src/utils/](mdc:src/utils) - 通用工具函数
+
+### 编辑器工具
+[src/tabs/utils/](mdc:src/tabs/utils) - 编辑器专用工具函数
+
+## 类型定义
+
+### 类型文件
+[src/types/](mdc:src/types) - 全局类型定义
+
+## 样式系统
+
+### 全局样式
+[src/styles/](mdc:src/styles) - 全局样式文件
+
+### 编辑器样式
+[src/tabs/styles/](mdc:src/tabs/styles) - 编辑器专用样式
+
+## 组件使用模式
+
+### 基本组件结构
+```typescript
+// 标准组件结构
+import React from 'react';
+import styled from 'styled-components';
+
+interface ComponentProps {
+  // 定义 props 类型
+}
+
+const StyledComponent = styled.div`
+  // 样式定义
+`;
+
+const Component: React.FC<ComponentProps> = (props) => {
+  // 组件逻辑
+  return <StyledComponent>{/* 组件内容 */}</StyledComponent>;
+};
+
+export default Component;
+```
+
+### Hook 使用模式
+```typescript
+// 自定义 Hook 结构
+import { useState, useEffect } from 'react';
+
+export const useCustomHook = (initialValue: any) => {
+  const [state, setState] = useState(initialValue);
+  
+  useEffect(() => {
+    // 副作用逻辑
+  }, []);
+  
+  return { state, setState };
+};
+```
+
+## 扩展开发要点
+
+1. **内容脚本**: 在 [src/content.tsx](mdc:src/content.tsx) 中处理页面交互
+2. **后台脚本**: 在 [src/background/](mdc:src/background) 中处理扩展生命周期
+3. **权限管理**: 在 [package.json](mdc:package.json) 中配置所需权限
+4. **消息传递**: 使用 Chrome 扩展 API 进行组件间通信

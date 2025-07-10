@@ -1,0 +1,93 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 开发指南
+
+## 开发环境设置
+
+### 环境要求
+- Node.js >= 16.0.0
+- pnpm >= 7.0.0
+
+### 安装和启动
+```bash
+pnpm install  # 安装依赖
+pnpm dev      # 启动开发服务器
+```
+
+## 代码规范
+
+### 文件命名
+- 组件文件使用 PascalCase: `MyComponent.tsx`
+- 工具函数使用 camelCase: `myUtils.ts`
+- 样式文件使用 kebab-case: `my-component.less`
+
+### 导入规范
+- 使用相对路径导入本地文件
+- 第三方库导入放在文件顶部
+- 使用 TypeScript 类型导入
+
+### 组件开发
+
+组件通常位于 [src/components/](mdc:src/components) 目录：
+
+```typescript
+// 组件示例结构
+import React from 'react';
+import { Button } from 'antd';
+
+interface MyComponentProps {
+  title: string;
+  onClick: () => void;
+}
+
+const MyComponent: React.FC<MyComponentProps> = ({ title, onClick }) => {
+  return <Button onClick={onClick}>{title}</Button>;
+};
+
+export default MyComponent;
+```
+
+## 扩展开发特殊文件
+
+### 内容脚本
+[src/content.tsx](mdc:src/content.tsx) - 注入到网页中的脚本，用于页面交互
+
+### 后台脚本
+[src/background/index.ts](mdc:src/background/index.ts) - 扩展后台逻辑，处理扩展生命周期
+
+### 弹窗页面
+[src/popup/](mdc:src/popup) - 点击扩展图标显示的弹窗界面
+
+### 独立页面
+[src/tabs/](mdc:src/tabs) - 在新标签页中打开的完整页面
+
+## 状态管理
+
+使用 React Hooks 进行状态管理：
+- useState - 本地状态
+- useEffect - 副作用处理
+- useCallback - 函数缓存
+- useMemo - 值缓存
+
+## 样式管理
+
+- 使用 Styled Components 编写组件样式
+- 全局样式放在 [src/styles/](mdc:src/styles) 目录
+- 支持 Less 和 CSS 模块
+
+## 类型定义
+
+TypeScript 类型定义位于 [src/types/](mdc:src/types) 目录：
+- 使用 interface 定义对象类型
+- 使用 type 定义联合类型或别名
+- 为所有组件 props 定义类型
+
+## 调试技巧
+
+1. 使用 Chrome 开发者工具调试扩展
+2. 在 `chrome://extensions/` 中启用开发者模式
+3. 使用 `console.log` 进行调试输出
+4. 检查扩展的后台页面和内容脚本

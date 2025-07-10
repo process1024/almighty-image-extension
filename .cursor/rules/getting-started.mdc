@@ -1,0 +1,110 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 快速上手指南
+
+欢迎来到图图插件 (Almighty Image Extension) 项目！这是一个功能强大的Chrome浏览器扩展，提供图片批量下载、智能截图、图片编辑标注等功能。
+
+## 🚀 快速开始
+
+### 1. 环境准备
+```bash
+# 确保你有正确的 Node.js 版本
+node --version  # 应该 >= 16.0.0
+
+# 安装依赖
+pnpm install
+
+# 启动开发服务器
+pnpm dev
+```
+
+### 2. 项目结构理解
+
+如果你是第一次接触这个项目，建议按以下顺序阅读：
+
+1. **项目概述** - 了解项目基本信息和目录结构
+2. **架构设计** - 理解技术栈和设计模式
+3. **开发指南** - 学习开发规范和最佳实践
+4. **组件指南** - 深入了解各个组件和模块
+
+### 3. 关键文件和目录
+
+#### 入口文件
+- [src/popup/index.tsx](mdc:src/popup/index.tsx) - 扩展弹窗界面
+- [src/content.tsx](mdc:src/content.tsx) - 页面内容脚本
+- [src/background/index.ts](mdc:src/background/index.ts) - 后台脚本
+- [src/tabs/edit.tsx](mdc:src/tabs/edit.tsx) - 图片编辑器
+
+#### 主要目录
+- [src/components/](mdc:src/components) - 通用组件库
+- [src/tabs/components/](mdc:src/tabs/components) - 编辑工具组件
+- [src/tabs/hooks/](mdc:src/tabs/hooks) - 编辑器相关 Hooks
+- [src/services/](mdc:src/services) - 业务逻辑服务
+- [src/utils/](mdc:src/utils) - 工具函数
+- [src/types/](mdc:src/types) - 类型定义
+
+## 🛠️ 开发流程
+
+### 添加新功能
+
+1. **确定功能位置**: 是通用组件、编辑工具还是服务层？
+2. **创建组件**: 在对应目录创建 TypeScript 组件
+3. **添加类型**: 在 [src/types/](mdc:src/types) 中定义相关类型
+4. **编写样式**: 使用 Styled Components 或在 [src/styles/](mdc:src/styles) 中添加全局样式
+5. **集成测试**: 在开发环境中测试功能
+
+### 调试技巧
+
+1. **Chrome 扩展调试**:
+   - 在 `chrome://extensions/` 启用开发者模式
+   - 点击"检查视图"查看扩展页面
+   - 在扩展页面中使用开发者工具
+
+2. **内容脚本调试**:
+   - 在网页上按 F12 打开开发者工具
+   - 在 Console 中可以看到内容脚本的输出
+
+3. **后台脚本调试**:
+   - 在 `chrome://extensions/` 中点击扩展的"检查视图"
+   - 查看后台脚本的 Console 输出
+
+## 🎯 常见任务
+
+### 添加新的编辑工具
+
+1. 在 [src/tabs/components/](mdc:src/tabs/components) 中创建新工具组件
+2. 在 [src/tabs/hooks/useCanvasActions.ts](mdc:src/tabs/hooks/useCanvasActions.ts) 中添加工具逻辑
+3. 在编辑器界面中集成新工具
+
+### 修改UI样式
+
+1. 对于局部样式，使用 Styled Components
+2. 对于全局样式，修改 [src/styles/](mdc:src/styles) 中的文件
+3. 使用 Ant Design 或 Material-UI 的主题定制
+
+### 添加新的扩展权限
+
+1. 在 [package.json](mdc:package.json) 的 `manifest.permissions` 中添加权限
+2. 在相应的脚本中使用 Chrome API
+3. 重新构建并重新加载扩展
+
+## 📚 学习资源
+
+- [Plasmo 官方文档](mdc:https:/plasmo.com)
+- [Chrome 扩展开发文档](mdc:https:/developer.chrome.com/docs/extensions)
+- [Fabric.js 官方文档](mdc:http:/fabricjs.com)
+- [React 18 文档](mdc:https:/react.dev)
+
+## 🤝 贡献指南
+
+1. Fork 仓库
+2. 创建功能分支
+3. 按照代码规范开发
+4. 提交 Pull Request
+
+---
+
+如果你在开发过程中遇到问题，可以参考其他规则文件中的详细说明，或者查看项目的 [README.md](mdc:README.md) 文件。

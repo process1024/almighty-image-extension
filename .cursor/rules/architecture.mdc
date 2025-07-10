@@ -1,0 +1,111 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 架构设计
+
+## 整体架构
+
+这是一个基于 Plasmo 框架的现代化浏览器扩展，采用 React + TypeScript 技术栈。
+
+### 核心架构组件
+
+1. **Plasmo 框架**: 现代化的浏览器扩展开发框架
+2. **React 18**: 用户界面构建和状态管理
+3. **TypeScript**: 类型安全的 JavaScript 开发
+4. **Fabric.js**: 强大的 HTML5 画布库，用于图片编辑
+
+## 扩展架构
+
+### 扩展组件类型
+
+- **Background Script**: [src/background/index.ts](mdc:src/background/index.ts) - 后台服务工作者
+- **Content Script**: [src/content.tsx](mdc:src/content.tsx) - 页面内容脚本
+- **Popup**: [src/popup/index.tsx](mdc:src/popup/index.tsx) - 弹窗界面
+- **Tab Pages**: [src/tabs/edit.tsx](mdc:src/tabs/edit.tsx) - 独立标签页
+
+### 权限配置
+
+在 [package.json](mdc:package.json) 中配置的权限：
+- `contextMenus` - 右键菜单
+- `tabs` - 标签页访问
+- `activeTab` - 当前标签页
+- `management` - 扩展管理
+- `downloads` - 下载管理
+- `storage` - 存储访问
+
+## 技术栈详解
+
+### UI 组件库
+
+- **Ant Design**: 企业级 UI 设计语言 - 主要用于表单和通用组件
+- **Material-UI**: React UI 组件库 - 用于特定的 Material Design 组件
+- **Styled Components**: CSS-in-JS 样式解决方案
+
+### 状态管理
+
+- **React Hooks**: 本地状态管理
+- **ahooks**: React Hooks 工具库，提供常用的自定义 Hooks
+- **Context API**: 跨组件状态共享
+
+### 图像处理
+
+- **Fabric.js**: 主要的画布编辑库
+  - 对象选择和变换
+  - 绘图工具实现
+  - 画布历史记录管理
+
+### 工具库
+
+- **lodash-es**: 实用工具函数库
+- **react-selecto**: 拖拽选择组件
+- **react-color**: 颜色选择器组件
+- **classnames**: CSS 类名管理
+
+## 目录结构架构
+
+```
+src/
+├── background/          # 后台脚本
+├── content.tsx         # 内容脚本
+├── popup/              # 弹窗界面
+├── tabs/               # 图片编辑器
+│   ├── hooks/          # 编辑器相关hooks
+│   ├── components/     # 编辑工具组件
+│   ├── constants/      # 常量定义
+│   ├── utils/          # 工具函数
+│   └── styles/         # 样式文件
+├── components/         # 通用组件
+├── services/           # 服务层
+├── utils/              # 工具函数
+├── types/              # 类型定义
+├── styles/             # 全局样式
+└── assets/             # 静态资源
+```
+
+## 数据流
+
+1. **用户交互** → **Content Script** → **Background Script**
+2. **Background Script** → **Popup/Tab Pages** → **UI 更新**
+3. **图片编辑** → **Fabric.js** → **Canvas 渲染**
+
+## 设计模式
+
+### 组件设计模式
+
+- **函数组件**: 所有组件都使用 React 函数组件
+- **Hooks 模式**: 自定义 Hooks 封装业务逻辑
+- **组合模式**: 组件通过 props 组合使用
+
+### 状态管理模式
+
+- **本地状态**: 使用 useState 管理组件内部状态
+- **全局状态**: 使用 Context API 或 Props 传递
+- **副作用**: 使用 useEffect 处理副作用
+
+### 工具模式
+
+- **工厂模式**: 创建不同类型的绘图工具
+- **观察者模式**: 监听画布事件和状态变化
+- **策略模式**: 不同的编辑工具有不同的处理策略
