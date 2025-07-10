@@ -5,47 +5,52 @@ import './index.less';
 import { sendCurrentTabMessage } from '~services/message';
 
 function Popup() {
-  function showBatchPin() {
-    // window.open('/tabs/edit.html');
+  const handleBatchPin = () => {
     sendCurrentTabMessage({ type: 'batchPin' });
     window.close();
-  }
-  function showSelectCapture() {
+  };
+
+  const handleSelectCapture = () => {
     sendCurrentTabMessage({ type: 'showSelectCapture' });
     window.close();
-  }
+  };
 
-  function captureCurrent() {
+  const handleCaptureCurrent = () => {
     sendCurrentTabMessage({ type: 'captureCurrent' });
     window.close();
-  }
+  };
 
-  function captureFullPage() {
+  const handleCaptureFullPage = () => {
     sendCurrentTabMessage({ type: 'captureFullPage' });
     window.close();
-  }
+  };
 
   return (
     <div className="popup">
-      <div className="title">图片下载</div>
-      <div className="btn" onClick={showBatchPin}>
-        <div className="select-pic-icon icon" />
-        批量下载
+      <div className="section">
+        <div className="title">图片管理</div>
+        <button className="btn" onClick={handleBatchPin}>
+          <div className="select-pic-icon icon" />
+          <span>批量选择下载</span>
+        </button>
       </div>
-      <div className="title">截图</div>
-      <div className="capture-btn-wrap">
-        <button className="btn" onClick={showSelectCapture}>
-          <div className="select-icon icon"></div>
-          <div>选定区域截图</div>
-        </button>
-        <button className="btn" onClick={captureCurrent}>
-          <div className="current-icon icon"></div>
-          <div>可视区域截图</div>
-        </button>
-        <button className="btn" onClick={captureFullPage}>
-          <div className="full-icon icon"></div>
-          <div>整页截图</div>
-        </button>
+      
+      <div className="section">
+        <div className="title">屏幕截图</div>
+        <div className="capture-btn-wrap">
+          <button className="btn" onClick={handleSelectCapture}>
+            <div className="select-icon icon" />
+            <span>选定区域截图</span>
+          </button>
+          <button className="btn" onClick={handleCaptureCurrent}>
+            <div className="current-icon icon" />
+            <span>可视区域截图</span>
+          </button>
+          <button className="btn" onClick={handleCaptureFullPage}>
+            <div className="full-icon icon" />
+            <span>整页截图</span>
+          </button>
+        </div>
       </div>
     </div>
   );
