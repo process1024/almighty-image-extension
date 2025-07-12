@@ -9,20 +9,20 @@
       content="图图插件是一个功能强大的Chrome浏览器扩展，提供图片批量下载、智能截图、图片编辑标注等功能，为用户提供一站式的图片处理解决方案。" />
     <meta name="keywords" content="Chrome扩展,图片下载,截图工具,图片编辑,浏览器插件" />
     <link rel="stylesheet" href="styles.css" />
-    <link rel="icon" href="../src/assets/qiantu-logo.svg" type="image/svg+xml" />
+    <link rel="icon" href="../assets/icon.png" type="image/png" />
   </head>
   <body>
     <!-- 导航栏 -->
     <nav class="navbar">
       <div class="nav-container">
         <div class="nav-logo">
-          <img src="../src/assets/qiantu-logo.svg" alt="图图插件" class="logo-icon" />
+          <img src="../assets/icon.png" alt="图图插件" class="logo-icon" />
           <span class="logo-text">图图插件</span>
         </div>
         <div class="nav-menu">
           <a href="#features" class="nav-link">功能特性</a>
           <a href="#screenshots" class="nav-link">产品截图</a>
-          <a href="#tech" class="nav-link">技术栈</a>
+          <!-- <a href="#tech" class="nav-link">技术栈</a> -->
           <a href="#download" class="nav-link">立即下载</a>
         </div>
         <div class="nav-toggle">
@@ -182,7 +182,8 @@
         <div class="screenshots-grid">
           <div class="screenshot-item">
             <div class="screenshot-placeholder">
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+              <img src="./assets/popup.png" alt="弹窗界面截图" />
+              <!-- <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
                 <rect
                   x="2"
                   y="3"
@@ -194,7 +195,7 @@
                 <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="2" />
                 <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="2" />
               </svg>
-              <p>弹窗界面截图</p>
+              <p>弹窗界面截图</p> -->
             </div>
             <h4>弹窗界面</h4>
             <p>简洁的扩展弹窗，快速访问所有功能</p>
@@ -202,11 +203,12 @@
 
           <div class="screenshot-item">
             <div class="screenshot-placeholder">
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+              <video autoplay loop muted src="./assets/capture.mp4" alt="截图功能演示" />
+              <!-- <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
                 <path d="M3 3H21V21H3V3Z" stroke="currentColor" stroke-width="2" />
                 <path d="M9 9H15V15H9V9Z" stroke="currentColor" stroke-width="2" />
               </svg>
-              <p>截图功能演示</p>
+              <p>截图功能演示</p> -->
             </div>
             <h4>截图功能</h4>
             <p>拖拽选择区域，精确截取所需内容</p>
@@ -214,7 +216,8 @@
 
           <div class="screenshot-item">
             <div class="screenshot-placeholder">
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+              <img src="./assets/batch.png" alt="批量选择界面" />
+              <!-- <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
                 <rect
                   x="3"
                   y="3"
@@ -225,16 +228,17 @@
                   stroke-width="2" />
                 <circle cx="9" cy="9" r="2" stroke="currentColor" stroke-width="2" />
                 <path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" />
-              </svg>
-              <p>批量选择界面</p>
+              </svg> -->
+              <!-- <p>批量选择界面</p> -->
             </div>
-            <h4>批量选择</h4>
+            <h4>批量选择图片下载</h4>
             <p>瀑布流展示页面图片，支持多选下载</p>
           </div>
 
           <div class="screenshot-item">
             <div class="screenshot-placeholder">
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+              <img src="./assets/editor.png" alt="编辑器界面" />
+              <!-- <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
                   stroke="currentColor"
@@ -244,13 +248,13 @@
                   stroke="currentColor"
                   stroke-width="2" />
               </svg>
-              <p>编辑器界面</p>
+              <p>编辑器界面</p> -->
             </div>
             <h4>图片编辑器</h4>
             <p>功能丰富的图片编辑和标注工具</p>
           </div>
 
-          <div class="screenshot-item">
+          <!-- <div class="screenshot-item">
             <div class="screenshot-placeholder">
               <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
@@ -263,7 +267,7 @@
             </div>
             <h4>绘图工具</h4>
             <p>丰富的绘图工具，支持各种标注需求</p>
-          </div>
+          </div> -->
 
           <div class="screenshot-item">
             <div class="screenshot-placeholder">
@@ -285,7 +289,7 @@
     </section>
 
     <!-- 技术栈 -->
-    <section id="tech" class="tech-stack">
+    <!-- <section id="tech" class="tech-stack">
       <div class="container">
         <div class="section-header">
           <h2 class="section-title">技术栈</h2>
@@ -325,7 +329,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
 
     <!-- 下载安装 -->
     <section id="download" class="download">
@@ -383,7 +387,7 @@
         <div class="footer-content">
           <div class="footer-left">
             <div class="footer-logo">
-              <img src="../src/assets/qiantu-logo.svg" alt="图图插件" class="logo-icon" />
+              <img src="../assets/icon.png" alt="图图插件" class="logo-icon" />
               <span class="logo-text">图图插件</span>
             </div>
             <p class="footer-description">功能强大的浏览器图片工具扩展</p>
@@ -398,7 +402,7 @@
             <div class="footer-column">
               <h5>资源</h5>
               <a href="https://github.com/process1024/almighty-image-extension">GitHub</a>
-              <a href="#tech">技术栈</a>
+              <!-- <a href="#tech">技术栈</a> -->
               <a href="#">使用文档</a>
             </div>
           </div>

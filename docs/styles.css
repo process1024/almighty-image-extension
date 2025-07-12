@@ -391,9 +391,11 @@ body {
     border: 2px dashed var(--border-color);
 }
 
-.screenshot-placeholder svg {
-    margin-bottom: 0.5rem;
-    opacity: 0.6;
+.screenshot-placeholder img,
+.screenshot-placeholder video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .screenshot-item h4 {
