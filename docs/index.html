@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图图插件 - 功能强大的浏览器图片工具扩展</title>
+    <meta
+      name="description"
+      content="图图插件是一个功能强大的Chrome浏览器扩展，提供图片批量下载、智能截图、图片编辑标注等功能，为用户提供一站式的图片处理解决方案。" />
+    <meta name="keywords" content="Chrome扩展,图片下载,截图工具,图片编辑,浏览器插件" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="../src/assets/qiantu-logo.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <img src="../src/assets/qiantu-logo.svg" alt="图图插件" class="logo-icon" />
+          <span class="logo-text">图图插件</span>
+        </div>
+        <div class="nav-menu">
+          <a href="#features" class="nav-link">功能特性</a>
+          <a href="#screenshots" class="nav-link">产品截图</a>
+          <a href="#tech" class="nav-link">技术栈</a>
+          <a href="#download" class="nav-link">立即下载</a>
+        </div>
+        <div class="nav-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section class="hero">
+      <div class="hero-container">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            <span class="gradient-text">图图插件</span>
+            <span class="subtitle">Almighty Image Extension</span>
+          </h1>
+          <p class="hero-description">
+            一个功能强大的Chrome浏览器扩展，集成图片批量选择下载、智能截图、图片编辑标注等功能，为用户提供一站式的图片处理解决方案。
+          </p>
+          <div class="hero-buttons">
+            <a href="#download" class="btn btn-primary">
+              <span>立即下载</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M7 10L12 15L17 10H7Z" fill="currentColor" />
+              </svg>
+            </a>
+            <a href="#features" class="btn btn-secondary">
+              <span>了解更多</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M9 18L15 12L9 6V18Z" fill="currentColor" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="hero-image">
+          <div class="hero-screenshot-placeholder">
+            <div class="placeholder-content">
+              <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
+                <rect
+                  x="3"
+                  y="3"
+                  width="18"
+                  height="18"
+                  rx="2"
+                  stroke="currentColor"
+                  stroke-width="2" />
+                <circle cx="9" cy="9" r="2" stroke="currentColor" stroke-width="2" />
+                <path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" />
+              </svg>
+              <p>主要功能截图</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 功能特性 -->
+    <section id="features" class="features">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">功能特性</h2>
+          <p class="section-subtitle">强大的图片处理工具集，满足您的各种需求</p>
+        </div>
+
+        <div class="features-grid">
+          <!-- 智能截图 -->
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                <rect
+                  x="2"
+                  y="3"
+                  width="20"
+                  height="14"
+                  rx="2"
+                  stroke="currentColor"
+                  stroke-width="2" />
+                <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="2" />
+                <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="2" />
+              </svg>
+            </div>
+            <h3 class="feature-title">智能截图</h3>
+            <p class="feature-description">
+              支持区域截图、整页截图、当前页面截图，满足不同场景的截图需求
+            </p>
+            <ul class="feature-list">
+              <li>🖱️ 拖拽选择任意区域进行截图</li>
+              <li>📄 支持超长页面的完整截图</li>
+              <li>👁️ 一键截取当前可视区域</li>
+            </ul>
+          </div>
+
+          <!-- 批量图片管理 -->
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                <rect
+                  x="3"
+                  y="3"
+                  width="18"
+                  height="18"
+                  rx="2"
+                  stroke="currentColor"
+                  stroke-width="2" />
+                <circle cx="9" cy="9" r="2" stroke="currentColor" stroke-width="2" />
+                <path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" />
+              </svg>
+            </div>
+            <h3 class="feature-title">批量图片管理</h3>
+            <p class="feature-description">智能识别页面图片，提供瀑布流展示和批量下载功能</p>
+            <ul class="feature-list">
+              <li>🔍 智能识别页面中的所有图片</li>
+              <li>🎯 支持框选多张图片</li>
+              <li>📦 一键下载选中的所有图片</li>
+            </ul>
+          </div>
+
+          <!-- 图片编辑标注 -->
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                  stroke="currentColor"
+                  stroke-width="2" />
+                <path
+                  d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                  stroke="currentColor"
+                  stroke-width="2" />
+              </svg>
+            </div>
+            <h3 class="feature-title">图片编辑标注</h3>
+            <p class="feature-description">
+              丰富的绘图工具，支持文本、箭头、画笔、形状等多种标注方式
+            </p>
+            <ul class="feature-list">
+              <li>✏️ 文本标注（字体、颜色、大小自定义）</li>
+              <li>➡️ 箭头工具（多种样式和颜色）</li>
+              <li>🎨 自由画笔、矩形、椭圆等工具</li>
+              <li>🔳 马赛克工具（隐私保护）</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 产品截图 -->
+    <section id="screenshots" class="screenshots">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">产品截图</h2>
+          <p class="section-subtitle">直观了解插件的界面和功能</p>
+        </div>
+
+        <div class="screenshots-grid">
+          <div class="screenshot-item">
+            <div class="screenshot-placeholder">
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                <rect
+                  x="2"
+                  y="3"
+                  width="20"
+                  height="14"
+                  rx="2"
+                  stroke="currentColor"
+                  stroke-width="2" />
+                <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="2" />
+                <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="2" />
+              </svg>
+              <p>弹窗界面截图</p>
+            </div>
+            <h4>弹窗界面</h4>
+            <p>简洁的扩展弹窗，快速访问所有功能</p>
+          </div>
+
+          <div class="screenshot-item">
+            <div class="screenshot-placeholder">
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                <path d="M3 3H21V21H3V3Z" stroke="currentColor" stroke-width="2" />
+                <path d="M9 9H15V15H9V9Z" stroke="currentColor" stroke-width="2" />
+              </svg>
+              <p>截图功能演示</p>
+            </div>
+            <h4>截图功能</h4>
+            <p>拖拽选择区域，精确截取所需内容</p>
+          </div>
+
+          <div class="screenshot-item">
+            <div class="screenshot-placeholder">
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                <rect
+                  x="3"
+                  y="3"
+                  width="18"
+                  height="18"
+                  rx="2"
+                  stroke="currentColor"
+                  stroke-width="2" />
+                <circle cx="9" cy="9" r="2" stroke="currentColor" stroke-width="2" />
+                <path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" />
+              </svg>
+              <p>批量选择界面</p>
+            </div>
+            <h4>批量选择</h4>
+            <p>瀑布流展示页面图片，支持多选下载</p>
+          </div>
+
+          <div class="screenshot-item">
+            <div class="screenshot-placeholder">
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                  stroke="currentColor"
+                  stroke-width="2" />
+                <path
+                  d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                  stroke="currentColor"
+                  stroke-width="2" />
+              </svg>
+              <p>编辑器界面</p>
+            </div>
+            <h4>图片编辑器</h4>
+            <p>功能丰富的图片编辑和标注工具</p>
+          </div>
+
+          <div class="screenshot-item">
+            <div class="screenshot-placeholder">
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+                <path
+                  d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22"
+                  stroke="currentColor"
+                  stroke-width="2" />
+              </svg>
+              <p>绘图工具演示</p>
+            </div>
+            <h4>绘图工具</h4>
+            <p>丰富的绘图工具，支持各种标注需求</p>
+          </div>
+
+          <div class="screenshot-item">
+            <div class="screenshot-placeholder">
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15"
+                  stroke="currentColor"
+                  stroke-width="2" />
+                <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" />
+                <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" />
+              </svg>
+              <p>导出下载功能</p>
+            </div>
+            <h4>导出下载</h4>
+            <p>一键导出编辑后的图片，支持多种格式</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 技术栈 -->
+    <section id="tech" class="tech-stack">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">技术栈</h2>
+          <p class="section-subtitle">基于现代化的技术栈构建</p>
+        </div>
+
+        <div class="tech-grid">
+          <div class="tech-item">
+            <div class="tech-icon">🚀</div>
+            <h4>Plasmo</h4>
+            <p>现代化的浏览器扩展开发框架</p>
+          </div>
+          <div class="tech-item">
+            <div class="tech-icon">⚛️</div>
+            <h4>React 18</h4>
+            <p>用户界面构建和状态管理</p>
+          </div>
+          <div class="tech-item">
+            <div class="tech-icon">📘</div>
+            <h4>TypeScript</h4>
+            <p>类型安全的JavaScript开发</p>
+          </div>
+          <div class="tech-item">
+            <div class="tech-icon">🎨</div>
+            <h4>Fabric.js</h4>
+            <p>强大的HTML5画布库，用于图片编辑</p>
+          </div>
+          <div class="tech-item">
+            <div class="tech-icon">🔧</div>
+            <h4>Ant Design</h4>
+            <p>企业级UI设计语言</p>
+          </div>
+          <div class="tech-item">
+            <div class="tech-icon">💎</div>
+            <h4>Material-UI</h4>
+            <p>React UI组件库</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 下载安装 -->
+    <section id="download" class="download">
+      <div class="container">
+        <div class="download-content">
+          <h2 class="download-title">立即体验图图插件</h2>
+          <p class="download-description">开始使用功能强大的图片处理工具，提升您的工作效率</p>
+
+          <div class="download-steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <h4>下载扩展</h4>
+              <p>从Chrome应用商店或GitHub下载最新版本</p>
+            </div>
+            <div class="step">
+              <div class="step-number">2</div>
+              <h4>安装扩展</h4>
+              <p>在Chrome扩展管理页面安装插件</p>
+            </div>
+            <div class="step">
+              <div class="step-number">3</div>
+              <h4>开始使用</h4>
+              <p>点击扩展图标，开始使用各种功能</p>
+            </div>
+          </div>
+
+          <div class="download-buttons">
+            <a
+              href="https://github.com/process1024/almighty-image-extension"
+              class="btn btn-primary"
+              target="_blank">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M9 19C4 20.5 4 16.5 2 16M22 16V22H16M22 16L18 12M22 16H16"
+                  stroke="currentColor"
+                  stroke-width="2" />
+              </svg>
+              <span>GitHub 下载</span>
+            </a>
+            <a href="#" class="btn btn-secondary">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2" />
+              </svg>
+              <span>Chrome 商店（即将上线）</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-left">
+            <div class="footer-logo">
+              <img src="../src/assets/qiantu-logo.svg" alt="图图插件" class="logo-icon" />
+              <span class="logo-text">图图插件</span>
+            </div>
+            <p class="footer-description">功能强大的浏览器图片工具扩展</p>
+          </div>
+          <div class="footer-links">
+            <div class="footer-column">
+              <h5>产品</h5>
+              <a href="#features">功能特性</a>
+              <a href="#screenshots">产品截图</a>
+              <a href="#download">立即下载</a>
+            </div>
+            <div class="footer-column">
+              <h5>资源</h5>
+              <a href="https://github.com/process1024/almighty-image-extension">GitHub</a>
+              <a href="#tech">技术栈</a>
+              <a href="#">使用文档</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2024 图图插件. 保留所有权利.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
