@@ -352,11 +352,25 @@ async function capturePage(
   }
 
   const canvas = document.createElement("canvas");
-  canvas.width = captureSize.width;
+  const dp = window.devicePixelRatio;
+  
+  // 最终画布尺寸需要考虑设备像素比
+  canvas.width = captureSize.width * dp;
   const lastPageHeight = drawImageArr[drawImageArr.length - 1][4];
-  canvas.height = (drawImageArr.length - 1) * clientHeight + lastPageHeight;
+  canvas.height = ((drawImageArr.length - 1) * clientHeight + lastPageHeight) * dp;
+  
+  console.log('capturePage - Final canvas size:', canvas.width, 'x', canvas.height);
+  console.log('capturePage - DPR:', dp);
+  console.log('capturePage - Logical size:', captureSize.width, 'x', (drawImageArr.length - 1) * clientHeight + lastPageHeight);
+  
   const context = canvas.getContext("2d");
-  drawImageArr.forEach((draw) => context.drawImage(...draw));
+  
+  // 绘制时需要调整每个片段的位置和尺寸以匹配DPR
+  drawImageArr.forEach((draw) => {
+    const [image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight] = draw;
+    // 所有坐标和尺寸都需要乘以DPR
+    context.drawImage(image, sx * dp, sy * dp, sWidth * dp, sHeight * dp, dx * dp, dy * dp, dWidth * dp, dHeight * dp);
+  });
 
   return canvas.toDataURL("image/png", 1);
 }
