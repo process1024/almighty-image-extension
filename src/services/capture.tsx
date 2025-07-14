@@ -126,8 +126,13 @@ export async function captureImageByPosition(p: Position, clip = true) {
 export async function captureCurrent() {
   const result = await getTabCaptureImage();
   console.log(result, 'result');
-  // openPinModal({ img_url: result }, "可视区域采集");
-  return result;
+  chrome.runtime.sendMessage({ type: "storage", data: {
+    key: 'imageData',
+    data: result
+  }}, () => {
+    chrome.runtime.sendMessage({ type: "open", url: '/tabs/edit.html' });
+  });
+  // return result;
 }
 
 // 截图完成采集前的相关校验限制
@@ -135,15 +140,6 @@ function validPin(url: string) {
   if (isBase64(url)) {
     const size = getBase64Size(url);
     if (size > MAC_IMG_SIZE) {
-      // pinMessage.open("failWithLink", {
-      //   msg: "采集图片最大限制为20M",
-      //   link: url ? (
-      //     <a href={url} download={document.title}>
-      //       下载到本地
-      //     </a>
-      //   ) : null
-      // });
-      // pinMessage.open("fail", "采集图片最大限制为20M");
       return false;
     }
   }
@@ -171,7 +167,13 @@ export async function captureFullPage() {
   const result = await capturePage(position, captureSize);
   const valid = validPin(result);
   if (!valid) return;
-  // openPinModal({ img_url: result }, "整张截图采集");
+  chrome.runtime.sendMessage({ type: "storage", data: {
+    key: 'imageData',
+    data: result
+  }}, () => {
+    chrome.runtime.sendMessage({ type: "open", url: '/tabs/edit.html' });
+  });
+
 }
 
 export async function captureSelect(position: Position) {

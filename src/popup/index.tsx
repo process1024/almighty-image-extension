@@ -25,6 +25,14 @@ function Popup() {
     window.close();
   };
 
+  const handleImageProcess = () => {
+    // @ts-expect-error - Chrome extension API
+    const url = chrome.runtime.getURL('tabs/process.html');
+    // @ts-expect-error - Chrome extension API
+    chrome.tabs.create({ url });
+    window.close();
+  };
+
   return (
     <div className="popup">
       <div className="section">
@@ -32,6 +40,10 @@ function Popup() {
         <button className="btn" onClick={handleBatchPin}>
           <div className="select-pic-icon icon" />
           <span>批量选择下载</span>
+        </button>
+        <button className="btn" onClick={handleImageProcess}>
+          <div className="process-icon icon" />
+          <span>图片处理工具</span>
         </button>
       </div>
       
