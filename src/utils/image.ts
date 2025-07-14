@@ -185,3 +185,41 @@ export function getBase64ImageDimensions(base64: string) {
       };
   });
 }
+
+/**
+ * 获取考虑设备像素比的实际显示尺寸
+ * @param width 图片原始宽度
+ * @param height 图片原始高度
+ * @param devicePixelRatio 设备像素比，默认从window获取
+ * @returns 实际显示尺寸
+ */
+export function getActualDisplayDimensions(
+  width: number, 
+  height: number, 
+  devicePixelRatio?: number
+): { width: number; height: number } {
+  const ratio = devicePixelRatio || window.devicePixelRatio || 1;
+  return {
+    width: width / ratio,
+    height: height / ratio
+  };
+}
+
+/**
+ * 调试函数：打印尺寸相关信息
+ */
+export function debugImageDimensions(
+  originalWidth: number,
+  originalHeight: number,
+  devicePixelRatio?: number
+): void {
+  const ratio = devicePixelRatio || window.devicePixelRatio || 1;
+  const actual = getActualDisplayDimensions(originalWidth, originalHeight, ratio);
+  
+  console.group('🖼️ Image Dimensions Debug');
+  console.log('📏 Original size:', `${originalWidth} × ${originalHeight}`);
+  console.log('📱 Device pixel ratio:', ratio);
+  console.log('🎯 Actual display size:', `${actual.width} × ${actual.height}`);
+  console.log('🖥️ Viewport size:', `${window.innerWidth} × ${window.innerHeight}`);
+  console.groupEnd();
+}

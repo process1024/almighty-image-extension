@@ -15,22 +15,28 @@ export const StyledHeader = styled.div`
   box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
   display: flex;
   align-items: center;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   justify-content: center;
 `;
 
 export const StyledContent = styled.div`
   flex: 1;
   position: relative;
-  overflow: hidden;
+  overflow: auto;
   margin-top: 46px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #212224;
+  min-height: calc(100vh - 46px);
+  padding: 20px;
 
   canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    min-width: 300px;
+    min-height: 200px;
   }
 `;

@@ -1,7 +1,7 @@
 // src/components/ImageEditor/hooks/useCanvas.js
 import { useEffect, useState } from 'react';
 import { fabric } from 'fabric';
-import { getBase64ImageDimensions } from '~utils/image';
+import { getBase64ImageDimensions, getActualDisplayDimensions, debugImageDimensions } from '~utils/image';
 
 // 声明Chrome扩展API类型
 declare global {
@@ -36,10 +36,31 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
       try {
         const { imageData } = await chrome.storage.local.get(['imageData']);
         const { width, height } = await getBase64ImageDimensions(imageData);
+        
+        // 调试尺寸信息
+        debugImageDimensions(width, height);
+        
+        // 计算实际显示尺寸
+        const { width: actualWidth, height: actualHeight } = getActualDisplayDimensions(width, height);
 
-        // 统一设置画布尺寸
-        canvas.setDimensions({ width, height });
-        canvas.setBackgroundImage(imageData, canvas.renderAll.bind(canvas));
+        console.log('actualWidth', actualWidth, 'actualHeight', actualHeight);
+        
+        // 设置画布尺寸为实际显示尺寸
+        canvas.setDimensions({ width: actualWidth, height: actualHeight });
+        
+        // 计算背景图片的缩放比例
+        const scaleX = actualWidth / width;
+        const scaleY = actualHeight / height;
+        
+        console.log('Background image scale:', { scaleX, scaleY });
+        
+        // 设置背景图片，指定缩放参数让图片适应画布尺寸
+        canvas.setBackgroundImage(imageData, canvas.renderAll.bind(canvas), {
+          scaleX: scaleX,
+          scaleY: scaleY,
+          originX: 'left',
+          originY: 'top'
+        });
       } catch (error) {
         console.error('Failed to load image:', error);
       }

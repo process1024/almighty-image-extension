@@ -53,11 +53,21 @@ export function clipImage2Url(img: ClipImage) {
     image.src = img.url;
     image.onload = function () {
       const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const context = canvas.getContext("2d");
       const dp = window.devicePixelRatio;
-      context.drawImage(image, img.x * dp, img.y * dp, img.width * dp, img.height * dp, 0, 0, img.width, img.height);
+      
+      // 画布尺寸需要考虑设备像素比
+      canvas.width = img.width * dp;
+      canvas.height = img.height * dp;
+      
+      const context = canvas.getContext("2d");
+      
+      // 裁剪时源图像和目标画布都使用相同的DPR缩放
+      context.drawImage(image, img.x * dp, img.y * dp, img.width * dp, img.height * dp, 0, 0, img.width * dp, img.height * dp);
+      
+      console.log('clipImage2Url - DPR:', dp);
+      console.log('clipImage2Url - Canvas size:', canvas.width, 'x', canvas.height);
+      console.log('clipImage2Url - Logical size:', img.width, 'x', img.height);
+      
       resolve(canvas.toDataURL("image/png", 1));
     };
   });
@@ -126,10 +136,21 @@ export async function captureImageByPosition(p: Position, clip = true) {
 export async function captureCurrent() {
   const result = await getTabCaptureImage();
   console.log(result, 'result');
+  
+  // 获取视窗尺寸信息，用于后续画布设置
+  const viewportWidth = document.documentElement.clientWidth;
+  const viewportHeight = document.documentElement.clientHeight;
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  
+  console.log('Viewport dimensions:', viewportWidth, viewportHeight);
+  console.log('Device pixel ratio:', devicePixelRatio);
+  
+  // @ts-expect-error - Chrome extension API
   chrome.runtime.sendMessage({ type: "storage", data: {
     key: 'imageData',
     data: result
   }}, () => {
+    // @ts-expect-error - Chrome extension API
     chrome.runtime.sendMessage({ type: "open", url: '/tabs/edit.html' });
   });
   // return result;
@@ -167,10 +188,16 @@ export async function captureFullPage() {
   const result = await capturePage(position, captureSize);
   const valid = validPin(result);
   if (!valid) return;
+  
+  console.log('Full page capture completed');
+  console.log('Full page dimensions:', clientWidth, scrollHeight);
+  
+  // @ts-expect-error - Chrome extension API
   chrome.runtime.sendMessage({ type: "storage", data: {
     key: 'imageData',
     data: result
   }}, () => {
+    // @ts-expect-error - Chrome extension API
     chrome.runtime.sendMessage({ type: "open", url: '/tabs/edit.html' });
   });
 
@@ -273,7 +300,7 @@ async function capturePage(
   }
 
   // 二维数组，存放每次 drawImage 的参数
-  const drawImageArr = [];
+  const drawImageArr: Array<[HTMLImageElement, number, number, number, number, number, number, number, number]> = [];
 
   for (let i = 0; i < pagePosition.length; i++) {
     if (escapeEvent.isEscape) {
