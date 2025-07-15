@@ -33,6 +33,18 @@ function Popup() {
     window.close();
   };
 
+  const handleOpenWebsite = () => {
+    // @ts-expect-error - Chrome extension API
+    chrome.tabs.create({ url: 'https://process1024.github.io/almighty-image-extension/' });
+    window.close();
+  };
+
+  const handleFeedback = () => {
+    // @ts-expect-error - Chrome extension API
+    chrome.tabs.create({ url: 'https://github.com/process1024/almighty-image-extension/issues' });
+    window.close();
+  };
+
   return (
     <div className="popup">
       <div className="section">
@@ -52,17 +64,31 @@ function Popup() {
         <div className="capture-btn-wrap">
           <button className="btn" onClick={handleSelectCapture}>
             <div className="select-icon icon" />
-            <span>选定区域截图</span>
+            <span>选定区域</span>
           </button>
           <button className="btn" onClick={handleCaptureCurrent}>
             <div className="current-icon icon" />
-            <span>可视区域截图</span>
+            <span>可视区域</span>
           </button>
           <button className="btn" onClick={handleCaptureFullPage}>
             <div className="full-icon icon" />
             <span>整页截图</span>
           </button>
         </div>
+      </div>
+      
+      <div className="footer">
+        <div className="footer-links">
+          <button className="link-btn" onClick={handleOpenWebsite}>
+            <div className="website-icon icon" />
+            <span>官方网站</span>
+          </button>
+          <button className="link-btn" onClick={handleFeedback}>
+            <div className="feedback-icon icon" />
+            <span>问题反馈</span>
+          </button>
+        </div>
+        <div className="footer-text">更多功能敬请期待</div>
       </div>
     </div>
   );

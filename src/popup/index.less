@@ -2,17 +2,18 @@
 html, body {
     margin: 0;
     padding: 0;
-    width: 240px;
+    width: 300px;
     min-height: 300px;
+    max-height: 400px;
     background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .popup {
     padding: 16px;
     width: 100%;
-    min-height: 300px;
+    min-height: calc(100vh - 32px);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -20,7 +21,7 @@ html, body {
 }
 
 .section {
-    margin-bottom: 16px;
+    margin-bottom: 18px;
     
     &:last-of-type {
         margin-bottom: 0;
@@ -29,19 +30,19 @@ html, body {
 
 .title {
     color: #1f2937;
-    margin-bottom: 10px;
-    font-size: 13px;
+    margin-bottom: 12px;
+    font-size: 14px;
     font-weight: 600;
     letter-spacing: -0.01em;
     position: relative;
-    padding-bottom: 6px;
+    padding-bottom: 8px;
     
     &::after {
         content: '';
         position: absolute;
         bottom: 0;
         left: 0;
-        width: 24px;
+        width: 28px;
         height: 2px;
         background: linear-gradient(90deg, #3b82f6, #8b5cf6);
         border-radius: 1px;
@@ -93,23 +94,27 @@ html, body {
     align-items: center;
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
     width: 100%;
-    height: 40px;
+    height: 48px;
     font-size: 12px;
     color: #374151;
     border: 1px solid #e5e7eb;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
-    padding: 0 12px;
-    gap: 10px;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    padding: 0 14px;
+    gap: 12px;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     
     &:hover {
         background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         border-color: #3b82f6;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+        transform: translateY(-1px);
     }
     
     &:active {
         background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        transform: translateY(0);
     }
     
     &:last-child {
@@ -130,8 +135,36 @@ html, body {
 
 .capture-btn-wrap {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 8px;
+    
+    .btn {
+        flex: 1;
+        margin-bottom: 0;
+        flex-direction: column;
+        height: 72px;
+        padding: 6px;
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+        }
+        
+        .icon {
+            transform: scale(0.75);
+        }
+        
+        span {
+            font-size: 10px;
+            font-weight: 500;
+            text-align: center;
+            line-height: 1.3;
+            flex: none;
+            color: #374151;
+        }
+    }
 }
 
 .select-pic-icon {
@@ -140,6 +173,75 @@ html, body {
 
 .process-icon {
     background-image: url('../../assets/photo.svg');
+}
+
+.website-icon {
+    background-image: url('../../assets/icon.png');
+}
+
+.feedback-icon {
+    background-image: url('../../assets/message.svg');
+}
+
+/* 底部区域样式 */
+.footer {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid rgba(229, 231, 235, 0.6);
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 6px;
+}
+
+.link-btn {
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 0;
+    gap: 4px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    
+    &:hover {
+        opacity: 0.7;
+    }
+    
+    &:active {
+        opacity: 0.5;
+    }
+    
+    .icon {
+        display: none;
+    }
+    
+    span {
+        font-size: 11px;
+        font-weight: 400;
+        color: #6b7280;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        text-decoration-thickness: 1px;
+        
+        &:hover {
+            color: #3b82f6;
+        }
+    }
+}
+
+.footer-text {
+    text-align: center;
+    font-size: 10px;
+    color: #9ca3af;
+    font-weight: 400;
+    margin-bottom: 4px;
+    opacity: 0.8;
 }
 
 /* 添加滚动条样式 */

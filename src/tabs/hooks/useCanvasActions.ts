@@ -74,7 +74,7 @@ export const useCanvasActions = (canvas: fabric.Canvas | null) => {
         .replace(/[:-]/g, '')
         .replace(/\..+/, '')
         .replace('T', '-');
-      const filename = `canvas-${timestamp}.png`;
+      const filename = `图图插件-${timestamp}.png`;
       
       // 创建下载链接
       const link = document.createElement('a');
