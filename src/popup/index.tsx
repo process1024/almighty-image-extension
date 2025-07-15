@@ -41,7 +41,7 @@ function Popup() {
 
   const handleFeedback = () => {
     // @ts-expect-error - Chrome extension API
-    chrome.tabs.create({ url: 'https://github.com/process1024/almighty-image-extension/issues' });
+    chrome.tabs.create({ url: 'https://eip93iabdv.feishu.cn/wiki/ZEoxwTLw7ivucgkzetqcaCZsn2e?from=from_copylink' });
     window.close();
   };
 
