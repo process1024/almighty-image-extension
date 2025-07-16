@@ -1,8 +1,8 @@
 {
   "name": "almighty-image-extension",
-  "displayName": "Almighty image extension",
+  "displayName": "图图插件",
   "version": "0.0.1",
-  "description": "A basic Plasmo extension.",
+  "description": "一个插件搞定所有图片问题",
   "author": "https://github.com/process1024",
   "scripts": {
     "dev": "plasmo dev",
