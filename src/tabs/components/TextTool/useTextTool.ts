@@ -33,7 +33,7 @@ export const useTextTool = (canvas, activeFunction) => {
 
       const pointer = canvas.getPointer(options.e);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const text = new (fabric as any).TextBox('1双击编辑文字', {
+      const text = new (fabric as any).TextBox('双击编辑文字', {
         left: pointer.x,
         top: pointer.y,
         ...textOptions,
