@@ -32,6 +32,10 @@ export const StyledContent = styled.div`
   min-height: calc(100vh - 46px);
   padding: 20px;
 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   canvas {
     display: block;
     margin: 0 auto;
