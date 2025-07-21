@@ -6,7 +6,8 @@ import { TOOL_TYPES } from '../../constants/tools';
 export const useMosaicTool = (canvas, activeTool) => {
   const [mosaicOptions, setMosaicOptions] = useState({
     blockSize: 10,
-    brushSize: 20
+    brushSize: 20,
+    color: '#ededed' // 新增颜色字段，默认灰色
   });
 
   const isDrawingRef = useRef(false);
@@ -40,7 +41,7 @@ export const useMosaicTool = (canvas, activeTool) => {
 
     const { blockSize, brushSize } = mosaicOptions;
     const ctx = tempCanvasRef.current.getContext('2d');
-    const mainCtx = canvas.getContext();
+    // const mainCtx = canvas.getContext(); // 不再需要
 
     // 计算马赛克范围
     const left = Math.max(0, x - brushSize / 2);
@@ -55,26 +56,8 @@ export const useMosaicTool = (canvas, activeTool) => {
         const bw = Math.min(blockSize, right - bx);
         const bh = Math.min(blockSize, bottom - by);
 
-        // 获取块的平均颜色
-        const imageData = mainCtx.getImageData(bx, by, bw, bh);
-        const data = imageData.data;
-        let r = 0, g = 0, b = 0, a = 0;
-
-        for (let i = 0; i < data.length; i += 4) {
-          r += data[i];
-          g += data[i + 1];
-          b += data[i + 2];
-          a += data[i + 3];
-        }
-
-        const pixelCount = data.length / 4;
-        r = Math.round(r / pixelCount);
-        g = Math.round(g / pixelCount);
-        b = Math.round(b / pixelCount);
-        a = Math.round(a / pixelCount);
-
-        // 填充马赛克块
-        ctx.fillStyle = `rgba(${r},${g},${b},${a / 255})`;
+        // 使用自定义颜色填充马赛克块
+        ctx.fillStyle = mosaicOptions.color || '#ededed';
         ctx.fillRect(bx, by, bw, bh);
       }
     }
