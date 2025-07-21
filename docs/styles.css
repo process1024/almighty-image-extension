@@ -409,6 +409,48 @@ body {
     color: var(--text-secondary);
 }
 
+/* 产品截图放大灯箱样式 */
+.screenshot-lightbox {
+  position: fixed;
+  z-index: 9999;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(30,32,38,0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(.23,1.01,.32,1);
+}
+.screenshot-lightbox.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.screenshot-lightbox-content {
+  max-width: 90vw;
+  max-height: 80vh;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  border-radius: 12px;
+  background: #fff;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: lightboxIn 0.25s cubic-bezier(.23,1.01,.32,1);
+}
+.screenshot-lightbox-content img,
+.screenshot-lightbox-content video {
+  max-width: 90vw;
+  max-height: 80vh;
+  border-radius: 12px;
+  background: #fff;
+  display: block;
+}
+@keyframes lightboxIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 /* 技术栈 */
 .tech-stack {
     padding: 80px 0;
@@ -868,4 +910,33 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
+} 
+
+/* 按钮动效 */
+.btn {
+  transition: transform 0.15s cubic-bezier(.23,1.01,.32,1), box-shadow 0.2s;
+}
+.btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 16px rgba(59,130,246,0.12);
+}
+.btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 2px 8px rgba(59,130,246,0.15);
+}
+
+/* --- 功能卡片动画 --- */
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+.feature-card.animate {
+  animation: scaleIn 0.5s cubic-bezier(.23,1.01,.32,1) both;
+}
+.feature-card {
+  transition: transform 0.18s cubic-bezier(.23,1.01,.32,1), box-shadow 0.2s;
+}
+.feature-card:hover {
+  transform: scale(1.04);
+  box-shadow: 0 8px 32px rgba(59,130,246,0.10), 0 1.5px 6px rgba(0,0,0,0.06);
 } 

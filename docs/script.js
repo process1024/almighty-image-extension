@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initScrollAnimations();
     initSmoothScrolling();
     initMobileMenu();
+    initScreenshotZoom();
 });
 
 // 导航栏功能
@@ -194,6 +195,57 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// 产品截图放大预览
+function initScreenshotZoom() {
+  // 创建灯箱元素
+  const lightbox = document.createElement('div');
+  lightbox.className = 'screenshot-lightbox';
+  lightbox.innerHTML = '<div class="screenshot-lightbox-content"></div>';
+  document.body.appendChild(lightbox);
+  const content = lightbox.querySelector('.screenshot-lightbox-content');
+
+  function showLightbox(src, type, alt) {
+    content.innerHTML = '';
+    if (type === 'img') {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = alt || '';
+      content.appendChild(img);
+    } else if (type === 'video') {
+      const video = document.createElement('video');
+      video.src = src;
+      video.controls = true;
+      video.autoplay = true;
+      video.loop = true;
+      video.style.maxWidth = '90vw';
+      video.style.maxHeight = '80vh';
+      content.appendChild(video);
+    }
+    lightbox.classList.add('active');
+  }
+
+  // 关闭灯箱
+  function hideLightbox() {
+    lightbox.classList.remove('active');
+    content.innerHTML = '';
+  }
+  lightbox.addEventListener('click', hideLightbox);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') hideLightbox();
+  });
+
+  // 绑定点击事件
+  document.querySelectorAll('.screenshot-placeholder img, .screenshot-placeholder video').forEach(el => {
+    el.style.cursor = 'zoom-in';
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const src = el.getAttribute('src');
+      const alt = el.getAttribute('alt') || '';
+      showLightbox(src, el.tagName.toLowerCase(), alt);
+    });
+  });
+}
 
 // 页面性能优化
 function optimizePerformance() {
