@@ -912,17 +912,49 @@ body {
     }
 } 
 
-/* 按钮动效 */
+/* --- Hero 动效 --- */
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+  100% { transform: translateY(0); }
+}
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 32px 0 #7f9cf5, 0 0 0 0 #fff0; }
+  50% { box-shadow: 0 0 48px 8px #7f9cf5, 0 0 0 0 #fff0; }
+}
+
+.hero-title {
+  opacity: 0;
+  animation: fadeInUp 0.8s 0.1s both;
+}
+.subtitle {
+  opacity: 0;
+  animation: fadeInUp 0.8s 0.3s both;
+}
+.hero-description {
+  opacity: 0;
+  animation: fadeInUp 0.8s 0.5s both;
+}
+.hero-buttons {
+  opacity: 0;
+  animation: fadeInUp 0.8s 0.7s both;
+}
+
 .btn {
-  transition: transform 0.15s cubic-bezier(.23,1.01,.32,1), box-shadow 0.2s;
+  transition: box-shadow 0.3s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
 }
 .btn:hover {
-  transform: scale(1.06);
-  box-shadow: 0 4px 16px rgba(59,130,246,0.12);
+  box-shadow: 0 0 16px 4px #7f9cf5, 0 2px 8px #764ba2;
+  transform: translateY(-2px) scale(1.04);
 }
 .btn:active {
-  transform: scale(0.96);
-  box-shadow: 0 2px 8px rgba(59,130,246,0.15);
+  transform: scale(0.98);
 }
 
 /* --- 功能卡片动画 --- */
