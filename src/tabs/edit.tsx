@@ -2,13 +2,10 @@ import {
   // ArrowRightOutlined,
   BorderOutlined,
   EditOutlined,
-  // SelectOutlined,
-  // UndoOutlined,
-  // RedoOutlined,
 } from '@ant-design/icons';
 import { Space } from 'antd';
 import { fabric } from 'fabric';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import './styles/global.css';
 
@@ -227,7 +224,6 @@ const ImageEditor = () => {
 
     // 处理取消选择
     const handleSelectionCleared = () => {
-
       // 如果是用户主动操作导致的选择清除，不要恢复工具状态
       if (isUserAction) {
         return;

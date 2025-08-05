@@ -1,5 +1,3 @@
-import React from 'react';
-
 import './index.less';
 
 import { sendCurrentTabMessage } from '~services/message';
@@ -41,7 +39,9 @@ function Popup() {
 
   const handleFeedback = () => {
     // @ts-expect-error - Chrome extension API
-    chrome.tabs.create({ url: 'https://eip93iabdv.feishu.cn/wiki/ZEoxwTLw7ivucgkzetqcaCZsn2e?from=from_copylink' });
+    chrome.tabs.create({
+      url: 'https://eip93iabdv.feishu.cn/wiki/ZEoxwTLw7ivucgkzetqcaCZsn2e?from=from_copylink',
+    });
     window.close();
   };
 
@@ -58,7 +58,7 @@ function Popup() {
           <span>图片处理工具</span>
         </button>
       </div>
-      
+
       <div className="section">
         <div className="title">屏幕截图</div>
         <div className="capture-btn-wrap">
@@ -76,7 +76,7 @@ function Popup() {
           </button>
         </div>
       </div>
-      
+
       <div className="footer">
         <div className="footer-links">
           <button className="link-btn" onClick={handleOpenWebsite}>
