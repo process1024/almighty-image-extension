@@ -1,13 +1,14 @@
 // src/components/ImageEditor/components/MosaicTool/useMosaicTool.js
-import { useState, useEffect, useRef } from 'react';
 import { fabric } from 'fabric';
+import { useEffect, useRef, useState } from 'react';
+
 import { TOOL_TYPES } from '../../constants/tools';
 
 export const useMosaicTool = (canvas, activeTool) => {
   const [mosaicOptions, setMosaicOptions] = useState({
     blockSize: 10,
     brushSize: 20,
-    color: '#ededed' // 新增颜色字段，默认灰色
+    color: '#ededed', // 新增颜色字段，默认灰色
   });
 
   const isDrawingRef = useRef(false);
@@ -21,17 +22,17 @@ export const useMosaicTool = (canvas, activeTool) => {
     if (!canvas) return;
 
     tempCanvasRef.current = document.createElement('canvas');
-    
+
     // 设置临时画布尺寸与主画布相同
     tempCanvasRef.current.width = canvas.width;
     tempCanvasRef.current.height = canvas.height;
-    
+
     // 创建马赛克图层
     mosaicLayerRef.current = new fabric.Image(tempCanvasRef.current, {
       left: 0,
       top: 0,
       selectable: false,
-      evented: false
+      evented: false,
     });
   }, [canvas]);
 
@@ -76,7 +77,7 @@ export const useMosaicTool = (canvas, activeTool) => {
   useEffect(() => {
     if (!canvas) return;
 
-    const handleMouseDown = (e) => {
+    const handleMouseDown = e => {
       if (activeTool !== TOOL_TYPES.MOSAIC) return;
 
       isDrawingRef.current = true;
@@ -92,21 +93,21 @@ export const useMosaicTool = (canvas, activeTool) => {
       applyMosaic(pointer.x, pointer.y);
     };
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = e => {
       if (!isDrawingRef.current || activeTool !== TOOL_TYPES.MOSAIC) return;
 
       const pointer = canvas.getPointer(e.e);
-      
+
       // 在当前位置应用马赛克
       applyMosaic(pointer.x, pointer.y);
-      
+
       // 在两点之间插值应用马赛克，使效果更连续
       if (lastPosRef.current) {
         const dx = pointer.x - lastPosRef.current.x;
         const dy = pointer.y - lastPosRef.current.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         const steps = Math.max(1, Math.floor(dist / (mosaicOptions.brushSize / 4)));
-        
+
         for (let i = 1; i < steps; i++) {
           const x = lastPosRef.current.x + (dx * i) / steps;
           const y = lastPosRef.current.y + (dy * i) / steps;
@@ -129,7 +130,7 @@ export const useMosaicTool = (canvas, activeTool) => {
         obj.evented = false;
       });
       canvas.selection = false;
-      
+
       // 添加事件监听
       canvas.on('mouse:down', handleMouseDown);
       canvas.on('mouse:move', handleMouseMove);
@@ -143,7 +144,7 @@ export const useMosaicTool = (canvas, activeTool) => {
         }
       });
       canvas.selection = true;
-      
+
       // 移除事件监听
       canvas.off('mouse:down', handleMouseDown);
       canvas.off('mouse:move', handleMouseMove);
@@ -165,6 +166,8 @@ export const useMosaicTool = (canvas, activeTool) => {
 
   return {
     mosaicOptions,
-    setMosaicOptions
+    setMosaicOptions,
+    tempCanvasRef, // 新增导出
+    mosaicLayerRef, // 新增导出
   };
 };

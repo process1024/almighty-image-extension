@@ -1,14 +1,20 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
 import { fabric } from 'fabric';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { registerCustomFabricTypes } from '../utils/fabricCustomTypes';
 
 interface HistoryState {
   canvasState: string;
+  mosaicDataUrl?: string; // 新增，保存马赛克像素内容
   action: string;
   timestamp: number;
 }
 
-export const useHistory = (canvas: fabric.Canvas | null) => {
+export const useHistory = (
+  canvas: fabric.Canvas | null,
+  tempCanvasRef?: React.MutableRefObject<HTMLCanvasElement | null>,
+  mosaicLayerRef?: React.MutableRefObject<fabric.Image | null>,
+) => {
   const [history, setHistory] = useState<HistoryState[]>([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const isLoadingRef = useRef(false);
@@ -18,60 +24,73 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
   const isDrawingRef = useRef(false);
 
   // 保存历史记录状态
-  const saveState = useCallback((action: string = 'unknown') => {
-    if (!canvas || isLoadingRef.current || !isRecordingRef.current || isDrawingRef.current) return;
-    
-    try {
-      // 确保自定义类型已注册
-      registerCustomFabricTypes();
-      
-      const currentState = JSON.stringify(canvas.toJSON(['id', 'selectable', 'evented']));
-      
-      // 避免保存相同的状态
-      if (currentState === lastSavedStateRef.current) {
+  const saveState = useCallback(
+    (action: string = 'unknown') => {
+      if (!canvas || isLoadingRef.current || !isRecordingRef.current || isDrawingRef.current)
         return;
-      }
-      
-      lastSavedStateRef.current = currentState;
-      
-      const historyEntry: HistoryState = {
-        canvasState: currentState,
-        action,
-        timestamp: Date.now()
-      };
-      
-      setHistory(prev => {
-        // 移除当前索引之后的所有历史记录（处理分支情况）
-        const newHistory = prev.slice(0, currentIndex + 1);
-        newHistory.push(historyEntry);
-        
-        // 限制历史记录数量，保留最近50个操作
-        const maxHistorySize = 50;
-        if (newHistory.length > maxHistorySize) {
-          return newHistory.slice(-maxHistorySize);
+
+      try {
+        // 确保自定义类型已注册
+        registerCustomFabricTypes();
+
+        const currentState = JSON.stringify(canvas.toJSON(['id', 'selectable', 'evented']));
+
+        // 避免保存相同的状态
+        if (currentState === lastSavedStateRef.current) {
+          return;
         }
-        
-        return newHistory;
-      });
-      
-      setCurrentIndex(prev => prev + 1);
-      
-      console.log(`历史记录已保存: ${action}`);
-      
-    } catch (error) {
-      console.error('保存历史记录失败:', error);
-    }
-  }, [canvas, currentIndex]);
+
+        lastSavedStateRef.current = currentState;
+
+        // 新增：保存马赛克像素内容
+        let mosaicDataUrl = undefined;
+        if (tempCanvasRef && tempCanvasRef.current) {
+          try {
+            mosaicDataUrl = tempCanvasRef.current.toDataURL();
+          } catch (e) {
+            mosaicDataUrl = undefined;
+          }
+        }
+        const historyEntry: HistoryState = {
+          canvasState: currentState,
+          mosaicDataUrl, // 新增
+          action,
+          timestamp: Date.now(),
+        };
+
+        setHistory(prev => {
+          // 移除当前索引之后的所有历史记录（处理分支情况）
+          const newHistory = prev.slice(0, currentIndex + 1);
+          newHistory.push(historyEntry);
+
+          // 限制历史记录数量，保留最近50个操作
+          const maxHistorySize = 50;
+          if (newHistory.length > maxHistorySize) {
+            return newHistory.slice(-maxHistorySize);
+          }
+
+          return newHistory;
+        });
+
+        setCurrentIndex(prev => prev + 1);
+
+        console.log(`历史记录已保存: ${action}`);
+      } catch (error) {
+        console.error('保存历史记录失败:', error);
+      }
+    },
+    [canvas, currentIndex, tempCanvasRef],
+  );
 
   // 初始化时保存画布状态（只执行一次）
   useEffect(() => {
     if (canvas && !isInitializedRef.current) {
       // 确保自定义类型已注册
       registerCustomFabricTypes();
-      
+
       // 标记已初始化
       isInitializedRef.current = true;
-      
+
       // 延迟初始化，确保画布完全加载
       setTimeout(() => {
         if (canvas && !isLoadingRef.current) {
@@ -101,17 +120,17 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
     // 对象添加完成（绘制完成）
     const handleObjectAdded = (e: fabric.IEvent<Event>) => {
       if (isLoadingRef.current) return;
-      
+
       const obj = (e as fabric.IEvent<Event> & { target?: fabric.Object }).target;
       const actionMap: Record<string, string> = {
-        'rect': '创建矩形',
-        'ellipse': '创建椭圆', 
-        'textbox': '创建文本',
-        'path': '绘制路径',
-        'arrow': '创建箭头'
+        rect: '创建矩形',
+        ellipse: '创建椭圆',
+        textbox: '创建文本',
+        path: '绘制路径',
+        arrow: '创建箭头',
       };
       const action = actionMap[obj?.type || ''] || '添加对象';
-      
+
       // 如果正在绘制中，延迟保存直到绘制完成
       // 如果不在绘制中，立即保存（比如通过代码添加的对象）
       if (isDrawingRef.current) {
@@ -136,11 +155,11 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
       if (isLoadingRef.current) return;
       const obj = (e as fabric.IEvent<Event> & { target?: fabric.Object }).target;
       const actionMap: Record<string, string> = {
-        'rect': '删除矩形',
-        'ellipse': '删除椭圆',
-        'textbox': '删除文本', 
-        'path': '删除路径',
-        'arrow': '删除箭头'
+        rect: '删除矩形',
+        ellipse: '删除椭圆',
+        textbox: '删除文本',
+        path: '删除路径',
+        arrow: '删除箭头',
       };
       const action = actionMap[obj?.type || ''] || '删除对象';
       setTimeout(() => saveState(action), 10);
@@ -157,7 +176,7 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
     // 路径绘制完成
     const handlePathCreated = () => {
       if (isLoadingRef.current) return;
-      
+
       // 对于画笔工具，绘制完成后立即保存
       if (isDrawingRef.current) {
         const checkAndSave = () => {
@@ -198,15 +217,15 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
     try {
       isLoadingRef.current = true;
       isRecordingRef.current = false; // 停止记录，避免撤销操作被记录
-      
+
       // 确保自定义类型已注册
       registerCustomFabricTypes();
-      
+
       const newIndex = currentIndex - 1;
       const prevState = history[newIndex];
-      
+
       console.log(`撤销操作: ${history[currentIndex]?.action} → ${prevState.action}`);
-      
+
       // 使用Promise包装loadFromJSON以更好地处理错误
       const loadPromise = new Promise((resolve, reject) => {
         try {
@@ -215,18 +234,42 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
               canvas.renderAll();
               setCurrentIndex(newIndex);
               lastSavedStateRef.current = prevState.canvasState;
-              
+
               // 重新启用记录
               setTimeout(() => {
                 isLoadingRef.current = false;
                 isRecordingRef.current = true;
               }, 100);
-              
+
               // 触发自定义事件
-              canvas.fire('history:undo', { 
-                index: newIndex, 
-                action: prevState.action 
+              canvas.fire('history:undo', {
+                index: newIndex,
+                action: prevState.action,
               });
+
+              // 新增：恢复马赛克像素内容
+              if (tempCanvasRef && tempCanvasRef.current && prevState.mosaicDataUrl) {
+                const img = new window.Image();
+                img.onload = () => {
+                  const ctx = tempCanvasRef.current!.getContext('2d');
+                  ctx.clearRect(0, 0, tempCanvasRef.current!.width, tempCanvasRef.current!.height);
+                  ctx.drawImage(img, 0, 0);
+                  // 刷新 mosaicLayerRef
+                  if (mosaicLayerRef && mosaicLayerRef.current) {
+                    mosaicLayerRef.current.setElement(tempCanvasRef.current!);
+                    canvas.renderAll();
+                  }
+                };
+                img.src = prevState.mosaicDataUrl;
+              } else if (tempCanvasRef && tempCanvasRef.current) {
+                // 没有历史马赛克，清空
+                const ctx = tempCanvasRef.current.getContext('2d');
+                ctx.clearRect(0, 0, tempCanvasRef.current.width, tempCanvasRef.current.height);
+                if (mosaicLayerRef && mosaicLayerRef.current) {
+                  mosaicLayerRef.current.setElement(tempCanvasRef.current);
+                  canvas.renderAll();
+                }
+              }
               resolve(true);
             } catch (renderError) {
               reject(renderError);
@@ -237,35 +280,34 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
         }
       });
 
-      loadPromise.catch((error) => {
+      loadPromise.catch(error => {
         console.error('撤销操作失败 - 详细错误:', error);
         isLoadingRef.current = false;
         isRecordingRef.current = true;
         // 可以在这里添加用户友好的错误提示
       });
-
     } catch (error) {
       console.error('撤销操作失败:', error);
       isLoadingRef.current = false;
       isRecordingRef.current = true;
     }
-  }, [currentIndex, history, canvas]);
+  }, [currentIndex, history, canvas, tempCanvasRef, mosaicLayerRef]);
 
   const redo = useCallback(() => {
     if (currentIndex >= history.length - 1 || !canvas) return;
-    
+
     try {
       isLoadingRef.current = true;
       isRecordingRef.current = false; // 停止记录，避免重做操作被记录
-      
+
       // 确保自定义类型已注册
       registerCustomFabricTypes();
-      
+
       const newIndex = currentIndex + 1;
       const nextState = history[newIndex];
-      
+
       console.log(`重做操作: ${history[currentIndex]?.action} → ${nextState.action}`);
-      
+
       // 使用Promise包装loadFromJSON以更好地处理错误
       const loadPromise = new Promise((resolve, reject) => {
         try {
@@ -274,18 +316,40 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
               canvas.renderAll();
               setCurrentIndex(newIndex);
               lastSavedStateRef.current = nextState.canvasState;
-              
+
               // 重新启用记录
               setTimeout(() => {
                 isLoadingRef.current = false;
                 isRecordingRef.current = true;
               }, 100);
-              
+
               // 触发自定义事件
-              canvas.fire('history:redo', { 
-                index: newIndex, 
-                action: nextState.action 
+              canvas.fire('history:redo', {
+                index: newIndex,
+                action: nextState.action,
               });
+
+              // 新增：恢复马赛克像素内容
+              if (tempCanvasRef && tempCanvasRef.current && nextState.mosaicDataUrl) {
+                const img = new window.Image();
+                img.onload = () => {
+                  const ctx = tempCanvasRef.current!.getContext('2d');
+                  ctx.clearRect(0, 0, tempCanvasRef.current!.width, tempCanvasRef.current!.height);
+                  ctx.drawImage(img, 0, 0);
+                  if (mosaicLayerRef && mosaicLayerRef.current) {
+                    mosaicLayerRef.current.setElement(tempCanvasRef.current!);
+                    canvas.renderAll();
+                  }
+                };
+                img.src = nextState.mosaicDataUrl;
+              } else if (tempCanvasRef && tempCanvasRef.current) {
+                const ctx = tempCanvasRef.current.getContext('2d');
+                ctx.clearRect(0, 0, tempCanvasRef.current.width, tempCanvasRef.current.height);
+                if (mosaicLayerRef && mosaicLayerRef.current) {
+                  mosaicLayerRef.current.setElement(tempCanvasRef.current);
+                  canvas.renderAll();
+                }
+              }
               resolve(true);
             } catch (renderError) {
               reject(renderError);
@@ -296,31 +360,33 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
         }
       });
 
-      loadPromise.catch((error) => {
+      loadPromise.catch(error => {
         console.error('重做操作失败 - 详细错误:', error);
         isLoadingRef.current = false;
         isRecordingRef.current = true;
         // 可以在这里添加用户友好的错误提示
       });
-
     } catch (error) {
       console.error('重做操作失败:', error);
       isLoadingRef.current = false;
       isRecordingRef.current = true;
     }
-  }, [currentIndex, history, canvas]);
+  }, [currentIndex, history, canvas, tempCanvasRef, mosaicLayerRef]);
 
   // 手动保存状态（用于特殊操作）
-  const manualSave = useCallback((action: string) => {
-    saveState(action);
-  }, [saveState]);
+  const manualSave = useCallback(
+    (action: string) => {
+      saveState(action);
+    },
+    [saveState],
+  );
 
   // 清空历史记录
   const clearHistory = useCallback(() => {
     setHistory([]);
     setCurrentIndex(-1);
     lastSavedStateRef.current = '';
-    
+
     if (canvas) {
       saveState('重置');
     }
@@ -335,7 +401,7 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
       canRedo: currentIndex < history.length - 1,
       currentAction: history[currentIndex]?.action || '无',
       prevAction: history[currentIndex - 1]?.action || '无',
-      nextAction: history[currentIndex + 1]?.action || '无'
+      nextAction: history[currentIndex + 1]?.action || '无',
     };
   }, [history, currentIndex]);
 
@@ -349,6 +415,6 @@ export const useHistory = (canvas: fabric.Canvas | null) => {
     getHistoryInfo,
     historyLength: history.length,
     currentIndex,
-    isLoading: isLoadingRef.current
+    isLoading: isLoadingRef.current,
   };
 };

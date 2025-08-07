@@ -58,7 +58,10 @@ const ImageEditor = () => {
   const { textOptions, setTextOptions } = useTextTool(canvas, activeFunction);
   const { rectOptions, setRectOptions } = useRectTool(canvas, activeFunction);
   const { brushOptions, setBrushOptions } = useBrushTool(canvas, activeFunction);
-  const { mosaicOptions, setMosaicOptions } = useMosaicTool(canvas, activeFunction);
+  const { mosaicOptions, setMosaicOptions, tempCanvasRef, mosaicLayerRef } = useMosaicTool(
+    canvas,
+    activeFunction,
+  );
   const { ellipseOptions, setEllipseOptions } = useEllipseTool(canvas, activeFunction);
 
   // 控制面板显示逻辑 - 基于当前激活的工具类型
@@ -70,7 +73,7 @@ const ImageEditor = () => {
   const showArrowControls = activeFunction === TOOL_TYPES.ARROW;
 
   // 取消注释并修改历史钩子调用
-  const { undo, redo, canUndo, canRedo } = useHistory(canvas);
+  const { undo, redo, canUndo, canRedo } = useHistory(canvas, tempCanvasRef, mosaicLayerRef);
 
   // 启用对象修改事件监听 - 现在由useHistory自动处理
   // const handleObjectModified = useCallback(() => {
@@ -177,7 +180,7 @@ const ImageEditor = () => {
   const updateObjectProperties = (props: Record<string, unknown>) => {
     if (!selectedObject || !canvas) return;
 
-    Object.keys(props).forEach((key) => {
+    Object.keys(props).forEach(key => {
       (selectedObject as fabric.Object & { set: (key: string, value: unknown) => void }).set(
         key,
         props[key],
@@ -280,7 +283,7 @@ const ImageEditor = () => {
             <ToolButton
               active={activeFunction === TOOL_TYPES.TEXT}
               icon={<TextIcon />}
-              tooltip="文本"
+              tooltip='文本'
               onClick={() => handleToolClick(TOOL_TYPES.TEXT)}
             />
             {showTextControls && (
@@ -288,7 +291,7 @@ const ImageEditor = () => {
                 selectedObject={selectedObject?.type === 'textbox' ? selectedObject : null}
                 defaultTextOptions={textOptions}
                 onUpdateSelected={updateObjectProperties}
-                onUpdateDefaults={(props) => setTextOptions((prev) => ({ ...prev, ...props }))}
+                onUpdateDefaults={props => setTextOptions(prev => ({ ...prev, ...props }))}
               />
             )}
           </div>
@@ -297,7 +300,7 @@ const ImageEditor = () => {
             <ToolButton
               active={activeFunction === TOOL_TYPES.ARROW}
               icon={<LineArrowIcon />}
-              tooltip="箭头"
+              tooltip='箭头'
               onClick={() => handleToolClick(TOOL_TYPES.ARROW)}
             />
             {showArrowControls && (
@@ -305,7 +308,7 @@ const ImageEditor = () => {
                 defaultArrowOptions={arrowOptions}
                 selectedObject={selectedObject?.type === 'arrow' ? selectedObject : null}
                 onUpdateSelected={updateObjectProperties}
-                onUpdateDefaults={(props) => setArrowOptions((prev) => ({ ...prev, ...props }))}
+                onUpdateDefaults={props => setArrowOptions(prev => ({ ...prev, ...props }))}
               />
             )}
           </div>
@@ -314,13 +317,13 @@ const ImageEditor = () => {
             <ToolButton
               active={activeFunction === TOOL_TYPES.BRUSH}
               icon={<EditOutlined />}
-              tooltip="画笔"
+              tooltip='画笔'
               onClick={() => handleToolClick(TOOL_TYPES.BRUSH)}
             />
             {showBrushControls && (
               <BrushControls
                 defaultBrushOptions={brushOptions}
-                onUpdateDefaults={(props) => setBrushOptions((prev) => ({ ...prev, ...props }))}
+                onUpdateDefaults={props => setBrushOptions(prev => ({ ...prev, ...props }))}
               />
             )}
           </div>
@@ -329,7 +332,7 @@ const ImageEditor = () => {
             <ToolButton
               active={activeFunction === TOOL_TYPES.RECT}
               icon={<BorderOutlined />}
-              tooltip="矩形"
+              tooltip='矩形'
               onClick={() => handleToolClick(TOOL_TYPES.RECT)}
             />
             {showRectControls && (
@@ -337,7 +340,7 @@ const ImageEditor = () => {
                 selectedObject={selectedObject?.type === 'rect' ? selectedObject : null}
                 defaultRectOptions={rectOptions}
                 onUpdateSelected={updateObjectProperties}
-                onUpdateDefaults={(props) => setRectOptions((prev) => ({ ...prev, ...props }))}
+                onUpdateDefaults={props => setRectOptions(prev => ({ ...prev, ...props }))}
               />
             )}
           </div>
@@ -346,7 +349,7 @@ const ImageEditor = () => {
             <ToolButton
               active={activeFunction === TOOL_TYPES.ELLIPSE}
               icon={<EllipseIcon />}
-              tooltip="圆"
+              tooltip='圆'
               onClick={() => handleToolClick(TOOL_TYPES.ELLIPSE)}
             />
             {showEllipseControls && (
@@ -354,7 +357,7 @@ const ImageEditor = () => {
                 selectedObject={selectedObject?.type === 'ellipse' ? selectedObject : null}
                 defaultEllipseOptions={ellipseOptions}
                 onUpdateSelected={updateObjectProperties}
-                onUpdateDefaults={(props) => setEllipseOptions((prev) => ({ ...prev, ...props }))}
+                onUpdateDefaults={props => setEllipseOptions(prev => ({ ...prev, ...props }))}
               />
             )}
           </div>
@@ -363,13 +366,13 @@ const ImageEditor = () => {
             <ToolButton
               active={activeFunction === TOOL_TYPES.MOSAIC}
               icon={<MosaicIcon />}
-              tooltip="马赛克"
+              tooltip='马赛克'
               onClick={() => handleToolClick(TOOL_TYPES.MOSAIC)}
             />
             {showMosaicControls && (
               <MosaicControls
                 options={mosaicOptions}
-                onUpdate={(props) => setMosaicOptions((prev) => ({ ...prev, ...props }))}
+                onUpdate={props => setMosaicOptions(prev => ({ ...prev, ...props }))}
               />
             )}
           </div>
