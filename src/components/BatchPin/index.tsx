@@ -20,8 +20,8 @@ const BatchPin = (props: { onClose: () => void }) => {
   const contentRef = useRef();
   const masonryRef = useRef();
 
-  const { imageEles, filterImgs, setFilterImgs, toggleSelected, selectAll, loading } =
-    useBatchPin(config);
+  const { imageEles, filterImgs, setFilterImgs, toggleSelected, selectAll, loading }
+    = useBatchPin(config);
   const [wrapperWidth, setWrapperWidth] = useState(1120);
 
   const masonryLayout = useMemo(() => {
@@ -165,7 +165,7 @@ const BatchPin = (props: { onClose: () => void }) => {
               <div className="empty-text">没有符合要求的图片</div>
             </When>
             <When condition={filterImgs.length}>
-              <section className="batch-pin-content" style={{ width: masonryLayout.width + 'px' }}>
+              <section className="batch-pin-content" style={{ width: `${masonryLayout.width}px` }}>
                 <Masonry
                   ref={masonryRef}
                   brickId="src"
@@ -186,31 +186,31 @@ const BatchPin = (props: { onClose: () => void }) => {
                 if (e.clientY <= 64) {
                   return false;
                 }
-                
+
                 // 检查事件目标元素
                 const target = e.inputEvent?.target;
                 if (target) {
                   // 检查是否在下拉菜单内
-                  const isInDropdown = target.closest('.settings-dropdown-menu') || 
-                                     target.closest('.dropdown-menu') ||
-                                     target.closest('.format-dropdown-container') ||
-                                     target.closest('.settings-dropdown-container');
-                  
+                  const isInDropdown = target.closest('.settings-dropdown-menu')
+                                     || target.closest('.dropdown-menu')
+                                     || target.closest('.format-dropdown-container')
+                                     || target.closest('.settings-dropdown-container');
+
                   if (isInDropdown) {
                     return false;
                   }
-                  
+
                   // 检查是否在header交互元素内
-                  const isInHeaderControl = target.closest('.header-right-container') ||
-                                           target.closest('.dropdown-trigger') ||
-                                           target.closest('.settings-btn') ||
-                                           target.closest('.close-button');
-                  
+                  const isInHeaderControl = target.closest('.header-right-container')
+                                           || target.closest('.dropdown-trigger')
+                                           || target.closest('.settings-btn')
+                                           || target.closest('.close-button');
+
                   if (isInHeaderControl) {
                     return false;
                   }
                 }
-                
+
                 return true;
               }}
               dragCallback={dragCallback}

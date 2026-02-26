@@ -7,12 +7,12 @@ export const EllipseControls = ({
   selectedObject,
   defaultEllipseOptions,
   onUpdateSelected,
-  onUpdateDefaults
+  onUpdateDefaults,
 }) => {
   const [ellipseProps, setEllipseProps] = useState({
     stroke: '#000000',
     strokeWidth: 4,
-    fill: 'rgba(255, 255, 255, 0.3)'
+    fill: 'rgba(255, 255, 255, 0.3)',
   });
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export const EllipseControls = ({
       setEllipseProps({
         stroke: selectedObject.stroke,
         strokeWidth: selectedObject.strokeWidth,
-        fill: selectedObject.fill
+        fill: selectedObject.fill,
       });
     } else {
       setEllipseProps(defaultEllipseOptions);
@@ -30,7 +30,7 @@ export const EllipseControls = ({
   const handleUpdate = (property, value) => {
     const newProps = { [property]: value };
     setEllipseProps(prev => ({ ...prev, ...newProps }));
-    
+
     if (selectedObject) {
       onUpdateSelected(newProps);
     } else {

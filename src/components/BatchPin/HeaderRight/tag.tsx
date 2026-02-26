@@ -1,6 +1,6 @@
-import { Select } from "antd";
+import { Select } from 'antd';
 
-import useViewModel from "./viewModel";
+import useViewModel from './viewModel';
 
 /**
  *
@@ -30,12 +30,12 @@ export default function HBTagInput(props) {
     open,
     onFocus,
     onBlur,
-    selectProps = {}
+    selectProps = {},
   } = useViewModel(props);
 
   return (
     <Select
-      mode={"tags"}
+      mode={'tags'}
       // className={styles.editArea}
       bordered={false}
       placeholder={useLabel ? undefined : placeholder}

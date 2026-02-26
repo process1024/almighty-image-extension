@@ -19,19 +19,19 @@ function IndexContent() {
 
   useEffect(() => {
     const listenerEventMap = {
-      batchPin: function () {
+      batchPin() {
         setContentUiType('batchPin');
       },
-      showSelectCapture: function () {
+      showSelectCapture() {
         setContentUiType('capture');
       },
-      captureCurrent: function () {
+      captureCurrent() {
         // 添加setTimeout 是因为等待一下message的关闭，避免截图到message
         setTimeout(() => {
           captureService.captureCurrent();
         }, 300);
       },
-      captureFullPage: function () {
+      captureFullPage() {
         captureService.captureFullPage();
       },
     };

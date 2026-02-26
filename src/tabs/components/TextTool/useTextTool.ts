@@ -9,12 +9,12 @@ export const useTextTool = (canvas, activeFunction) => {
     fontSize: 20,
     fill: '#000000',
     fontFamily: 'Arial',
-    textAlign: 'left'
+    textAlign: 'left',
   });
 
   useEffect(() => {
     if (!canvas) return;
-    
+
     // 使用统一的自定义类型注册
     registerCustomFabricTypes();
 
@@ -68,13 +68,13 @@ export const useTextTool = (canvas, activeFunction) => {
 
       // 添加文本到画布
       canvas.add(text);
-      
+
       // 设置为活动对象
       canvas.setActiveObject(text);
-      
+
       // 强制渲染
       canvas.requestRenderAll();
-      
+
       // 延迟进入编辑模式
       // setTimeout(() => {
       //   text.enterEditing();
@@ -92,6 +92,6 @@ export const useTextTool = (canvas, activeFunction) => {
 
   return {
     textOptions,
-    setTextOptions
+    setTextOptions,
   };
 };

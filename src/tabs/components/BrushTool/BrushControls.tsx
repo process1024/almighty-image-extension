@@ -4,11 +4,11 @@ import { StyledControls } from '../../styles/toolControls';
 
 export const BrushControls = ({
   defaultBrushOptions,
-  onUpdateDefaults
+  onUpdateDefaults,
 }) => {
   const [brushProps, setBrushProps] = useState({
     color: '#000000',
-    width: 2
+    width: 2,
   });
 
   useEffect(() => {

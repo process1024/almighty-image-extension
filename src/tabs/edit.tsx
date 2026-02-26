@@ -127,9 +127,9 @@ const ImageEditor = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // 检测是否在文本输入状态
-      const isEditingText =
-        (selectedObject as EditableObject)?.isEditing ||
-        (e.target instanceof HTMLElement && e.target.tagName === 'INPUT');
+      const isEditingText
+        = (selectedObject as EditableObject)?.isEditing
+        || (e.target instanceof HTMLElement && e.target.tagName === 'INPUT');
 
       if (['Backspace', 'Delete'].includes(e.key) && canvas && selectedObject && !isEditingText) {
         canvas.remove(selectedObject);

@@ -7,7 +7,7 @@ export const useEllipseTool = (canvas, activeTool) => {
   const [ellipseOptions, setEllipseOptions] = useState({
     stroke: '#ff0000',
     strokeWidth: 4,
-    fill: 'transparent'
+    fill: 'transparent',
   });
 
   const isDrawingRef = useRef(false);
@@ -38,7 +38,7 @@ export const useEllipseTool = (canvas, activeTool) => {
         strokeWidth: ellipseOptions.strokeWidth,
         fill: ellipseOptions.fill,
         selectable: false,
-        evented: false
+        evented: false,
       });
 
       canvas.add(ellipseRef.current);
@@ -49,15 +49,15 @@ export const useEllipseTool = (canvas, activeTool) => {
       if (!isDrawingRef.current || !startPointRef.current || !ellipseRef.current) return;
 
       const pointer = canvas.getPointer(e.e);
-      let width = Math.abs(pointer.x - startPointRef.current.x);
-      let height = Math.abs(pointer.y - startPointRef.current.y);
+      const width = Math.abs(pointer.x - startPointRef.current.x);
+      const height = Math.abs(pointer.y - startPointRef.current.y);
 
       // 设置椭圆中心点和半径
       ellipseRef.current.set({
         left: Math.min(startPointRef.current.x, pointer.x),
         top: Math.min(startPointRef.current.y, pointer.y),
         rx: width / 2,
-        ry: height / 2
+        ry: height / 2,
       });
 
       canvas.renderAll();
@@ -72,7 +72,7 @@ export const useEllipseTool = (canvas, activeTool) => {
       if (ellipseRef.current) {
         ellipseRef.current.set({
           selectable: true,
-          evented: true
+          evented: true,
         });
         canvas.setActiveObject(ellipseRef.current);
         canvas.renderAll();
@@ -93,6 +93,6 @@ export const useEllipseTool = (canvas, activeTool) => {
 
   return {
     ellipseOptions,
-    setEllipseOptions
+    setEllipseOptions,
   };
 };

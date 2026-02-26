@@ -154,35 +154,35 @@ export async function copyImageFromBase64(base64Image: string) {
 
 export function batchDownloadImages(imageUrls, format = 'jpg') {
   imageUrls.forEach((url, index) => {
-      chrome.downloads.download({
-          url: url,
-          filename: `image_${index}.${format}`,
-          saveAs: false // 设置为false以避免弹出保存对话框
-      }, (downloadId) => {
-          if (chrome.runtime.lastError) {
-              console.error(`Error downloading image ${url}:`, chrome.runtime.lastError);
-          } else {
-              console.log(`Started downloading image_${index}.${format} with ID:`, downloadId);
-          }
-      });
+    chrome.downloads.download({
+      url,
+      filename: `image_${index}.${format}`,
+      saveAs: false, // 设置为false以避免弹出保存对话框
+    }, (downloadId) => {
+      if (chrome.runtime.lastError) {
+        console.error(`Error downloading image ${url}:`, chrome.runtime.lastError);
+      } else {
+        console.log(`Started downloading image_${index}.${format} with ID:`, downloadId);
+      }
+    });
   });
 }
 
 export function getBase64ImageDimensions(base64: string) {
   return new Promise<{width: number, height: number}>((resolve, reject) => {
-      const img = new Image();
-      img.src = base64;
+    const img = new Image();
+    img.src = base64;
 
-      img.onload = () => {
-          resolve({
-              width: img.width,
-              height: img.height
-          });
-      };
+    img.onload = () => {
+      resolve({
+        width: img.width,
+        height: img.height,
+      });
+    };
 
-      img.onerror = (error) => {
-          reject(error);
-      };
+    img.onerror = (error) => {
+      reject(error);
+    };
   });
 }
 
@@ -194,14 +194,14 @@ export function getBase64ImageDimensions(base64: string) {
  * @returns 实际显示尺寸
  */
 export function getActualDisplayDimensions(
-  width: number, 
-  height: number, 
-  devicePixelRatio?: number
+  width: number,
+  height: number,
+  devicePixelRatio?: number,
 ): { width: number; height: number } {
   const ratio = devicePixelRatio || window.devicePixelRatio || 1;
   return {
     width: width / ratio,
-    height: height / ratio
+    height: height / ratio,
   };
 }
 
@@ -211,11 +211,11 @@ export function getActualDisplayDimensions(
 export function debugImageDimensions(
   originalWidth: number,
   originalHeight: number,
-  devicePixelRatio?: number
+  devicePixelRatio?: number,
 ): void {
   const ratio = devicePixelRatio || window.devicePixelRatio || 1;
   const actual = getActualDisplayDimensions(originalWidth, originalHeight, ratio);
-  
+
   console.group('🖼️ Image Dimensions Debug');
   console.log('📏 Original size:', `${originalWidth} × ${originalHeight}`);
   console.log('📱 Device pixel ratio:', ratio);

@@ -1,9 +1,9 @@
 // import styles from './index.module.less';
-import classNames from "classnames";
-import { debounce } from "lodash-es";
-import React, { ReactNode, Ref, forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
+import classNames from 'classnames';
+import { debounce } from 'lodash-es';
+import React, { ReactNode, Ref, forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
-import "./index.less";
+import './index.less';
 
 interface MasonryProps {
   ref: Ref<HTMLElement>;
@@ -34,7 +34,7 @@ interface MasonryProps {
 // 瀑布流
 export default forwardRef(function Masonry(
   {
-    brickId = "id",
+    brickId = 'id',
     bricks = [],
     render,
     gutter = 24,
@@ -43,10 +43,10 @@ export default forwardRef(function Masonry(
     children,
     threshold,
     scrollElement,
-    className = "masonry",
-    masonryKey = "masonryKey"
+    className = 'masonry',
+    masonryKey = 'masonryKey',
   },
-  ref
+  ref,
 ) {
   useImperativeHandle(ref, () => ({
     // 获取所有图片的位置，用来做框选操作
@@ -54,9 +54,9 @@ export default forwardRef(function Masonry(
       return {
         containerOffsetTop: containerRef.current?.getBoundingClientRect()?.top,
         containerOffsetLeft: containerRef.current?.getBoundingClientRect()?.left,
-        computedBricks
+        computedBricks,
       };
-    }
+    },
   }));
   const containerRef = useRef(null);
   const computedBricks = useRef(new Map()); // 已经计算大小和位置的bricks
@@ -90,8 +90,8 @@ export default forwardRef(function Masonry(
 
   // 获取瀑布流容器位置
   useEffect(() => {
-    const realScrollElement =
-      typeof scrollElement === "string"
+    const realScrollElement
+      = typeof scrollElement === 'string'
         ? document.getElementById(scrollElement)
         : scrollElement || document.documentElement;
 
@@ -101,7 +101,7 @@ export default forwardRef(function Masonry(
       setContainerOffsetTop(containerRectTop + window.scrollY);
     } else {
       setContainerOffsetTop(
-        containerRectTop - realScrollElement.getBoundingClientRect().top + realScrollElement.scrollTop
+        containerRectTop - realScrollElement.getBoundingClientRect().top + realScrollElement.scrollTop,
       );
     }
   }, [scrollElement, masonryKey]);
@@ -114,7 +114,7 @@ export default forwardRef(function Masonry(
       if (child) {
         allBricks.current.unshift({
           mansonryInnerChildIndex: index,
-          [brickId]: `childId_${index}`
+          [brickId]: `childId_${index}`,
         });
       }
     });
@@ -133,7 +133,7 @@ export default forwardRef(function Masonry(
 
     const keys = {};
     let index = 0;
-    for (let [key] of computedBricks.current) {
+    for (const [key] of computedBricks.current) {
       let realKey = bricks[index] && bricks[index][brickId];
 
       // 循环跳过重复的brick
@@ -152,14 +152,14 @@ export default forwardRef(function Masonry(
 
         // 清除当前brick后的所有brick缓存
         let clearAfter = false;
-        for (let [remainKey, remainBrick] of computedBricks.current) {
+        for (const [remainKey, remainBrick] of computedBricks.current) {
           if (clearAfter || remainKey === key) {
             clearAfter = true;
 
             computedBricks.current.delete(remainKey);
             columnHeightArr.current[remainBrick.column] = Math.min(
               remainBrick.top,
-              columnHeightArr.current[remainBrick.column]
+              columnHeightArr.current[remainBrick.column],
             );
           }
         }
@@ -194,8 +194,8 @@ export default forwardRef(function Masonry(
 
     return (scrollTop) => {
       // 真实滚动元素
-      const realScrollElement =
-        typeof scrollElement === "string"
+      const realScrollElement
+        = typeof scrollElement === 'string'
           ? document.getElementById(scrollElement)
           : scrollElement || document.documentElement;
 
@@ -269,7 +269,7 @@ export default forwardRef(function Masonry(
       if (rect) {
         // 已经渲染过
         brick.style.transform = `translate(${rect.left}px, ${rect.top}px)`;
-        brick.classList.add("brick");
+        brick.classList.add('brick');
       } else {
         // 新的brick
         columnHeightArr.current.forEach((value, i) => {
@@ -285,13 +285,13 @@ export default forwardRef(function Masonry(
           top: minHeight,
           height: brick.clientHeight,
           buttom: minHeight + brick.clientHeight,
-          right: columNum * (columnSize + gutter) + clientWidth
+          right: columNum * (columnSize + gutter) + clientWidth,
         };
 
         if (rect.buttom > visibleRect.top && rect.top < visibleRect.bottom) {
           // 视口范围内
           brick.style.transform = `translate(${rect.left}px, ${rect.top}px)`;
-          brick.classList.add("brick");
+          brick.classList.add('brick');
         } else {
           // 视口外的移到不可见区域
           brick.style.transform = `translate(-99999px, ${rect.top}px)`;
@@ -310,13 +310,13 @@ export default forwardRef(function Masonry(
     //   })
     // });
 
-    container.style.height = Math.max(...columnHeightArr.current) + "px";
+    container.style.height = `${Math.max(...columnHeightArr.current)}px`;
   }, [renderBricks, columnSize, gutter, brickId]);
 
   // 滚动事件
   useEffect(() => {
     // 没有提供 scrollElement 的话，绑定window的滚动事件
-    let target = typeof scrollElement === "string" ? document.getElementById(scrollElement) : scrollElement || window;
+    const target = typeof scrollElement === 'string' ? document.getElementById(scrollElement) : scrollElement || window;
 
     const change = debounce(
       () => {
@@ -328,23 +328,23 @@ export default forwardRef(function Masonry(
         setScrollTop(target.scrollTop || target.scrollY || 0);
       },
       100,
-      { trailing: true, maxWait: 200, leading: false }
+      { trailing: true, maxWait: 200, leading: false },
     );
 
     // 初始化设置
     change();
 
     // 绑定滚动事件
-    target.addEventListener("scroll", change, { passive: true });
+    target.addEventListener('scroll', change, { passive: true });
 
     // 取消滚动事件
     return () => {
-      target.removeEventListener("scroll", change, { passive: true });
+      target.removeEventListener('scroll', change, { passive: true });
     };
   }, [scrollElement]);
 
   return (
-    <div className={classNames(["masonry", className])} ref={containerRef}>
+    <div className={classNames(['masonry', className])} ref={containerRef}>
       {/* {console.count("Masonry Render")} */}
       {renderBricks.map(renderChild)}
     </div>

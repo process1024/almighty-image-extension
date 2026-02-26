@@ -7,7 +7,7 @@ export const useRectTool = (canvas, activeTool) => {
   const [rectOptions, setRectOptions] = useState({
     stroke: '#ff0000',
     strokeWidth: 2,
-    fill: 'transparent'
+    fill: 'transparent',
   });
 
   const isDrawingRef = useRef(false);
@@ -25,7 +25,7 @@ export const useRectTool = (canvas, activeTool) => {
 
       // 获取鼠标相对于画布的坐标
       const pointer = canvas.getPointer(e.e);
-      
+
       isDrawingRef.current = true;
       startPointRef.current = pointer;
 
@@ -39,7 +39,7 @@ export const useRectTool = (canvas, activeTool) => {
         strokeWidth: rectOptions.strokeWidth,
         fill: rectOptions.fill,
         selectable: false,
-        evented: false
+        evented: false,
       });
 
       canvas.add(rectRef.current);
@@ -64,8 +64,8 @@ export const useRectTool = (canvas, activeTool) => {
       }
 
       rectRef.current.set({
-        width: width,
-        height: height
+        width,
+        height,
       });
 
       canvas.renderAll();
@@ -80,7 +80,7 @@ export const useRectTool = (canvas, activeTool) => {
       if (rectRef.current) {
         rectRef.current.set({
           selectable: true,
-          evented: true
+          evented: true,
         });
         canvas.setActiveObject(rectRef.current);
         canvas.renderAll();
@@ -103,6 +103,6 @@ export const useRectTool = (canvas, activeTool) => {
 
   return {
     rectOptions,
-    setRectOptions
+    setRectOptions,
   };
 };

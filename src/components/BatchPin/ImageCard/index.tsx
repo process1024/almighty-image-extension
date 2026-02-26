@@ -26,8 +26,8 @@ export const ImageCard = ({ image, checked, onChange, renderWidth, onload }: Ima
   //   height: 0
   // });
 
-  const renderHeight =
-    renderWidth && image.width + 10 >= renderWidth
+  const renderHeight
+    = renderWidth && image.width + 10 >= renderWidth
       ? (renderWidth / image.width) * image.height
       : image.height;
 
@@ -51,7 +51,7 @@ export const ImageCard = ({ image, checked, onChange, renderWidth, onload }: Ima
     <div onClick={() => onChange(!checked)} className="batch-image-card-wrapper">
       <div className={`batch-image-card ${checked ? 'batch-image-card-checked' : ''}`}>
         <img
-          className={`batch-image-card__img`}
+          className={'batch-image-card__img'}
           height={renderHeight}
           src={image.renderSrc}
           alt={image.alt}

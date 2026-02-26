@@ -44,8 +44,8 @@ function ElementInspector({ sharp, onClick }: { sharp: TElementPosition; onClick
         className="capture-element-inspector"
         onMouseUp={onClick}
         style={{
-          width: sharp.right - sharp.left + 'px',
-          height: sharp.bottom - sharp.top + 'px',
+          width: `${sharp.right - sharp.left}px`,
+          height: `${sharp.bottom - sharp.top}px`,
           left: sharp.left,
           top: sharp.top,
         }}></div>
@@ -181,13 +181,13 @@ const Capture = ({ onCancel }: { onCancel: () => void }) => {
     // 选择区域到页面底部 和 选择区域底部不在当前可视区域时
     // 12为间距大小
     if (
-      start.y + offset.y + resizeProps.size.height + btnSize.height + 12 >= scrollHeight ||
-      end.y + offset.y + btnSize.height + 12 > scrollTop + clientHeight
+      start.y + offset.y + resizeProps.size.height + btnSize.height + 12 >= scrollHeight
+      || end.y + offset.y + btnSize.height + 12 > scrollTop + clientHeight
     ) {
       pinBtnStyle = {
         position: 'fixed',
         bottom: '8px',
-        left: end.x + offset.x - btnSize.width - 8 + 'px',
+        left: `${end.x + offset.x - btnSize.width - 8}px`,
       };
     } else {
       pinBtnStyle = {
@@ -209,12 +209,12 @@ const Capture = ({ onCancel }: { onCancel: () => void }) => {
       const result = await captureSelect(position);
       console.log('result', result);
       console.log(chrome);
-      chrome.runtime.sendMessage({ type: "storage", data: {
+      chrome.runtime.sendMessage({ type: 'storage', data: {
         key: 'imageData',
-        data: result
-      }}, (response) => {
+        data: result,
+      } }, (response) => {
         console.log('response', response);
-        chrome.runtime.sendMessage({ type: "open", url: '/tabs/edit.html' });
+        chrome.runtime.sendMessage({ type: 'open', url: '/tabs/edit.html' });
       });
 
       // chrome.storage.local.set({ key: result }, function () {
@@ -245,7 +245,7 @@ const Capture = ({ onCancel }: { onCancel: () => void }) => {
           id="mask"
           className="capture-mask"
           style={{
-            height: scrollHeight + 'px',
+            height: `${scrollHeight}px`,
           }}
           onClick={(e) => e.preventDefault()}
           ref={maskRef}>

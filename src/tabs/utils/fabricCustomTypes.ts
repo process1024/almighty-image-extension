@@ -60,13 +60,13 @@ export const registerCustomFabricTypes = () => {
       },
       toObject() {
         return fabric.util.object.extend(this.callSuper('toObject'), {
-          type: 'arrow'
+          type: 'arrow',
         });
-      }
+      },
     });
 
     // 添加fromObject静态方法，这是关键！
-    ArrowClass.fromObject = function(object: ArrowObjectData, callback?: (obj: fabric.Object) => void) {
+    ArrowClass.fromObject = function (object: ArrowObjectData, callback?: (obj: fabric.Object) => void) {
       const points = [object.x1 || 0, object.y1 || 0, object.x2 || 0, object.y2 || 0];
       const arrow = new ArrowClass(points, object);
       if (callback) {
@@ -84,7 +84,7 @@ export const registerCustomFabricTypes = () => {
     const TextBoxClass = fabric.util.createClass(fabric.IText, {
       type: 'textbox',
       superType: 'drawing',
-      initialize: function(text: string, options: fabric.ITextboxOptions) {
+      initialize(text: string, options: fabric.ITextboxOptions) {
         options = options || {};
         this.callSuper('initialize', text, {
           ...options,
@@ -108,32 +108,32 @@ export const registerCustomFabricTypes = () => {
           lockScalingX: false,
           lockScalingY: false,
           minScaleLimit: 0.1,
-          maxScaleLimit: 10
+          maxScaleLimit: 10,
         });
       },
-      toObject: function() {
+      toObject() {
         return fabric.util.object.extend(this.callSuper('toObject'), {
           textAlign: this.textAlign,
           fontSize: this.fontSize,
           fontFamily: this.fontFamily,
           fill: this.fill,
-          type: 'textbox'
+          type: 'textbox',
         });
       },
-      onDblClick: function() {
+      onDblClick() {
         if (!this.editable) return;
-        
+
         if (!this.canvas) return;
         this.canvas.setActiveObject(this);
-        
+
         this.enterEditing();
         this.selectAll();
         this.canvas.requestRenderAll();
-      }
+      },
     });
 
     // 添加fromObject静态方法，这是关键！
-    TextBoxClass.fromObject = function(object: TextBoxObjectData, callback?: (obj: fabric.Object) => void) {
+    TextBoxClass.fromObject = function (object: TextBoxObjectData, callback?: (obj: fabric.Object) => void) {
       const textbox = new TextBoxClass(object.text || '', object);
       if (callback) {
         callback(textbox);
@@ -152,4 +152,4 @@ export const registerCustomFabricTypes = () => {
 // 重置注册状态（用于测试）
 export const resetCustomTypesRegistration = () => {
   customTypesRegistered = false;
-}; 
+};

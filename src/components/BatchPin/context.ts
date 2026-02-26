@@ -1,6 +1,6 @@
-import React, { createContext } from "react";
+import React, { createContext } from 'react';
 
-import { globalConfig } from "~services/config";
+import { globalConfig } from '~services/config';
 
 export interface ImageType {
   alt: string;
@@ -15,23 +15,23 @@ export interface ImageType {
 
 export const initialState = () => {
   return {
-    format: "all",
-    /**页面的所有图片 */
+    format: 'all',
+    /** 页面的所有图片 */
     allImg: [] as ImageType[],
-    /**筛选后的图片 */
+    /** 筛选后的图片 */
     filterImgs: [] as ImageType[],
-    /**已选中的图片 */
+    /** 已选中的图片 */
     selectedImgs: [] as ImageType[],
     minWidth: globalConfig.batchPin.minWidth,
     minHeight: globalConfig.batchPin.minHeight,
     tags: [],
-    boardId: "",
+    boardId: '',
     rangSize: {
       maxWith: globalConfig.batchPin.minWidth,
       maxHeight: globalConfig.batchPin.minHeight,
       minWidth: 1,
-      minHeight: 1
-    }
+      minHeight: 1,
+    },
   };
 };
 

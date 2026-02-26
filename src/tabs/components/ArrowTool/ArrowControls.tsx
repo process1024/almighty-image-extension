@@ -6,7 +6,7 @@ export const ArrowControls = ({
   defaultArrowOptions,
   selectedObject,
   onUpdateSelected,
-  onUpdateDefaults
+  onUpdateDefaults,
 }) => {
   const handleChange = (property, value) => {
     if (selectedObject) {
@@ -33,7 +33,7 @@ export const ArrowControls = ({
         <input
           type="number"
           min="1"
-          max="100"  // 扩大最大线宽范围
+          max="100" // 扩大最大线宽范围
           step="0.5" // 允许小数输入
           value={options.strokeWidth}
           onChange={(e) => handleChange('strokeWidth', parseFloat(e.target.value))}

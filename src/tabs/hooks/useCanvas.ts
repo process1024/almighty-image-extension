@@ -36,30 +36,30 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
       try {
         const { imageData } = await chrome.storage.local.get(['imageData']);
         const { width, height } = await getBase64ImageDimensions(imageData);
-        
+
         // 调试尺寸信息
         debugImageDimensions(width, height);
-        
+
         // 计算实际显示尺寸
         const { width: actualWidth, height: actualHeight } = getActualDisplayDimensions(width, height);
 
         console.log('actualWidth', actualWidth, 'actualHeight', actualHeight);
-        
+
         // 设置画布尺寸为实际显示尺寸
         canvas.setDimensions({ width: actualWidth, height: actualHeight });
-        
+
         // 计算背景图片的缩放比例
         const scaleX = actualWidth / width;
         const scaleY = actualHeight / height;
-        
+
         console.log('Background image scale:', { scaleX, scaleY });
-        
+
         // 设置背景图片，指定缩放参数让图片适应画布尺寸
         canvas.setBackgroundImage(imageData, canvas.renderAll.bind(canvas), {
-          scaleX: scaleX,
-          scaleY: scaleY,
+          scaleX,
+          scaleY,
           originX: 'left',
-          originY: 'top'
+          originY: 'top',
         });
       } catch (error) {
         console.error('Failed to load image:', error);
@@ -82,7 +82,7 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
     const handleSelection = (): void => {
       // console.log('Selection event:', e.type, e);
       const activeObjects = canvas.getActiveObjects();
-      
+
       if (activeObjects.length === 1) {
         const obj = activeObjects[0];
         setSelectedObject(obj);
@@ -112,6 +112,6 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
   return {
     canvas,
     selectedObject,
-    setSelectedObject
+    setSelectedObject,
   };
 };

@@ -70,7 +70,7 @@ const FormatDropdown = ({ formats, onChange }: FormatDropdownProps) => {
 
   return (
     <div className="format-dropdown-container" ref={dropdownRef}>
-      <div className="dropdown-trigger" 
+      <div className="dropdown-trigger"
         onMouseDown={(e) => {
           e.stopPropagation();
         }}
@@ -84,8 +84,8 @@ const FormatDropdown = ({ formats, onChange }: FormatDropdownProps) => {
         <DownOutlined className={`arrow-icon ${isOpen ? 'arrow-up' : ''}`} />
       </div>
       {isOpen && (
-        <div 
-          className="dropdown-menu" 
+        <div
+          className="dropdown-menu"
           onPointerDown={(e) => {
             e.stopPropagation();
             e.preventDefault();
@@ -126,12 +126,12 @@ const RangeSlider = ({ label, min, max, value, onChange }: RangeSliderProps) => 
   return (
     <div className="range-slider-container">
       <label className="range-label">{label}</label>
-      <div 
+      <div
         className="slider-wrapper"
         onPointerDown={(e) => {
           // 只对滑块thumb允许事件，阻止其他区域
-          const isSliderThumb = (e.target as HTMLElement)?.matches('input[type="range"]::-webkit-slider-thumb') ||
-                               (e.target as HTMLElement)?.tagName === 'INPUT';
+          const isSliderThumb = (e.target as HTMLElement)?.matches('input[type="range"]::-webkit-slider-thumb')
+                               || (e.target as HTMLElement)?.tagName === 'INPUT';
           if (!isSliderThumb) {
             e.stopPropagation();
           }
@@ -159,7 +159,7 @@ const RangeSlider = ({ label, min, max, value, onChange }: RangeSliderProps) => 
   );
 };
 
-const SettingsDropdown = ({ config, onChange }: { 
+const SettingsDropdown = ({ config, onChange }: {
   config: {
     rangSize: {
       minWidth: number;
@@ -169,8 +169,8 @@ const SettingsDropdown = ({ config, onChange }: {
     };
     minWidth: number;
     minHeight: number;
-  }; 
-  onChange: (key: string, value: string | number) => void; 
+  };
+  onChange: (key: string, value: string | number) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -189,7 +189,7 @@ const SettingsDropdown = ({ config, onChange }: {
 
   return (
     <div className="settings-dropdown-container" ref={dropdownRef}>
-      <button 
+      <button
         className={`settings-btn ${isOpen ? 'active' : ''}`}
         onMouseDown={(e) => {
           e.stopPropagation();
@@ -203,10 +203,10 @@ const SettingsDropdown = ({ config, onChange }: {
         <span>筛选设置</span>
         <DownOutlined className={`arrow-icon ${isOpen ? 'arrow-up' : ''}`} />
       </button>
-      
+
       {isOpen && (
-        <div 
-          className="settings-dropdown-menu" 
+        <div
+          className="settings-dropdown-menu"
           onPointerDown={(e) => {
             e.stopPropagation();
             e.preventDefault();
@@ -232,7 +232,7 @@ const SettingsDropdown = ({ config, onChange }: {
               <h4>图片尺寸筛选</h4>
               <p>设置图片的最小尺寸要求</p>
             </div>
-            
+
             <div className="settings-controls">
               <RangeSlider
                 label="最小宽度"
@@ -249,7 +249,7 @@ const SettingsDropdown = ({ config, onChange }: {
                 onChange={(value) => onChange('minHeight', value)}
               />
             </div>
-            
+
             <div className="settings-footer">
               <span className="hint-text">
                 只显示符合尺寸要求的图片
@@ -329,7 +329,7 @@ export default function Header({ onClose, all, selected, onSelectAll }: HeaderPr
           onSelectAll={onSelectAll}
           onClose={onClose}
         />
-        
+
         <button className="close-button" onClick={onClose}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path

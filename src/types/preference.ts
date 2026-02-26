@@ -1,8 +1,8 @@
 export type Preference = {
   pinButton: {
-    type: "primary" | "shallow" | "disable";
-    position: "leftTop" | "rightTop";
-    mode: "hover" | "alt";
+    type: 'primary' | 'shallow' | 'disable';
+    position: 'leftTop' | 'rightTop';
+    mode: 'hover' | 'alt';
   };
   /**
    * pinEnable：全局启用下是否启用或禁用
@@ -20,7 +20,7 @@ export type Preference = {
     }
   >;
   drag: {
-    mode: "direction" | "bottom" | "disable";
+    mode: 'direction' | 'bottom' | 'disable';
   };
   shortcut: {
     batchPin: string;

@@ -6,22 +6,22 @@ export function uniqArray(arr: any[]) {
 }
 
 // 管道组合函数，函数从左至右执行
-export const pipe =
-  (...fns) =>
-  (...args) => {
-    return fns.reduce((acc, fn) => {
-      if (Array.isArray(acc)) {
-        return fn(...acc);
-      } else {
-        return fn(acc);
-      }
-    }, args);
-  };
+export const pipe
+  = (...fns) =>
+    (...args) => {
+      return fns.reduce((acc, fn) => {
+        if (Array.isArray(acc)) {
+          return fn(...acc);
+        } else {
+          return fn(acc);
+        }
+      }, args);
+    };
 
 export function testURLMatches(url: string, matches: string[]) {
   let r, i;
   for (i = matches.length - 1; i >= 0; i--) {
-    r = new RegExp('^' + matches[i].replace(/\*/g, '.*') + '$');
+    r = new RegExp(`^${matches[i].replace(/\*/g, '.*')}$`);
     if (r.test(url)) {
       return true;
     }
@@ -64,7 +64,7 @@ export function parseJwt(e) {
       atob(t)
         .split('')
         .map(function (e) {
-          return '%' + ('00' + e.charCodeAt(0).toString(16)).slice(-2);
+          return `%${(`00${e.charCodeAt(0).toString(16)}`).slice(-2)}`;
         })
         .join(''),
     );

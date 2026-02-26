@@ -42,28 +42,27 @@ export default function HeaderRight(props: HeaderRightProps) {
 
   const handleDownload = useCallback(async () => {
     if (!config.selectedImgs.length) return;
-    
+
     setIsDownloading(true);
-    
+
     try {
       const batchData = config.selectedImgs.map((img) => img.src);
-      
+
       // 发送下载请求
       if (window.chrome?.runtime) {
-        window.chrome.runtime.sendMessage({ 
-          type: "download", 
-          urls: batchData 
+        window.chrome.runtime.sendMessage({
+          type: 'download',
+          urls: batchData,
         });
       }
 
       // 显示成功提示
       console.log(`开始下载 ${config.selectedImgs.length} 张图片`);
-      
+
       // 延迟关闭，给用户反馈时间
       setTimeout(() => {
         props.onClose && props.onClose();
       }, 1000);
-      
     } catch (error) {
       console.error('下载失败:', error);
     } finally {
@@ -81,7 +80,7 @@ export default function HeaderRight(props: HeaderRightProps) {
             已选择 <strong>{selected}</strong> / {all}
           </span>
         </div>
-        
+
         <button
           className={`select-all-btn ${checkAll ? 'checked' : ''} ${indeterminate ? 'indeterminate' : ''}`}
           onClick={() => handleSelectAll(!checkAll)}

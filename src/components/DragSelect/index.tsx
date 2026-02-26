@@ -49,8 +49,8 @@ export default memo(function DragSelect(props) {
     // 添加蒙层
     setShowMask(true);
     const selectPosition = { selectTop, selectBottom, selectLeft, selectRight };
-    const { computedBricks, containerOffsetLeft, containerOffsetTop } =
-      masonryRef.current.getBricksPosition();
+    const { computedBricks, containerOffsetLeft, containerOffsetTop }
+      = masonryRef.current.getBricksPosition();
     // 拿到瀑布流每个图片位置的数组，这个数组是基于列表容器的距离，所以需要进行计算
     computedBricks.current.forEach((value, key) => {
       const { top: targetTop, buttom: targetBottom, left: targetLeft, right: targetRight } = value;
@@ -71,10 +71,10 @@ export default memo(function DragSelect(props) {
     const { selectTop, selectBottom, selectLeft, selectRight } = selectPosition;
     const { targetTop, targetBottom, targetLeft, targetRight } = targetPosition;
     if (
-      selectTop > targetBottom ||
-      selectBottom < targetTop ||
-      selectLeft > targetRight ||
-      selectRight < targetLeft
+      selectTop > targetBottom
+      || selectBottom < targetTop
+      || selectLeft > targetRight
+      || selectRight < targetLeft
     ) {
       return false;
     } else {
@@ -98,7 +98,7 @@ export default memo(function DragSelect(props) {
         selectFromInside={true}
         preventDragFromInside
         scrollOptions={{
-          container: container,
+          container,
           getScrollPosition: () => [container.scrollLeft, container.scrollTop],
           throttleTime: 10,
           threshold: 10,
@@ -113,8 +113,8 @@ export default memo(function DragSelect(props) {
            * 2. 如果可以滚动，无法判断用户是否点击的是滚动条，所以当用户选择位置趋向滚动条时候，不触发框选方法
            */
           if (
-            (!isScrollable || container.clientWidth - e.inputEvent.clientX > scrollWidth) &&
-            dragCondition(e)
+            (!isScrollable || container.clientWidth - e.inputEvent.clientX > scrollWidth)
+            && dragCondition(e)
           ) {
             return true;
           } else {

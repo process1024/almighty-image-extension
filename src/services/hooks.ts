@@ -1,9 +1,9 @@
-import type { MutableRefObject } from "react";
-import { useEffect, useState } from "react";
+import type { MutableRefObject } from 'react';
+import { useEffect, useState } from 'react';
 
 const initialPosition = {
   start: { x: 0, y: 0 },
-  end: { x: 0, y: 0 }
+  end: { x: 0, y: 0 },
 };
 
 export function useMouseMove(target: Element | MutableRefObject<Element>) {
@@ -12,7 +12,7 @@ export function useMouseMove(target: Element | MutableRefObject<Element>) {
   const handleMouse = (e: MouseEvent) => {
     setAxis({
       x: e.clientX,
-      y: e.clientY
+      y: e.clientY,
     });
   };
 
@@ -24,22 +24,22 @@ export function useMouseMove(target: Element | MutableRefObject<Element>) {
   }
 
   useEffect(() => {
-    const el = "current" in target ? target.current : target;
+    const el = 'current' in target ? target.current : target;
 
-    el.addEventListener("mousemove", handleMouse);
-    el.addEventListener("mouseenter", handleEnter);
-    el.addEventListener("mouseout", handleOut);
+    el.addEventListener('mousemove', handleMouse);
+    el.addEventListener('mouseenter', handleEnter);
+    el.addEventListener('mouseout', handleOut);
 
     return () => {
-      el.removeEventListener("mousemove", handleMouse);
-      el.removeEventListener("mouseenter", handleEnter);
-      el.removeEventListener("mouseout", handleOut);
+      el.removeEventListener('mousemove', handleMouse);
+      el.removeEventListener('mouseenter', handleEnter);
+      el.removeEventListener('mouseout', handleOut);
     };
   }, []);
 
   return {
     axis,
-    moving
+    moving,
   };
 }
 
@@ -63,20 +63,20 @@ export function useMouseDrag(target: Element | MutableRefObject<Element>) {
       position.end.x = pageX;
       position.end.y = pageY;
       // setPosition({ ...position });
-      el.addEventListener("mousemove", mouseMoveEv);
+      el.addEventListener('mousemove', mouseMoveEv);
     };
 
     const onMouseUp = () => {
       setDragging(false);
-      el.removeEventListener("mousemove", mouseMoveEv);
+      el.removeEventListener('mousemove', mouseMoveEv);
     };
 
-    const el = "current" in target ? target.current : target;
-    el.addEventListener("mousedown", onMouseDown);
-    el.addEventListener("mouseup", onMouseUp);
+    const el = 'current' in target ? target.current : target;
+    el.addEventListener('mousedown', onMouseDown);
+    el.addEventListener('mouseup', onMouseUp);
     return () => {
-      el.removeEventListener("mousedown", onMouseDown);
-      el.removeEventListener("mouseup", onMouseUp);
+      el.removeEventListener('mousedown', onMouseDown);
+      el.removeEventListener('mouseup', onMouseUp);
       setPosition(initialPosition);
     };
   }, []);
@@ -91,7 +91,7 @@ export function useDelayState(initial: any) {
   function setStateDelay(value: any, time: number = 300) {
     const timer = setTimeout(() => {
       setState(value);
-      let timers = timerQueue.filter((t) => t !== timer);
+      const timers = timerQueue.filter((t) => t !== timer);
       setTimerQueue(timers);
     }, time);
     timerQueue.push(timer);
@@ -129,13 +129,13 @@ export function useKeyPressing(key: string, target: Element | MutableRefObject<E
   }
 
   useEffect(() => {
-    const el = "current" in target ? target.current : target;
-    el.addEventListener("keydown", onKeydown);
-    el.addEventListener("keyup", onKeyup);
+    const el = 'current' in target ? target.current : target;
+    el.addEventListener('keydown', onKeydown);
+    el.addEventListener('keyup', onKeyup);
 
     return () => {
-      el.removeEventListener("keydown", onKeydown);
-      el.removeEventListener("keyup", onKeyup);
+      el.removeEventListener('keydown', onKeydown);
+      el.removeEventListener('keyup', onKeyup);
     };
   }, []);
 

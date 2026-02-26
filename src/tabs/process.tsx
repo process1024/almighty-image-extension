@@ -92,7 +92,7 @@ const ImageProcessor = () => {
 
         // 清除画布
         ctx?.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         // 绘制图片
         ctx?.drawImage(img, 0, 0);
 
@@ -106,7 +106,7 @@ const ImageProcessor = () => {
             }
           },
           'image/jpeg',
-          quality / 100
+          quality / 100,
         );
       };
 
@@ -138,17 +138,17 @@ const ImageProcessor = () => {
       }, 100);
 
       const compressed = await compressImage(selectedFile, compressQuality);
-      
+
       clearInterval(progressInterval);
       setProgress(100);
-      
+
       setCompressedFile(compressed);
       setCompressedSize(compressed.size);
-      
-      console.log('压缩完成', { 
-        original: selectedFile.size, 
+
+      console.log('压缩完成', {
+        original: selectedFile.size,
         compressed: compressed.size,
-        ratio: ((1 - compressed.size / selectedFile.size) * 100).toFixed(1) + '%'
+        ratio: `${((1 - compressed.size / selectedFile.size) * 100).toFixed(1)}%`,
       });
     } catch (error) {
       console.error('压缩失败:', error);
@@ -178,12 +178,12 @@ const ImageProcessor = () => {
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
   };
 
   const getCompressionRatio = (): string => {
     if (originalSize === 0 || compressedSize === 0) return '0%';
-    return ((1 - compressedSize / originalSize) * 100).toFixed(1) + '%';
+    return `${((1 - compressedSize / originalSize) * 100).toFixed(1)}%`;
   };
 
   const convertImageFormat = (file: File, format: string): Promise<Blob> => {
@@ -207,32 +207,32 @@ const ImageProcessor = () => {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
           }
         }
-        
+
         // 绘制图片
         ctx?.drawImage(img, 0, 0);
 
         // 根据格式设置MIME类型
         let mimeType: string;
         let quality: number | undefined;
-        
+
         switch (format) {
-          case 'jpeg':
-            mimeType = 'image/jpeg';
-            quality = 0.9; // 高质量
-            break;
-          case 'png':
-            mimeType = 'image/png';
-            break;
-          case 'webp':
-            mimeType = 'image/webp';
-            quality = 0.9;
-            break;
-          case 'bmp':
-            // Canvas不直接支持BMP，使用PNG代替
-            mimeType = 'image/png';
-            break;
-          default:
-            mimeType = 'image/png';
+        case 'jpeg':
+          mimeType = 'image/jpeg';
+          quality = 0.9; // 高质量
+          break;
+        case 'png':
+          mimeType = 'image/png';
+          break;
+        case 'webp':
+          mimeType = 'image/webp';
+          quality = 0.9;
+          break;
+        case 'bmp':
+          // Canvas不直接支持BMP，使用PNG代替
+          mimeType = 'image/png';
+          break;
+        default:
+          mimeType = 'image/png';
         }
 
         // 转换为Blob
@@ -245,7 +245,7 @@ const ImageProcessor = () => {
             }
           },
           mimeType,
-          quality
+          quality,
         );
       };
 
@@ -264,12 +264,12 @@ const ImageProcessor = () => {
     const url = URL.createObjectURL(convertedFile);
     const link = document.createElement('a');
     link.href = url;
-    
+
     // 获取原文件名（不包含扩展名）
     const originalName = selectedFile.name.replace(/\.[^/.]+$/, '');
     const extension = outputFormat === 'jpeg' ? 'jpg' : outputFormat;
     link.download = `${originalName}.${extension}`;
-    
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -295,16 +295,16 @@ const ImageProcessor = () => {
       }, 100);
 
       const converted = await convertImageFormat(selectedFile, outputFormat);
-      
+
       clearInterval(progressInterval);
       setConvertProgress(100);
-      
+
       setConvertedFile(converted);
-      
-      console.log('格式转换完成', { 
+
+      console.log('格式转换完成', {
         originalFormat: selectedFile.type,
         newFormat: outputFormat,
-        size: converted.size
+        size: converted.size,
       });
     } catch (error) {
       console.error('格式转换失败:', error);
@@ -371,11 +371,11 @@ const ImageProcessor = () => {
 
           {/* 显示文件大小信息 */}
           {selectedFile && (
-            <div style={{ 
-              background: '#ffffff', 
-              padding: 16, 
+            <div style={{
+              background: '#ffffff',
+              padding: 16,
               borderRadius: 8,
-              border: '1px solid #f0f0f0'
+              border: '1px solid #f0f0f0',
             }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 16 }}>
                 <div style={{ textAlign: 'center' }}>
@@ -403,7 +403,7 @@ const ImageProcessor = () => {
               </div>
             </div>
           )}
-          
+
           <Space size="middle">
             <Button
               type="primary"
@@ -426,9 +426,9 @@ const ImageProcessor = () => {
           </Space>
 
           {processing && (
-            <Progress 
-              percent={progress} 
-              status="active" 
+            <Progress
+              percent={progress}
+              status="active"
               showInfo={true}
               format={percent => `${percent}%`}
             />
@@ -456,11 +456,11 @@ const ImageProcessor = () => {
 
           {/* 显示格式转换信息 */}
           {selectedFile && (
-            <div style={{ 
-              background: '#ffffff', 
-              padding: 16, 
+            <div style={{
+              background: '#ffffff',
+              padding: 16,
               borderRadius: 8,
-              border: '1px solid #f0f0f0'
+              border: '1px solid #f0f0f0',
             }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 16 }}>
                 <div style={{ textAlign: 'center' }}>
@@ -508,9 +508,9 @@ const ImageProcessor = () => {
           </Space>
 
           {converting && (
-            <Progress 
-              percent={convertProgress} 
-              status="active" 
+            <Progress
+              percent={convertProgress}
+              status="active"
               showInfo={true}
               format={percent => `${percent}%`}
             />
@@ -565,12 +565,12 @@ const ImageProcessor = () => {
         </div>
 
         {/* 技术特点 */}
-        <div style={{ 
-          marginTop: 24, 
-          padding: 16, 
-          background: '#fafafa', 
+        <div style={{
+          marginTop: 24,
+          padding: 16,
+          background: '#fafafa',
           borderRadius: 8,
-          textAlign: 'center'
+          textAlign: 'center',
         }}>
           <Space split={<span style={{ color: '#d9d9d9' }}>•</span>} size="large" wrap>
             <Text type="secondary" style={{ fontSize: 12 }}>本地处理</Text>
@@ -584,4 +584,4 @@ const ImageProcessor = () => {
   );
 };
 
-export default ImageProcessor; 
+export default ImageProcessor;

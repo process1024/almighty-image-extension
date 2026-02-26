@@ -1,8 +1,8 @@
-import { MutableRefObject, useEffect } from "react";
-import { useCallback, useMemo, useState } from "react";
-import { When } from "react-if";
+import { MutableRefObject, useEffect } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { When } from 'react-if';
 
-import "./index.less";
+import './index.less';
 
 interface Position {
   x: number;
@@ -23,8 +23,8 @@ interface IProps {
   children: React.FC;
 }
 
-type PosMap = "e" | "w" | "s" | "n" | "ne" | "nw" | "se" | "sw" | "move";
-type PageEvent = Pick<MouseEvent, "pageX" | "pageY">;
+type PosMap = 'e' | 'w' | 's' | 'n' | 'ne' | 'nw' | 'se' | 'sw' | 'move';
+type PageEvent = Pick<MouseEvent, 'pageX' | 'pageY'>;
 
 function calcOffset(endEvent: PageEvent, startEvent: PageEvent) {
   const x = endEvent.pageX - startEvent.pageX;
@@ -37,76 +37,76 @@ export function Resizer({ position, style = {}, size, container, onDragStop, chi
   const [offset, setOffset] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const [dragging, setDragging] = useState(false);
   const [dragOrigin, setDragOrigin] = useState({ pageX: 0, pageY: 0 });
-  const [dragType, setDragType] = useState<PosMap>("move");
+  const [dragType, setDragType] = useState<PosMap>('move');
 
   const resizeStyle: Partial<React.CSSProperties> = useMemo(() => {
     return {
       left: position.x + offset.x,
       top: position.y + offset.y,
       width: `${size.width + offset.width}px`,
-      height: `${size.height + offset.height}px`
+      height: `${size.height + offset.height}px`,
     };
   }, [position, size, offset]);
 
-  const points = ["e", "w", "s", "n", "ne", "nw", "se", "sw"];
+  const points = ['e', 'w', 's', 'n', 'ne', 'nw', 'se', 'sw'];
 
   const onResize = (e: MouseEvent) => {
     if (!dragging) return;
     const result = calcOffset(e, dragOrigin);
     switch (dragType) {
-      case "move":
-        offset.x = result.x;
-        offset.y = result.y;
-        break;
+    case 'move':
+      offset.x = result.x;
+      offset.y = result.y;
+      break;
 
-      case "e":
-        offset.width = result.x;
-        break;
+    case 'e':
+      offset.width = result.x;
+      break;
 
-      case "w":
-        offset.width = -result.x;
-        offset.x = result.x;
-        break;
+    case 'w':
+      offset.width = -result.x;
+      offset.x = result.x;
+      break;
 
-      case "s":
-        offset.height = result.y;
-        break;
+    case 's':
+      offset.height = result.y;
+      break;
 
-      case "n":
-        offset.height = -result.y;
-        offset.y = result.y;
-        break;
+    case 'n':
+      offset.height = -result.y;
+      offset.y = result.y;
+      break;
 
-      case "ne":
-        offset.y = result.y;
-        offset.width = result.x;
-        offset.height = -result.y;
-        break;
+    case 'ne':
+      offset.y = result.y;
+      offset.width = result.x;
+      offset.height = -result.y;
+      break;
 
-      case "nw":
-        offset.width = -result.x;
-        offset.height = -result.y;
-        offset.x = result.x;
-        offset.y = result.y;
-        break;
+    case 'nw':
+      offset.width = -result.x;
+      offset.height = -result.y;
+      offset.x = result.x;
+      offset.y = result.y;
+      break;
 
-      case "se":
-        offset.width = result.x;
-        offset.height = result.y;
-        break;
+    case 'se':
+      offset.width = result.x;
+      offset.height = result.y;
+      break;
 
-      case "sw":
-        offset.x = result.x;
-        offset.width = -result.x;
-        offset.height = result.y;
-        break;
+    case 'sw':
+      offset.x = result.x;
+      offset.width = -result.x;
+      offset.height = result.y;
+      break;
 
-      default:
-        break;
+    default:
+      break;
     }
 
     // 拖拽超出页面边界处理
-    if (dragType === "move") {
+    if (dragType === 'move') {
       if (position.x + offset.x <= 0) {
         offset.x = -position.x;
       } else if (position.x + offset.x + size.width >= document.body.clientWidth) {
@@ -136,7 +136,7 @@ export function Resizer({ position, style = {}, size, container, onDragStop, chi
       x: position.x + offset.x,
       y: position.y + offset.y,
       width: size.width + offset.width,
-      height: size.height + offset.height
+      height: size.height + offset.height,
     });
 
     offset.x = 0;
@@ -151,30 +151,30 @@ export function Resizer({ position, style = {}, size, container, onDragStop, chi
       setDragging(true);
       setDragOrigin({
         pageX: e.pageX,
-        pageY: e.pageY
+        pageY: e.pageY,
       });
       e.stopPropagation();
       setDragType(dir);
     },
 
-    [dragging, offset]
+    [dragging, offset],
   );
 
   useEffect(() => {
-    container.current.addEventListener("mousemove", onResize);
+    container.current.addEventListener('mousemove', onResize);
     return () => {
-      container.current?.removeEventListener("mousemove", onResize);
+      container.current?.removeEventListener('mousemove', onResize);
     };
   }, [dragging]);
 
   return (
     <div
       className="resizer"
-      onMouseDown={(e) => onDragMouseDown("move", e)}
+      onMouseDown={(e) => onDragMouseDown('move', e)}
       onMouseUp={onResizeMouseup}
       style={{ ...style, ...resizeStyle }}>
       <When condition={size.width > 0 || size.height > 0}>
-        <div className="capture-size" style={{ top: position.y + offset.y <= 40 ? "10px" : "-40px" }}>
+        <div className="capture-size" style={{ top: position.y + offset.y <= 40 ? '10px' : '-40px' }}>
           {size.width + offset.width}x{size.height + offset.height}
         </div>
         {points.map((item) => (
@@ -185,7 +185,7 @@ export function Resizer({ position, style = {}, size, container, onDragStop, chi
         ))}
       </When>
 
-      {children({ offset: offset })}
+      {children({ offset })}
     </div>
   );
 }

@@ -1,7 +1,7 @@
-import { sendMessageByPromise } from "~services/message";
-import { getBase64Size, isBase64 } from "~utils/base64";
-import { getClearFixFn } from "~utils/element";
-import { sleep } from "~utils/util";
+import { sendMessageByPromise } from '~services/message';
+import { getBase64Size, isBase64 } from '~utils/base64';
+import { getClearFixFn } from '~utils/element';
+import { sleep } from '~utils/util';
 
 const MAC_IMG_SIZE = 44444;
 // import { MAC_IMG_SIZE } from "./config";
@@ -10,7 +10,7 @@ const MAC_IMG_SIZE = 44444;
 export async function getTabCaptureImage() {
   // 拿到 base64 的图片
   const base64 = await sendMessageByPromise<string>({
-    type: "getCapture"
+    type: 'getCapture',
   });
 
   return base64;
@@ -27,20 +27,20 @@ export type ClipImage = {
 function getForbidScroll(el: HTMLElement) {
   function closeDefault(e) {
     if (e.preventDefault) {
-      e.preventDefault(); //取消事件的默认行为
-      e.stopPropagation(); //阻止冒泡
+      e.preventDefault(); // 取消事件的默认行为
+      e.stopPropagation(); // 阻止冒泡
     }
     return false;
   }
 
   function forbidScroll() {
-    el.addEventListener("wheel", closeDefault, { passive: false });
-    el.addEventListener("scroll", closeDefault, { passive: false });
+    el.addEventListener('wheel', closeDefault, { passive: false });
+    el.addEventListener('scroll', closeDefault, { passive: false });
   }
 
   function cancelForbidScroll() {
-    el.removeEventListener("wheel", closeDefault);
-    el.removeEventListener("scroll", closeDefault);
+    el.removeEventListener('wheel', closeDefault);
+    el.removeEventListener('scroll', closeDefault);
   }
 
   return [forbidScroll, cancelForbidScroll];
@@ -52,23 +52,23 @@ export function clipImage2Url(img: ClipImage) {
     const image = new Image();
     image.src = img.url;
     image.onload = function () {
-      const canvas = document.createElement("canvas");
+      const canvas = document.createElement('canvas');
       const dp = window.devicePixelRatio;
-      
+
       // 画布尺寸需要考虑设备像素比
       canvas.width = img.width * dp;
       canvas.height = img.height * dp;
-      
-      const context = canvas.getContext("2d");
-      
+
+      const context = canvas.getContext('2d');
+
       // 裁剪时源图像和目标画布都使用相同的DPR缩放
       context.drawImage(image, img.x * dp, img.y * dp, img.width * dp, img.height * dp, 0, 0, img.width * dp, img.height * dp);
-      
+
       console.log('clipImage2Url - DPR:', dp);
       console.log('clipImage2Url - Canvas size:', canvas.width, 'x', canvas.height);
       console.log('clipImage2Url - Logical size:', img.width, 'x', img.height);
-      
-      resolve(canvas.toDataURL("image/png", 1));
+
+      resolve(canvas.toDataURL('image/png', 1));
     };
   });
 }
@@ -98,8 +98,8 @@ export function pageScroll(p: Position) {
   // 视窗外
   const { start, end } = p;
   if (
-    document.documentElement.scrollTop > start.y ||
-    document.documentElement.scrollTop + document.documentElement.clientHeight < end.y
+    document.documentElement.scrollTop > start.y
+    || document.documentElement.scrollTop + document.documentElement.clientHeight < end.y
   ) {
     window.scrollTo(start.x, start.y);
     // console.log(start.x, start.y);
@@ -124,7 +124,7 @@ export async function captureImageByPosition(p: Position, clip = true) {
       width: end.x - start.x,
       height: end.y - start.y,
       x: start.x,
-      y: start.y - document.documentElement.scrollTop
+      y: start.y - document.documentElement.scrollTop,
     };
     const result = await clipImage2Url(clipParams);
     return result;
@@ -136,22 +136,22 @@ export async function captureImageByPosition(p: Position, clip = true) {
 export async function captureCurrent() {
   const result = await getTabCaptureImage();
   console.log(result, 'result');
-  
+
   // 获取视窗尺寸信息，用于后续画布设置
   const viewportWidth = document.documentElement.clientWidth;
   const viewportHeight = document.documentElement.clientHeight;
   const devicePixelRatio = window.devicePixelRatio || 1;
-  
+
   console.log('Viewport dimensions:', viewportWidth, viewportHeight);
   console.log('Device pixel ratio:', devicePixelRatio);
-  
+
   // @ts-expect-error - Chrome extension API
-  chrome.runtime.sendMessage({ type: "storage", data: {
+  chrome.runtime.sendMessage({ type: 'storage', data: {
     key: 'imageData',
-    data: result
-  }}, () => {
+    data: result,
+  } }, () => {
     // @ts-expect-error - Chrome extension API
-    chrome.runtime.sendMessage({ type: "open", url: '/tabs/edit.html' });
+    chrome.runtime.sendMessage({ type: 'open', url: '/tabs/edit.html' });
   });
   // return result;
 }
@@ -174,33 +174,32 @@ export async function captureFullPage() {
   const position = {
     start: {
       x: 0,
-      y: 0
+      y: 0,
     },
     end: {
       x: clientWidth,
-      y: scrollHeight
-    }
+      y: scrollHeight,
+    },
   };
   const captureSize = {
     width: clientWidth,
-    height: scrollHeight
+    height: scrollHeight,
   };
   const result = await capturePage(position, captureSize);
   const valid = validPin(result);
   if (!valid) return;
-  
+
   console.log('Full page capture completed');
   console.log('Full page dimensions:', clientWidth, scrollHeight);
-  
-  // @ts-expect-error - Chrome extension API
-  chrome.runtime.sendMessage({ type: "storage", data: {
-    key: 'imageData',
-    data: result
-  }}, () => {
-    // @ts-expect-error - Chrome extension API
-    chrome.runtime.sendMessage({ type: "open", url: '/tabs/edit.html' });
-  });
 
+  // @ts-expect-error - Chrome extension API
+  chrome.runtime.sendMessage({ type: 'storage', data: {
+    key: 'imageData',
+    data: result,
+  } }, () => {
+    // @ts-expect-error - Chrome extension API
+    chrome.runtime.sendMessage({ type: 'open', url: '/tabs/edit.html' });
+  });
 }
 
 export async function captureSelect(position: Position) {
@@ -209,25 +208,25 @@ export async function captureSelect(position: Position) {
   if (document.documentElement.clientHeight < captureHeight) {
     const captureSize = {
       height: captureHeight,
-      width: Math.abs(position.start.x - position.end.x)
+      width: Math.abs(position.start.x - position.end.x),
     };
 
     return capturePage(position, captureSize, {
       forceClearFix: true,
       // 选定区域截图时候不隐藏滚动条，隐藏的话在window场景下选定区域内容位移
-      hiddenScroll: false
+      hiddenScroll: false,
     });
   }
   // FIX: 不滚到顶部，兼容多数页面头部有固定栏遮盖的情况
   await pageScroll({
     start: {
       x: position.start.x,
-      y: position.start.y - 200
+      y: position.start.y - 200,
     },
     end: {
       x: position.end.x,
-      y: position.end.y - 200
-    }
+      y: position.end.y - 200,
+    },
   });
 
   const result = await captureImageByPosition(position);
@@ -237,18 +236,18 @@ export async function captureSelect(position: Position) {
 function keyDownEvent() {
   const res = {
     isEscape: false,
-    removeListener
+    removeListener,
   };
   function handleEscape(e: KeyboardEvent) {
-    if (e.key === "Escape") {
+    if (e.key === 'Escape') {
       res.isEscape = true;
     }
   }
 
-  window.addEventListener("keydown", handleEscape);
+  window.addEventListener('keydown', handleEscape);
 
   function removeListener() {
-    window.removeEventListener("keydown", handleEscape);
+    window.removeEventListener('keydown', handleEscape);
   }
 
   return res;
@@ -258,13 +257,13 @@ function keyDownEvent() {
 // NOTE: captureVisibleTab 限制，一秒最多调用2次
 async function capturePage(
   position: Position,
-  captureSize: Record<"width" | "height", number>,
+  captureSize: Record<'width' | 'height', number>,
   option = {
     // 是否强制清楚 fixed 元素
     forceClearFix: false,
     // 是否隐藏滚动条
-    hiddenScroll: true
-  }
+    hiddenScroll: true,
+  },
 ) {
   // 监听esc 事件，提前完成截图事件
   const escapeEvent = keyDownEvent();
@@ -286,15 +285,15 @@ async function capturePage(
       pagePosition.push({
         start: {
           x: position.start.x,
-          y: position.start.y + clientHeight * index
+          y: position.start.y + clientHeight * index,
         },
         end: {
           x: position.end.x,
           y:
             index + 1 === pageSize
               ? (height % clientHeight) + pagePosition[index - 1].end.y
-              : position.start.y + clientHeight * (index + 1)
-        }
+              : position.start.y + clientHeight * (index + 1),
+        },
       });
     }
   }
@@ -347,24 +346,24 @@ async function capturePage(
       0,
       document.documentElement.clientHeight * i,
       end.x - start.x,
-      end.y - start.y
+      end.y - start.y,
     ]);
   }
 
-  const canvas = document.createElement("canvas");
+  const canvas = document.createElement('canvas');
   const dp = window.devicePixelRatio;
-  
+
   // 最终画布尺寸需要考虑设备像素比
   canvas.width = captureSize.width * dp;
   const lastPageHeight = drawImageArr[drawImageArr.length - 1][4];
   canvas.height = ((drawImageArr.length - 1) * clientHeight + lastPageHeight) * dp;
-  
+
   console.log('capturePage - Final canvas size:', canvas.width, 'x', canvas.height);
   console.log('capturePage - DPR:', dp);
   console.log('capturePage - Logical size:', captureSize.width, 'x', (drawImageArr.length - 1) * clientHeight + lastPageHeight);
-  
-  const context = canvas.getContext("2d");
-  
+
+  const context = canvas.getContext('2d');
+
   // 绘制时需要调整每个片段的位置和尺寸以匹配DPR
   drawImageArr.forEach((draw) => {
     const [image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight] = draw;
@@ -372,11 +371,11 @@ async function capturePage(
     context.drawImage(image, sx * dp, sy * dp, sWidth * dp, sHeight * dp, dx * dp, dy * dp, dWidth * dp, dHeight * dp);
   });
 
-  return canvas.toDataURL("image/png", 1);
+  return canvas.toDataURL('image/png', 1);
 }
 
 export default {
   captureCurrent,
   captureFullPage,
-  captureSelect
+  captureSelect,
 };

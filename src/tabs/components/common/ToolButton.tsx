@@ -9,7 +9,7 @@ export const ToolButton = ({
   active,
   disabled = false,
   onClick,
-  tooltip = ''
+  tooltip = '',
 }) => {
   return (
     <Tooltip title={tooltip}>

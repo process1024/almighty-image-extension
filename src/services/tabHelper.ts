@@ -1,5 +1,5 @@
 export const isBackgroundScript = () => {
-  return typeof window === "undefined";
+  return typeof window === 'undefined';
 };
 
 const getActiveTab = (isBgScript?: boolean): Promise<chrome.tabs.Tab> =>
@@ -10,7 +10,7 @@ const getActiveTab = (isBgScript?: boolean): Promise<chrome.tabs.Tab> =>
           res(activeTab);
         });
       } else {
-        chrome.runtime.sendMessage({ type: "getActiveTab" }, (activeTab: chrome.tabs.Tab) => {
+        chrome.runtime.sendMessage({ type: 'getActiveTab' }, (activeTab: chrome.tabs.Tab) => {
           res(activeTab);
         });
       }

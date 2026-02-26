@@ -14,7 +14,7 @@ export const useArrowTool = (canvas: fabric.Canvas, activeTool: string) => {
   const startPointRef = useRef(null);
   useEffect(() => {
     if (!canvas) return;
-    
+
     // 使用统一的自定义类型注册
     registerCustomFabricTypes();
 
@@ -51,7 +51,7 @@ export const useArrowTool = (canvas: fabric.Canvas, activeTool: string) => {
       const pointer = canvas.getPointer(e.e); // 确保箭头在画布范围内
       const x2 = Math.min(Math.max(pointer.x, 0), canvas.width);
       const y2 = Math.min(Math.max(pointer.y, 0), canvas.height);
-      arrowRef.current.set({ x2: x2, y2: y2 });
+      arrowRef.current.set({ x2, y2 });
       // canvas.discardActiveObject();
       // canvas.requestRenderAll();
       canvas.renderAll();

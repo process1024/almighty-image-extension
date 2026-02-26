@@ -14,7 +14,7 @@ export function getElPosition(el) {
     top: Math.round(rect.top + window.scrollY),
     left: Math.round(rect.left + window.scrollX),
     bottom: Math.round(rect.bottom + window.scrollY),
-    right: Math.round(rect.right + window.scrollX)
+    right: Math.round(rect.right + window.scrollX),
   };
 }
 
@@ -28,54 +28,54 @@ interface FixElement extends HTMLElement {
  */
 export function getClearFixFn() {
   const allFixedEl = [] as FixElement[];
-  const fixedPosition = ["fixed", "sticky"];
-  const style = document.createElement("style");
-  style.type = "text/css";
+  const fixedPosition = ['fixed', 'sticky'];
+  const style = document.createElement('style');
+  style.type = 'text/css';
 
   // 移除固定定位的元素样式
   document.head.appendChild(style);
 
-  style.textContent = "";
+  style.textContent = '';
 
   // 隐藏滚动条
   function hiddenScroller() {
-    const hiddenScrollStyle =
-      "body::-webkit-scrollbar { display: none; } body { -ms-overflow-style: none; }  body,html, html *{scrollbar-color: transparent transparent !important;scrollbar-width: none !important;} ";
+    const hiddenScrollStyle
+      = 'body::-webkit-scrollbar { display: none; } body { -ms-overflow-style: none; }  body,html, html *{scrollbar-color: transparent transparent !important;scrollbar-width: none !important;} ';
     style.textContent += hiddenScrollStyle;
   }
 
-  const scrollBehavior = document.documentElement.style["scrollBehavior"];
+  const scrollBehavior = document.documentElement.style['scrollBehavior'];
   // 去除滚动动画
   function unSmoothContainer() {
-    document.documentElement.style["scrollBehavior"] = "auto";
+    document.documentElement.style['scrollBehavior'] = 'auto';
   }
 
   function hiddenFixed() {
     // console.time();
-    const allEle = document.querySelectorAll("*");
+    const allEle = document.querySelectorAll('*');
     const currentFixEl = [] as FixElement[];
     const square = window.innerHeight * window.innerWidth;
     allEle.forEach((el) => {
       const style = window.getComputedStyle(el);
-      const position = style.getPropertyValue("position");
+      const position = style.getPropertyValue('position');
       if (fixedPosition.includes(position) && !isElContainWindow(el)) {
-        if (style.position === "sticky") {
+        if (style.position === 'sticky') {
           // 以下条件判断参考 eagle
           if (
-            (el.clientHeight * el.clientWidth < 0.2 * square &&
-              +style.top.replace("px", "") > 10 &&
-              el.clientWidth < 0.8 * window.innerWidth &&
-              el.clientHeight < window.innerHeight) ||
-            (style.right === "0px" &&
-              style.top === "0px" &&
-              el.clientHeight === window.innerHeight &&
-              el.clientWidth < 0.3 * window.innerWidth) ||
-            ("0px" === style.bottom && "0px" !== style.top && el.clientHeight < window.innerHeight) ||
-            ("0px" === style.top && "100%" !== style.height && el.clientHeight < window.innerHeight) ||
-            (el.clientHeight < 100 &&
-              el.clientWidth < 100 &&
-              el.clientHeight * el.clientWidth < 5625 &&
-              el.clientHeight < window.innerHeight)
+            (el.clientHeight * el.clientWidth < 0.2 * square
+              && +style.top.replace('px', '') > 10
+              && el.clientWidth < 0.8 * window.innerWidth
+              && el.clientHeight < window.innerHeight)
+            || (style.right === '0px'
+              && style.top === '0px'
+              && el.clientHeight === window.innerHeight
+              && el.clientWidth < 0.3 * window.innerWidth)
+            || ('0px' === style.bottom && '0px' !== style.top && el.clientHeight < window.innerHeight)
+            || ('0px' === style.top && '100%' !== style.height && el.clientHeight < window.innerHeight)
+            || (el.clientHeight < 100
+              && el.clientWidth < 100
+              && el.clientHeight * el.clientWidth < 5625
+              && el.clientHeight < window.innerHeight)
           ) {
             if (!allFixedEl.includes(el)) {
               allFixedEl.push(el);
@@ -98,8 +98,8 @@ export function getClearFixFn() {
         e.originCssText = e.style.cssText;
         e.hasOrigin = true;
       }
-      e.style.cssText =
-        "visibility: hidden !important;overflow: hidden !important;opacity: 0 !important;transition: none 0s ease 0s";
+      e.style.cssText
+        = 'visibility: hidden !important;overflow: hidden !important;opacity: 0 !important;transition: none 0s ease 0s';
     });
     // console.timeEnd();
   }
@@ -119,20 +119,20 @@ export function getClearFixFn() {
       e.style.cssText = e.originCssText;
     });
     document.head.removeChild(style);
-    document.documentElement.style["scrollBehavior"] = scrollBehavior;
+    document.documentElement.style['scrollBehavior'] = scrollBehavior;
   }
 
   return {
     hiddenScroller,
     unSmoothContainer,
     hiddenFixed,
-    removeHidden
+    removeHidden,
   };
 }
 
 // 获取所有的子元素图片
 export function getChildImgs(e: HTMLElement): Array<HTMLImageElement> {
-  return Array.from(e.querySelectorAll("IMG"));
+  return Array.from(e.querySelectorAll('IMG'));
 }
 
 export function getHoverImgElement(e: MouseEvent) {
@@ -145,7 +145,7 @@ export function getHoverImgElement(e: MouseEvent) {
 }
 
 export function getVisibleImgElements() {
-  const imgs = Array.from(document.getElementsByTagName("img")).filter((ele) => isElementVisible(ele));
+  const imgs = Array.from(document.getElementsByTagName('img')).filter((ele) => isElementVisible(ele));
   return imgs;
 }
 
@@ -171,12 +171,12 @@ export function getMouseHoverElementPosition(axis: { x: number; y: number }) {
     const element = elements[index];
     const { width, height, opacity, display, visibility, pointerEvents } = getComputedStyle(element);
     if (
-      width !== "0" &&
-      height !== "0" &&
-      opacity !== "0" &&
-      display !== "none" &&
-      visibility !== "hidden" &&
-      pointerEvents !== "none"
+      width !== '0'
+      && height !== '0'
+      && opacity !== '0'
+      && display !== 'none'
+      && visibility !== 'hidden'
+      && pointerEvents !== 'none'
     ) {
       const elementInfo = isMouseInElement(element, axis);
       if (elementInfo) {

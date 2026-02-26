@@ -74,7 +74,7 @@ export function useBatchPin(config) {
           width: img.naturalWidth || img.width,
           height: img.naturalHeight || img.height,
           fileType: getImageType(url) || '',
-          img: img,
+          img,
         };
         return image;
       })
@@ -279,7 +279,7 @@ function getPageBackgroundImages(updateCb: Function) {
   const allEl = document.body.getElementsByTagName('*');
   const imgs = [] as ImageType[];
   const selectedText = (
-    '' + (window.getSelection ? window.getSelection() : document.getSelection())
+    `${window.getSelection ? window.getSelection() : document.getSelection()}`
   ).replace(/(^\s+|\s+$)/g, '');
   const length = allEl.length;
   for (let i = 1; i < length; i++) {
@@ -295,11 +295,11 @@ function getPageBackgroundImages(updateCb: Function) {
       const result = {
         fileType: getImageType(src),
         alt: selectedText || el.alt || el.title || document.title,
-        width: width,
-        height: height,
-        src: src,
+        width,
+        height,
+        src,
         renderSrc: src,
-        img: img,
+        img,
       };
 
       if (width === 0) {

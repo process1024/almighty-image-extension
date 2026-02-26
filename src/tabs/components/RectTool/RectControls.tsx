@@ -6,12 +6,12 @@ export const RectControls = ({
   selectedObject,
   defaultRectOptions,
   onUpdateSelected,
-  onUpdateDefaults
+  onUpdateDefaults,
 }) => {
   const [rectProps, setRectProps] = useState({
     stroke: '#000000',
     strokeWidth: 4,
-    fill: 'rgba(255, 255, 255, 0.3)'
+    fill: 'rgba(255, 255, 255, 0.3)',
   });
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export const RectControls = ({
       setRectProps({
         stroke: selectedObject.stroke || '#000000',
         strokeWidth: selectedObject.strokeWidth || 2,
-        fill: selectedObject.fill || 'rgba(255, 255, 255, 0.3)'
+        fill: selectedObject.fill || 'rgba(255, 255, 255, 0.3)',
       });
     } else {
       setRectProps(defaultRectOptions);
@@ -29,7 +29,7 @@ export const RectControls = ({
   const handleUpdate = (property, value) => {
     const newProps = { [property]: value };
     setRectProps(prev => ({ ...prev, ...newProps }));
-    
+
     if (selectedObject) {
       onUpdateSelected(newProps);
     } else {

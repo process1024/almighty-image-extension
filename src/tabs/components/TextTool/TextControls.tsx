@@ -2,17 +2,17 @@
 import React, { useEffect, useState } from 'react';
 import { StyledControls } from '../../styles/toolControls';
 
-export const TextControls = ({ 
-  selectedObject, 
-  defaultTextOptions, 
-  onUpdateSelected, 
-  onUpdateDefaults 
+export const TextControls = ({
+  selectedObject,
+  defaultTextOptions,
+  onUpdateSelected,
+  onUpdateDefaults,
 }) => {
   const [textProps, setTextProps] = useState({
     fontSize: 20,
     fill: '#000000',
     fontFamily: 'Arial',
-    textAlign: 'left'
+    textAlign: 'left',
   });
 
   // 当选中对象改变或默认选项改变时更新本地状态
@@ -23,7 +23,7 @@ export const TextControls = ({
         fontSize: selectedObject.fontSize || 20,
         fill: selectedObject.fill || '#000000',
         fontFamily: selectedObject.fontFamily || 'Arial',
-        textAlign: selectedObject.textAlign || 'left'
+        textAlign: selectedObject.textAlign || 'left',
       });
     } else {
       // 如果没有选中对象，使用默认属性
@@ -34,7 +34,7 @@ export const TextControls = ({
   const handleUpdate = (property, value) => {
     const newProps = { [property]: value };
     setTextProps(prev => ({ ...prev, ...newProps }));
-    
+
     if (selectedObject) {
       // 如果有选中对象，更新选中对象的属性
       onUpdateSelected(newProps);
