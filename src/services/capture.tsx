@@ -145,12 +145,10 @@ export async function captureCurrent() {
   console.log('Viewport dimensions:', viewportWidth, viewportHeight);
   console.log('Device pixel ratio:', devicePixelRatio);
 
-  // @ts-expect-error - Chrome extension API
   chrome.runtime.sendMessage({ type: 'storage', data: {
     key: 'imageData',
     data: result,
   } }, () => {
-    // @ts-expect-error - Chrome extension API
     chrome.runtime.sendMessage({ type: 'open', url: '/tabs/edit.html' });
   });
   // return result;
@@ -192,12 +190,10 @@ export async function captureFullPage() {
   console.log('Full page capture completed');
   console.log('Full page dimensions:', clientWidth, scrollHeight);
 
-  // @ts-expect-error - Chrome extension API
   chrome.runtime.sendMessage({ type: 'storage', data: {
     key: 'imageData',
     data: result,
   } }, () => {
-    // @ts-expect-error - Chrome extension API
     chrome.runtime.sendMessage({ type: 'open', url: '/tabs/edit.html' });
   });
 }

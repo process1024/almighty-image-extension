@@ -1,5 +1,9 @@
 import './index.less';
 
+import {
+  createTab,
+  getExtensionUrl,
+} from '~shared/chrome/messages';
 import { sendCurrentTabMessage } from '~services/message';
 
 function Popup() {
@@ -24,24 +28,17 @@ function Popup() {
   };
 
   const handleImageProcess = () => {
-    // @ts-expect-error - Chrome extension API
-    const url = chrome.runtime.getURL('tabs/process.html');
-    // @ts-expect-error - Chrome extension API
-    chrome.tabs.create({ url });
+    createTab(getExtensionUrl('tabs/process.html'));
     window.close();
   };
 
   const handleOpenWebsite = () => {
-    // @ts-expect-error - Chrome extension API
-    chrome.tabs.create({ url: 'https://process1024.github.io/almighty-image-extension/' });
+    createTab('https://process1024.github.io/almighty-image-extension/');
     window.close();
   };
 
   const handleFeedback = () => {
-    // @ts-expect-error - Chrome extension API
-    chrome.tabs.create({
-      url: 'https://eip93iabdv.feishu.cn/wiki/ZEoxwTLw7ivucgkzetqcaCZsn2e?from=from_copylink',
-    });
+    createTab('https://eip93iabdv.feishu.cn/wiki/ZEoxwTLw7ivucgkzetqcaCZsn2e?from=from_copylink');
     window.close();
   };
 

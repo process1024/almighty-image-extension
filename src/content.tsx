@@ -4,6 +4,7 @@ import { When } from 'react-if';
 
 import BatchPin from '~components/BatchPin';
 import Capture from '~components/Capture';
+import type { ContentMessage } from '~shared/chrome/messages';
 import captureService from '~services/capture';
 
 export const getShadowHostId = () => 'almighty-pin-shadow';
@@ -18,7 +19,7 @@ function IndexContent() {
   const [contentUiType, setContentUiType] = useState('');
 
   useEffect(() => {
-    const listenerEventMap = {
+    const listenerEventMap: Record<ContentMessage['type'], () => void> = {
       batchPin() {
         setContentUiType('batchPin');
       },
@@ -36,9 +37,9 @@ function IndexContent() {
       },
     };
 
-    const messageListener = (request) => {
+    const messageListener = (request: ContentMessage) => {
       console.log(request);
-      listenerEventMap[request.type] && listenerEventMap[request.type](request);
+      listenerEventMap[request.type]?.();
     };
 
     chrome.runtime.onMessage.addListener(messageListener);

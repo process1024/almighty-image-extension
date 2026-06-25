@@ -1,22 +1,15 @@
-// src/components/ImageEditor/hooks/useCanvas.js
-import { useEffect, useState } from 'react';
 import { fabric } from 'fabric';
-import { getBase64ImageDimensions, getActualDisplayDimensions, debugImageDimensions } from '~utils/image';
+import { useEffect, useState, type RefObject } from 'react';
 
-// 声明Chrome扩展API类型
-declare global {
-  const chrome: {
-    storage: {
-      local: {
-        get: (keys: string[]) => Promise<{ [key: string]: string }>;
-      };
-    };
-  };
-}
+import {
+  debugImageDimensions,
+  getActualDisplayDimensions,
+  getBase64ImageDimensions,
+} from '~utils/image';
 
 type FabricCanvas = fabric.Canvas;
 
-export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
+export const useCanvas = (canvasRef: RefObject<HTMLCanvasElement>) => {
   const [canvas, setCanvas] = useState<FabricCanvas | null>(null);
   const [selectedObject, setSelectedObject] = useState<fabric.Object | null>(null);
 
@@ -35,6 +28,10 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
     const loadImageData = async (canvas: FabricCanvas): Promise<void> => {
       try {
         const { imageData } = await chrome.storage.local.get(['imageData']);
+        if (!imageData) {
+          throw new Error('No image data found in extension storage');
+        }
+
         const { width, height } = await getBase64ImageDimensions(imageData);
 
         // 调试尺寸信息
@@ -85,7 +82,7 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
 
       if (activeObjects.length === 1) {
         const obj = activeObjects[0];
-        setSelectedObject(obj);
+        setSelectedObject(obj ?? null);
         // console.log('Object selected:', obj.type, obj);
       } else {
         setSelectedObject(null);

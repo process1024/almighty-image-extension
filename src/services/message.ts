@@ -1,22 +1,15 @@
-
-import tabHelper from '~services/tabHelper';
+import {
+  sendMessageToActiveTab,
+  sendRuntimeMessage,
+  type ContentMessage,
+  type RuntimeMessage,
+} from '~shared/chrome/messages';
 
 // chrome.runtime.sendMessage 转为 promise 用法
-export function sendMessageByPromise<T>(payload: any) {
-  return new Promise<T>((resolve, reject) => {
-    try {
-      chrome.runtime.sendMessage(payload, (data) => {
-        resolve(data);
-      });
-    } catch (error) {
-      reject(error);
-    }
-  });
+export function sendMessageByPromise<T>(payload: RuntimeMessage) {
+  return sendRuntimeMessage<T>(payload);
 }
 
-export async function sendCurrentTabMessage(payload: Record<string, any>) {
-  console.log(payload);
-  const tab = await tabHelper.getActiveTab(true);
-  console.log(tab, 'tab');
-  chrome.tabs.sendMessage(tab.id, payload);
+export async function sendCurrentTabMessage(payload: ContentMessage) {
+  return sendMessageToActiveTab(payload);
 }

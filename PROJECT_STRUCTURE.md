@@ -4,6 +4,15 @@
 
 本项目是一个基于 Plasmo 框架的浏览器扩展，采用 React + TypeScript 技术栈。经过优化后的目录结构更加清晰，职责分离明确，便于维护和扩展。
 
+## 当前状态
+
+本文档描述的是目标结构，不完全等同于当前源码目录。当前已先落地基础边界：
+
+- `src/shared/chrome/`：统一封装 Chrome runtime、tabs、extension URL 和消息类型。
+- `src/services/message.ts`、`src/services/tabHelper.ts`：保留为兼容出口，内部委托给 `src/shared/chrome/`。
+
+后续迁移建议按功能域渐进推进，例如 `features/capture`、`features/batchPin`、`features/editor`，避免一次性大规模移动文件导致回归风险。
+
 ## 目录结构
 
 ```
