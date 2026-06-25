@@ -74,5 +74,10 @@
       "downloads",
       "storage"
     ]
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp"
+    ]
   }
 }
