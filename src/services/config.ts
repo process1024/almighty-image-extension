@@ -41,16 +41,18 @@ export const globalConfig = {
 export function getBtnPositionOffset() {
   for (let index = 0; index < globalConfig.btnPositions.length; index++) {
     const positionRule = globalConfig.btnPositions[index];
-    let result: typeof globalConfig.btnPosition = null;
-    positionRule.rule.forEach((siteRule) => {
+    if (!positionRule) {
+      continue;
+    }
+
+    for (const siteRule of positionRule.rule) {
       if (siteRule.test(window.location.origin)) {
         const [x, y] = positionRule.btnPosition.split(',');
-        result = { x: +x, y: +y };
-        return;
+        return {
+          x: Number(x ?? globalConfig.btnPosition.x),
+          y: Number(y ?? globalConfig.btnPosition.y),
+        };
       }
-    });
-    if (result) {
-      return result;
     }
   }
   return globalConfig.btnPosition;
@@ -59,8 +61,10 @@ export function getBtnPositionOffset() {
 // 当前网站是否 要按照图片渲染大小排序
 export function isSortByRender() {
   for (let index = 0; index < globalConfig.sortImgByRenderSize.length; index++) {
-    if (globalConfig.sortImgByRenderSize[index].test(window.location.origin)) {
+    if (globalConfig.sortImgByRenderSize[index]?.test(window.location.origin)) {
       return true;
     }
   }
+
+  return false;
 }

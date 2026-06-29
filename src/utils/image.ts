@@ -54,12 +54,12 @@ export function getImageType(url: string) {
   let imgType = 'jpg';
   if (isBase64(url)) {
     // data/image,或者data/img
-    imgType = url.match('\\image/\\w+')
-      ? url.match('\\image/\\w+')[0].split('/')[1]
-      : url.match('\\img/\\w+')[0].split('/')[1];
+    const imageMatch = url.match('\\image/\\w+');
+    const imgMatch = url.match('\\img/\\w+');
+    imgType = imageMatch?.[0].split('/')[1] ?? imgMatch?.[0].split('/')[1] ?? imgType;
   } else {
-    const type = url.split('?')[0].split('.').pop();
-    if (ALL_IMAGE_TYPE.includes(type)) {
+    const type = url.split('?')[0]?.split('.').pop();
+    if (type && ALL_IMAGE_TYPE.includes(type)) {
       imgType = type;
     }
   }
@@ -78,12 +78,15 @@ export function getImageOriginUrl(
   img: HTMLImageElement | HTMLElement | Pick<HTMLImageElement, 'currentSrc' | 'src'>,
   { isAsync } = { isAsync: false },
 ): string | Promise<string> {
-  const src = img.currentSrc || img.getAttribute('src');
-  if (img.getAttribute('srcset') && img.currentSrc) {
+  const isElement = img instanceof Element;
+  const currentSrc = 'currentSrc' in img ? img.currentSrc : '';
+  const src = currentSrc || (isElement ? img.getAttribute('src') : img.src);
+
+  if (isElement && img.getAttribute('srcset') && currentSrc) {
     // 将srcset 值取出来并排序
     const t = /^-?\d+$/;
-    const srcset = img.getAttribute('srcset');
-    const handleSrcData = srcset.split(/,+/).map((curSrc) => {
+    const srcset = img.getAttribute('srcset') ?? '';
+    const handleSrcData = srcset.split(/,+/).map((curSrc: string) => {
       const srcData = {} as {
         url: string;
         width: number;
@@ -91,38 +94,45 @@ export function getImageOriginUrl(
       curSrc
         .trim()
         .split(/\s+/)
-        .forEach((e, o) => {
+        .forEach((e: string, o: number) => {
           if (o === 0) {
-            return (srcData.url = e);
+            srcData.url = e;
+            return;
           }
+
           const width = e.slice(0, -1);
           // 宽度单位
           const unitStr = e[e.length - 1];
           const unit = Number.parseInt(width, 10);
           // Number.parseFloat(n);
           if (unitStr === 'w' && t.test(width)) {
-            unit > 0 && (srcData.width = unit);
-          } else {
-            unitStr === 'x' && t.test(width) && unit > 0 && (srcData.width = unit);
+            if (unit > 0) {
+              srcData.width = unit;
+            }
+          } else if (unitStr === 'x' && t.test(width) && unit > 0) {
+            srcData.width = unit;
           }
         });
 
       return srcData;
     });
     const srcSort = handleSrcData
-      .filter((e, index) => JSON.stringify(e) !== JSON.stringify(handleSrcData[index - 1]))
-      .sort(function (a, b) {
+      .filter((e: { url: string; width: number }, index: number) => {
+        return JSON.stringify(e) !== JSON.stringify(handleSrcData[index - 1]);
+      })
+      .sort(function (a: { width: number }, b: { width: number }) {
         return a.width > b.width ? -1 : a.width < b.width ? 1 : 0;
       });
-    if (srcSort.length > 0 && srcSort[0].url && srcSort[0].width > 0) {
-      return handlePrefixUrl(srcSort[0].url);
+    const firstSrc = srcSort[0];
+    if (firstSrc?.url && firstSrc.width > 0) {
+      return handlePrefixUrl(firstSrc.url);
     }
-    return handlePrefixUrl(src);
+    return handlePrefixUrl(src ?? '');
   } else if (src) {
     return replaceCdnUrl(src, { isAsync });
-  } else if (getComputedStyle(img).getPropertyValue('background-image') !== 'none') {
+  } else if (isElement && getComputedStyle(img).getPropertyValue('background-image') !== 'none') {
     const backgroundImage = getComputedStyle(img).getPropertyValue('background-image');
-    return handlePrefixUrl(backgroundImage.replace(/.*url\(\"([^\)]+)\"\).*/gi, '$1'));
+    return handlePrefixUrl(backgroundImage.replace(/.*url\("([^"]+)"\).*/gi, '$1'));
   }
   return '';
 }
@@ -138,7 +148,7 @@ function handlePrefixUrl(url: string) {
 
 export async function copyImageFromBase64(base64Image: string) {
   // 将 base64 数据转换为 Blob
-  const byteCharacters = atob(base64Image.split(',')[1]);
+  const byteCharacters = atob(base64Image.split(',')[1] ?? '');
   const byteNumbers = new Array(byteCharacters.length);
   for (let i = 0; i < byteCharacters.length; i++) {
     byteNumbers[i] = byteCharacters.charCodeAt(i);
@@ -152,8 +162,8 @@ export async function copyImageFromBase64(base64Image: string) {
   console.log('Image copied to clipboard');
 }
 
-export function batchDownloadImages(imageUrls, format = 'jpg') {
-  imageUrls.forEach((url, index) => {
+export function batchDownloadImages(imageUrls: string[], format = 'jpg') {
+  imageUrls.forEach((url: string, index: number) => {
     chrome.downloads.download({
       url,
       filename: `image_${index}.${format}`,

@@ -1,9 +1,11 @@
-// src/components/ImageEditor/components/BrushTool/useBrushTool.js
-import { useState, useEffect } from 'react';
-import { TOOL_TYPES } from '../../constants/tools';
+import { fabric } from 'fabric';
+import { useEffect, useState } from 'react';
 
-export const useBrushTool = (canvas, activeTool) => {
-  const [brushOptions, setBrushOptions] = useState({
+import { TOOL_TYPES } from '../../constants/tools';
+import type { BrushOptions } from '../controlTypes';
+
+export const useBrushTool = (canvas: fabric.Canvas | null, activeTool: string) => {
+  const [brushOptions, setBrushOptions] = useState<BrushOptions>({
     color: '#ff0000',
     width: 8,
   });

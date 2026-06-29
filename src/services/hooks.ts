@@ -1,15 +1,34 @@
-import type { MutableRefObject } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type MutableRefObject } from 'react';
 
-const initialPosition = {
+type ElementTarget<T extends Element = Element> = T | MutableRefObject<T | null>;
+
+interface MousePosition {
+  x: number;
+  y: number;
+}
+
+interface DragPosition {
+  start: MousePosition;
+  end: MousePosition;
+}
+
+type DelayTimer = ReturnType<typeof setTimeout>;
+
+const createInitialPosition = (): DragPosition => ({
   start: { x: 0, y: 0 },
   end: { x: 0, y: 0 },
-};
+});
 
-export function useMouseMove(target: Element | MutableRefObject<Element>) {
+function getTargetElement<T extends Element>(target: ElementTarget<T>) {
+  return 'current' in target ? target.current : target;
+}
+
+export function useMouseMove(target: ElementTarget) {
   const [axis, setAxis] = useState({ x: 0, y: 0 });
   const [moving, setMoving] = useState(true);
-  const handleMouse = (e: MouseEvent) => {
+
+  const handleMouse: EventListener = (event) => {
+    const e = event as MouseEvent;
     setAxis({
       x: e.clientX,
       y: e.clientY,
@@ -24,7 +43,10 @@ export function useMouseMove(target: Element | MutableRefObject<Element>) {
   }
 
   useEffect(() => {
-    const el = 'current' in target ? target.current : target;
+    const el = getTargetElement(target);
+    if (!el) {
+      return undefined;
+    }
 
     el.addEventListener('mousemove', handleMouse);
     el.addEventListener('mouseenter', handleEnter);
@@ -35,7 +57,7 @@ export function useMouseMove(target: Element | MutableRefObject<Element>) {
       el.removeEventListener('mouseenter', handleEnter);
       el.removeEventListener('mouseout', handleOut);
     };
-  }, []);
+  }, [target]);
 
   return {
     axis,
@@ -43,26 +65,34 @@ export function useMouseMove(target: Element | MutableRefObject<Element>) {
   };
 }
 
-export function useMouseDrag(target: Element | MutableRefObject<Element>) {
-  const [position, setPosition] = useState(initialPosition);
+export function useMouseDrag(target: ElementTarget) {
+  const [position, setPosition] = useState(createInitialPosition);
   const [dragging, setDragging] = useState(false);
+
   useEffect(() => {
-    function mouseMoveEv(e) {
-      setDragging(true);
-      const { pageX, pageY } = e;
-      position.end.x = pageX;
-      position.end.y = pageY;
-      setPosition({ ...position });
+    const el = getTargetElement(target);
+    if (!el) {
+      return undefined;
     }
 
-    const onMouseDown = (e: MouseEvent) => {
-      // console.log(e, "useMouseDrag mouse down");
+    const mouseMoveEv: EventListener = (event) => {
+      const e = event as MouseEvent;
       const { pageX, pageY } = e;
-      position.start.x = pageX;
-      position.start.y = pageY;
-      position.end.x = pageX;
-      position.end.y = pageY;
-      // setPosition({ ...position });
+
+      setDragging(true);
+      setPosition((currentPosition) => ({
+        start: { ...currentPosition.start },
+        end: { x: pageX, y: pageY },
+      }));
+    };
+
+    const onMouseDown: EventListener = (event) => {
+      const e = event as MouseEvent;
+      const { pageX, pageY } = e;
+      setPosition({
+        start: { x: pageX, y: pageY },
+        end: { x: pageX, y: pageY },
+      });
       el.addEventListener('mousemove', mouseMoveEv);
     };
 
@@ -71,39 +101,36 @@ export function useMouseDrag(target: Element | MutableRefObject<Element>) {
       el.removeEventListener('mousemove', mouseMoveEv);
     };
 
-    const el = 'current' in target ? target.current : target;
     el.addEventListener('mousedown', onMouseDown);
     el.addEventListener('mouseup', onMouseUp);
+
     return () => {
       el.removeEventListener('mousedown', onMouseDown);
       el.removeEventListener('mouseup', onMouseUp);
-      setPosition(initialPosition);
+      setPosition(createInitialPosition());
     };
-  }, []);
+  }, [target]);
 
   return { position, dragging, setPosition };
 }
 
-export function useDelayState(initial: any) {
+export function useDelayState<T>(initial: T) {
   const [state, setState] = useState(initial);
-  const [timerQueue, setTimerQueue] = useState([]);
+  const timerQueueRef = useRef<DelayTimer[]>([]);
 
-  function setStateDelay(value: any, time: number = 300) {
+  function setStateDelay(value: T, time: number = 300) {
     const timer = setTimeout(() => {
       setState(value);
-      const timers = timerQueue.filter((t) => t !== timer);
-      setTimerQueue(timers);
+      timerQueueRef.current = timerQueueRef.current.filter((item) => item !== timer);
     }, time);
-    timerQueue.push(timer);
-    setTimerQueue(timerQueue);
+    timerQueueRef.current.push(timer);
   }
 
-  function setStateImmediately(value: any) {
-    timerQueue.forEach((timer) => {
+  function setStateImmediately(value: T) {
+    timerQueueRef.current.forEach((timer) => {
       clearTimeout(timer);
     });
-    timerQueue.length = 0;
-    setTimerQueue(timerQueue);
+    timerQueueRef.current = [];
     setState(value);
   }
 
@@ -113,23 +140,29 @@ export function useDelayState(initial: any) {
 /**
  * 监听按键是否正按着
  */
-export function useKeyPressing(key: string, target: Element | MutableRefObject<Element> = document.body) {
+export function useKeyPressing(key: string, target: ElementTarget = document.body) {
   const [pressing, setPressing] = useState(false);
 
-  function onKeydown(e) {
+  const onKeydown: EventListener = (event) => {
+    const e = event as KeyboardEvent;
     if (e.key === key) {
       setPressing(true);
     }
-  }
+  };
 
-  function onKeyup(e) {
+  const onKeyup: EventListener = (event) => {
+    const e = event as KeyboardEvent;
     if (e.key === key) {
       setPressing(false);
     }
-  }
+  };
 
   useEffect(() => {
-    const el = 'current' in target ? target.current : target;
+    const el = getTargetElement(target);
+    if (!el) {
+      return undefined;
+    }
+
     el.addEventListener('keydown', onKeydown);
     el.addEventListener('keyup', onKeyup);
 
@@ -137,7 +170,7 @@ export function useKeyPressing(key: string, target: Element | MutableRefObject<E
       el.removeEventListener('keydown', onKeydown);
       el.removeEventListener('keyup', onKeyup);
     };
-  }, []);
+  }, [key, target]);
 
   return [pressing];
 }

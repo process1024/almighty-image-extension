@@ -1,14 +1,25 @@
-// src/components/ImageEditor/components/TextTool/TextControls.jsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyledControls } from '../../styles/toolControls';
+import type {
+  ControlUpdater,
+  EditableFabricObject,
+  TextOptions,
+} from '../controlTypes';
+
+interface TextControlsProps {
+  selectedObject: EditableFabricObject | null;
+  defaultTextOptions: TextOptions;
+  onUpdateSelected: ControlUpdater<TextOptions>;
+  onUpdateDefaults: ControlUpdater<TextOptions>;
+}
 
 export const TextControls = ({
   selectedObject,
   defaultTextOptions,
   onUpdateSelected,
   onUpdateDefaults,
-}) => {
-  const [textProps, setTextProps] = useState({
+}: TextControlsProps) => {
+  const [textProps, setTextProps] = useState<TextOptions>({
     fontSize: 20,
     fill: '#000000',
     fontFamily: 'Arial',
@@ -21,7 +32,7 @@ export const TextControls = ({
       // 如果有选中对象，使用选中对象的属性
       setTextProps({
         fontSize: selectedObject.fontSize || 20,
-        fill: selectedObject.fill || '#000000',
+        fill: typeof selectedObject.fill === 'string' ? selectedObject.fill : '#000000',
         fontFamily: selectedObject.fontFamily || 'Arial',
         textAlign: selectedObject.textAlign || 'left',
       });
@@ -31,7 +42,7 @@ export const TextControls = ({
     }
   }, [selectedObject, defaultTextOptions]);
 
-  const handleUpdate = (property, value) => {
+  const handleUpdate = <K extends keyof TextOptions>(property: K, value: TextOptions[K]) => {
     const newProps = { [property]: value };
     setTextProps(prev => ({ ...prev, ...newProps }));
 

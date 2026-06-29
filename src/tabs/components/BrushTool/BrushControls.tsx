@@ -1,12 +1,17 @@
-// src/components/ImageEditor/components/BrushTool/BrushControls.jsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyledControls } from '../../styles/toolControls';
+import type { BrushOptions, ControlUpdater } from '../controlTypes';
+
+interface BrushControlsProps {
+  defaultBrushOptions: BrushOptions;
+  onUpdateDefaults: ControlUpdater<BrushOptions>;
+}
 
 export const BrushControls = ({
   defaultBrushOptions,
   onUpdateDefaults,
-}) => {
-  const [brushProps, setBrushProps] = useState({
+}: BrushControlsProps) => {
+  const [brushProps, setBrushProps] = useState<BrushOptions>({
     color: '#000000',
     width: 2,
   });
@@ -15,7 +20,7 @@ export const BrushControls = ({
     setBrushProps(defaultBrushOptions);
   }, [defaultBrushOptions]);
 
-  const handleUpdate = (property, value) => {
+  const handleUpdate = <K extends keyof BrushOptions>(property: K, value: BrushOptions[K]) => {
     const newProps = { [property]: value };
     setBrushProps(prev => ({ ...prev, ...newProps }));
     onUpdateDefaults(newProps);

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import './index.less';
 
 import { useKeyPress } from 'ahooks';
@@ -9,16 +7,16 @@ import { When } from 'react-if';
 import DragSelect from '~components/DragSelect';
 import Loading from '~components/Loading';
 
-import Masonry from '../Masonry';
+import Masonry, { type MasonryHandle } from '../Masonry';
 import { AppContext, initialState } from './context';
 import Header from './Header';
-import { CHECKTYPE, useBatchPin } from './hook/batch';
+import { CHECKTYPE, type ISelectedImg, useBatchPin } from './hook/batch';
 import ImageCard from './ImageCard';
 
 const BatchPin = (props: { onClose: () => void }) => {
   const [config, setConfig] = useState(initialState());
-  const contentRef = useRef();
-  const masonryRef = useRef();
+  const contentRef = useRef<HTMLElement | null>(null);
+  const masonryRef = useRef<MasonryHandle>(null);
 
   const { imageEles, filterImgs, setFilterImgs, toggleSelected, selectAll, loading }
     = useBatchPin(config);
@@ -57,7 +55,7 @@ const BatchPin = (props: { onClose: () => void }) => {
 
   useEffect(() => {
     config.selectedImgs = filterImgs.filter((item) =>
-      [CHECKTYPE.CHECK, CHECKTYPE.TEMPORARYCHECKED].includes(item.checked),
+      item.checked === CHECKTYPE.CHECK || item.checked === CHECKTYPE.TEMPORARYCHECKED,
     );
     setConfig({ ...config });
   }, [filterImgs]);
@@ -79,11 +77,11 @@ const BatchPin = (props: { onClose: () => void }) => {
     // setConfig({ ...config });
   }
 
-  function render(image) {
+  function render(image: ISelectedImg) {
     return (
       <ImageCard
         key={image.src}
-        checked={[CHECKTYPE.CHECK, CHECKTYPE.TEMPORARYCHECKED].includes(image.checked)}
+        checked={image.checked === CHECKTYPE.CHECK || image.checked === CHECKTYPE.TEMPORARYCHECKED}
         onChange={(e: boolean) => toggleSelected(e, image)}
         renderWidth={240}
         image={image}
@@ -96,7 +94,7 @@ const BatchPin = (props: { onClose: () => void }) => {
     return filterImgs.filter((img) => img.checked === CHECKTYPE.CHECK).length;
   }, [filterImgs]);
 
-  const dragCallback = (chooseMap, shiftKey) => {
+  const dragCallback = (chooseMap: Record<string, boolean>, shiftKey: boolean) => {
     setFilterImgs(
       filterImgs.map((img) => {
         const isInside = !!chooseMap[img.src];
@@ -169,18 +167,18 @@ const BatchPin = (props: { onClose: () => void }) => {
                 <Masonry
                   ref={masonryRef}
                   brickId="src"
-                  bricks={filterImgs}
+                  bricks={filterImgs as unknown as Record<string, unknown>[]}
                   columnNum={masonryLayout.number}
-                  scrollElement={contentRef.current}
+                  scrollElement={contentRef.current ?? undefined}
                   threshold={300}
-                  render={render}></Masonry>
+                  render={(image) => render(image as unknown as ISelectedImg)}></Masonry>
               </section>
             </When>
             <DragSelect
               masonryRef={masonryRef}
               container={document
                 .querySelector('#almighty-pin-shadow')
-                .shadowRoot.querySelector('#batch-pin-main')}
+                ?.shadowRoot?.querySelector<HTMLElement>('#batch-pin-main') ?? undefined}
               dragCondition={(e) => {
                 // 基本条件：距离顶部64px以下才允许拖拽
                 if (e.clientY <= 64) {
@@ -188,7 +186,9 @@ const BatchPin = (props: { onClose: () => void }) => {
                 }
 
                 // 检查事件目标元素
-                const target = e.inputEvent?.target;
+                const target = e.inputEvent?.target instanceof Element
+                  ? e.inputEvent.target
+                  : null;
                 if (target) {
                   // 检查是否在下拉菜单内
                   const isInDropdown = target.closest('.settings-dropdown-menu')

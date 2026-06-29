@@ -11,6 +11,8 @@ export interface ImageType {
   width: number;
   height: number;
   fileType: string;
+  img?: HTMLImageElement;
+  loaded?: boolean;
 }
 
 export const initialState = () => {

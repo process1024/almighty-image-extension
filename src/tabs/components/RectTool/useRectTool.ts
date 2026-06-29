@@ -1,23 +1,26 @@
-// src/components/ImageEditor/components/RectTool/useRectTool.js
-import { useState, useEffect, useRef } from 'react';
 import { fabric } from 'fabric';
-import { TOOL_TYPES } from '../../constants/tools';
+import { useEffect, useRef, useState } from 'react';
 
-export const useRectTool = (canvas, activeTool) => {
-  const [rectOptions, setRectOptions] = useState({
+import { TOOL_TYPES } from '../../constants/tools';
+import type { ShapeOptions } from '../controlTypes';
+
+type FabricPointer = ReturnType<fabric.Canvas['getPointer']>;
+
+export const useRectTool = (canvas: fabric.Canvas | null, activeTool: string) => {
+  const [rectOptions, setRectOptions] = useState<ShapeOptions>({
     stroke: '#ff0000',
     strokeWidth: 2,
     fill: 'transparent',
   });
 
   const isDrawingRef = useRef(false);
-  const startPointRef = useRef(null);
-  const rectRef = useRef(null);
+  const startPointRef = useRef<FabricPointer | null>(null);
+  const rectRef = useRef<fabric.Rect | null>(null);
 
   useEffect(() => {
     if (!canvas) return;
 
-    const handleMouseDown = (e) => {
+    const handleMouseDown = (e: fabric.IEvent<Event>) => {
       if (activeTool !== TOOL_TYPES.RECT) return;
 
       const target = e.target;
@@ -46,7 +49,7 @@ export const useRectTool = (canvas, activeTool) => {
       canvas.renderAll();
     };
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: fabric.IEvent<Event>) => {
       if (!isDrawingRef.current || !startPointRef.current || !rectRef.current) return;
 
       const pointer = canvas.getPointer(e.e);

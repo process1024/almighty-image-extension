@@ -1,18 +1,46 @@
 // import styles from './index.module.less';
 import classNames from 'classnames';
 import { debounce } from 'lodash-es';
-import React, { ReactNode, Ref, forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 
 import './index.less';
 
-interface MasonryProps {
-  ref: Ref<HTMLElement>;
+export type MasonryBrick = Record<string, unknown> & {
+  mansonryInnerChildIndex?: number;
+};
+
+export interface MasonryBrickRect {
+  column: number;
+  left: number;
+  top: number;
+  height: number;
+  buttom: number;
+  right: number;
+}
+
+export interface MasonryHandle {
+  getBricksPosition: () => {
+    containerOffsetTop: number;
+    containerOffsetLeft: number;
+    computedBricks: React.MutableRefObject<Map<string, MasonryBrickRect>>;
+  };
+}
+
+interface MasonryProps<TBrick extends MasonryBrick = MasonryBrick> {
   /** 数据源 */
-  bricks: Record<string, any>[];
+  bricks: TBrick[];
   /** 数据的唯一标识字段 */
   brickId?: string;
   /** 卡片的渲染函数 */
-  render: React.FC;
+  render: (record: TBrick) => ReactNode;
   /** 卡片的间距*/
   gutter?: number;
   /** 每一列的宽度（卡片宽度）*/
@@ -24,7 +52,7 @@ interface MasonryProps {
   /** 预加载的滚动区域*/
   threshold: number;
   /** 滚动元素，支持传入id、元素，默认为document.documentElement*/
-  scrollElement?: string | HTMLElement;
+  scrollElement?: string | HTMLElement | undefined;
   /** 瀑布流的class*/
   className?: string;
   /** 切换不同的瀑布流实例，用于，重新计算 containerOffsetTop 值*/
@@ -32,7 +60,7 @@ interface MasonryProps {
 }
 
 // 瀑布流
-export default forwardRef(function Masonry(
+const Masonry = forwardRef<MasonryHandle, MasonryProps>(function Masonry(
   {
     brickId = 'id',
     bricks = [],
@@ -48,24 +76,25 @@ export default forwardRef(function Masonry(
   },
   ref,
 ) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const computedBricks = useRef<Map<string, MasonryBrickRect>>(new Map());
+  const columnHeightArr = useRef<number[]>([]);
+  const visibleRectRef = useRef({ top: 0, bottom: 0 });
+  const allBricks = useRef<MasonryBrick[]>([]);
+  const [renderBricks, setRenderBricks] = useState<MasonryBrick[]>([]);
+
   useImperativeHandle(ref, () => ({
     // 获取所有图片的位置，用来做框选操作
     getBricksPosition: () => {
       return {
-        containerOffsetTop: containerRef.current?.getBoundingClientRect()?.top,
-        containerOffsetLeft: containerRef.current?.getBoundingClientRect()?.left,
+        containerOffsetTop: containerRef.current?.getBoundingClientRect()?.top ?? 0,
+        containerOffsetLeft: containerRef.current?.getBoundingClientRect()?.left ?? 0,
         computedBricks,
       };
     },
   }));
-  const containerRef = useRef(null);
-  const computedBricks = useRef(new Map()); // 已经计算大小和位置的bricks
-  const columnHeightArr = useRef([]); // 瀑布流各列高度
   const [containerOffsetTop, setContainerOffsetTop] = useState(0); // 瀑布流容器位置
-  const visibleRectRef = useRef({}); // 展示brick的区域
-  const allBricks = useRef([]);
 
-  const [renderBricks, setRenderBricks] = useState([]); // 当前被渲染的brick
   const [scrollTop, setScrollTop] = useState(0); // 页面滚动高度
 
   const isUnmount = useRef(false); // 是否销毁
@@ -79,7 +108,7 @@ export default forwardRef(function Masonry(
 
   const renderChild = useMemo(() => {
     const childrenNode = React.Children.toArray(children);
-    return (record) => {
+    return (record: MasonryBrick) => {
       // 先渲染 组件子元素
       if (record.mansonryInnerChildIndex !== undefined) {
         return childrenNode[record.mansonryInnerChildIndex];
@@ -94,6 +123,10 @@ export default forwardRef(function Masonry(
       = typeof scrollElement === 'string'
         ? document.getElementById(scrollElement)
         : scrollElement || document.documentElement;
+
+    if (!containerRef.current || !realScrollElement) {
+      return;
+    }
 
     const containerRectTop = containerRef.current.getBoundingClientRect().top;
 
@@ -131,18 +164,18 @@ export default forwardRef(function Masonry(
       return;
     }
 
-    const keys = {};
+    const keys: Record<string, boolean> = {};
     let index = 0;
     for (const [key] of computedBricks.current) {
-      let realKey = bricks[index] && bricks[index][brickId];
+      let realKey = bricks[index]?.[brickId] as string | undefined;
 
       // 循环跳过重复的brick
-      while (keys[realKey]) {
+      while (realKey && keys[realKey]) {
         index += 1;
-        realKey = bricks[index][brickId];
+        realKey = bricks[index]?.[brickId] as string | undefined;
       }
 
-      if (!bricks[index] || bricks[index][brickId] !== key) {
+      if (!bricks[index] || bricks[index]?.[brickId] !== key) {
         // 变更出现在前面几个，直接全部清空
         if (index < 5) {
           columnHeightArr.current.fill(0);
@@ -159,7 +192,7 @@ export default forwardRef(function Masonry(
             computedBricks.current.delete(remainKey);
             columnHeightArr.current[remainBrick.column] = Math.min(
               remainBrick.top,
-              columnHeightArr.current[remainBrick.column],
+              columnHeightArr.current[remainBrick.column] ?? 0,
             );
           }
         }
@@ -192,7 +225,7 @@ export default forwardRef(function Masonry(
     columnHeightArr.current.fill(0);
     computedBricks.current.clear();
 
-    return (scrollTop) => {
+    return (scrollTop: number) => {
       // 真实滚动元素
       const realScrollElement
         = typeof scrollElement === 'string'
@@ -216,14 +249,18 @@ export default forwardRef(function Masonry(
   useEffect(() => {
     const bricks = allBricks.current;
 
-    const keys = {}; // 避免重复
-    const beRenders = [];
+    const keys: Record<string, boolean> = {}; // 避免重复
+    const beRenders: MasonryBrick[] = [];
 
     const visibleRect = getVisibleRect(scrollTop);
 
     for (let i = 0; i < bricks.length; i++) {
       const brick = bricks[i];
-      const id = brick[brickId];
+      if (!brick) {
+        continue;
+      }
+
+      const id = brick[brickId] as string;
       const rect = computedBricks.current.get(id);
 
       if (rect) {
@@ -255,8 +292,11 @@ export default forwardRef(function Masonry(
   // 定位所有Dom节点
   useEffect(() => {
     const container = containerRef.current;
+    if (!container) {
+      return;
+    }
 
-    const brickDom = [...container.children];
+    const brickDom = [...container.children] as HTMLElement[];
 
     let columNum = 0;
     let minHeight = Infinity;
@@ -265,7 +305,13 @@ export default forwardRef(function Masonry(
     const visibleRect = visibleRectRef.current;
 
     brickDom.forEach((brick, index) => {
-      const rect = computedBrickMap.get(renderBricks[index][brickId]);
+      const renderBrick = renderBricks[index];
+      if (!renderBrick) {
+        return;
+      }
+
+      const brickKey = renderBrick[brickId] as string;
+      const rect = computedBrickMap.get(brickKey);
       if (rect) {
         // 已经渲染过
         brick.style.transform = `translate(${rect.left}px, ${rect.top}px)`;
@@ -279,7 +325,7 @@ export default forwardRef(function Masonry(
           }
         });
         const clientWidth = brick.clientWidth;
-        const rect = {
+        const nextRect = {
           column: columNum,
           left: columNum * (columnSize + gutter),
           top: minHeight,
@@ -288,17 +334,17 @@ export default forwardRef(function Masonry(
           right: columNum * (columnSize + gutter) + clientWidth,
         };
 
-        if (rect.buttom > visibleRect.top && rect.top < visibleRect.bottom) {
+        if (nextRect.buttom > visibleRect.top && nextRect.top < visibleRect.bottom) {
           // 视口范围内
-          brick.style.transform = `translate(${rect.left}px, ${rect.top}px)`;
+          brick.style.transform = `translate(${nextRect.left}px, ${nextRect.top}px)`;
           brick.classList.add('brick');
         } else {
           // 视口外的移到不可见区域
-          brick.style.transform = `translate(-99999px, ${rect.top}px)`;
+          brick.style.transform = `translate(-99999px, ${nextRect.top}px)`;
         }
 
         // 更新已经渲染数据
-        computedBrickMap.set(renderBricks[index][brickId], rect);
+        computedBrickMap.set(brickKey, nextRect);
 
         minHeight = columnHeightArr.current[columNum] = minHeight + brick.clientHeight + gutter;
       }
@@ -316,7 +362,13 @@ export default forwardRef(function Masonry(
   // 滚动事件
   useEffect(() => {
     // 没有提供 scrollElement 的话，绑定window的滚动事件
-    const target = typeof scrollElement === 'string' ? document.getElementById(scrollElement) : scrollElement || window;
+    const target = typeof scrollElement === 'string'
+      ? document.getElementById(scrollElement)
+      : scrollElement || window;
+
+    if (!target) {
+      return undefined;
+    }
 
     const change = debounce(
       () => {
@@ -325,7 +377,7 @@ export default forwardRef(function Masonry(
         }
 
         // 获取真实 DOM是scrollTop， window是scrollY
-        setScrollTop(target.scrollTop || target.scrollY || 0);
+        setScrollTop('scrollTop' in target ? target.scrollTop : target.scrollY || 0);
       },
       100,
       { trailing: true, maxWait: 200, leading: false },
@@ -339,7 +391,7 @@ export default forwardRef(function Masonry(
 
     // 取消滚动事件
     return () => {
-      target.removeEventListener('scroll', change, { passive: true });
+      target.removeEventListener('scroll', change);
     };
   }, [scrollElement]);
 
@@ -350,3 +402,5 @@ export default forwardRef(function Masonry(
     </div>
   );
 });
+
+export default Masonry;

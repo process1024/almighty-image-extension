@@ -1,4 +1,4 @@
-export function downloadBase64Image(base64String, fileName) {
+export function downloadBase64Image(base64String: string, fileName: string) {
   // 创建一个隐藏的<a>元素
   const link = document.createElement('a');
   link.style.display = 'none';
@@ -18,12 +18,12 @@ export function downloadBase64Image(base64String, fileName) {
   document.body.removeChild(link);
 }
 
-export function base64ToBlob(base64String) {
+export function base64ToBlob(base64String: string) {
   // 移除base64字符串的前缀（如果有）
-  const base64 = base64String.split(',')[1];
-  const mimeString = base64String.split(',')[0].split(':')[1].split(';')[0];
+  const base64 = base64String.split(',')[1] ?? '';
+  const mimeString = base64String.split(',')[0]?.split(':')[1]?.split(';')[0] ?? 'image/png';
   const byteCharacters = atob(base64);
-  const byteArrays = [];
+  const byteArrays: Uint8Array[] = [];
 
   for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
     const slice = byteCharacters.slice(offset, offset + 1024);

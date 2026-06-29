@@ -1,5 +1,4 @@
-import { MutableRefObject, useEffect } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode, type RefObject } from 'react';
 import { When } from 'react-if';
 
 import './index.less';
@@ -18,9 +17,9 @@ interface IProps {
   position: Position;
   style: Partial<React.CSSProperties>;
   size: Size;
-  container: MutableRefObject<HTMLElement>;
-  onDragStop: (e: any) => void;
-  children: React.FC;
+  container: RefObject<HTMLElement | null>;
+  onDragStop: (e: Position & Size) => void;
+  children: (props: { offset: Position & Size }) => ReactNode;
 }
 
 type PosMap = 'e' | 'w' | 's' | 'n' | 'ne' | 'nw' | 'se' | 'sw' | 'move';
@@ -161,9 +160,14 @@ export function Resizer({ position, style = {}, size, container, onDragStop, chi
   );
 
   useEffect(() => {
-    container.current.addEventListener('mousemove', onResize);
+    const current = container.current;
+    if (!current) {
+      return undefined;
+    }
+
+    current.addEventListener('mousemove', onResize);
     return () => {
-      container.current?.removeEventListener('mousemove', onResize);
+      current.removeEventListener('mousemove', onResize);
     };
   }, [dragging]);
 

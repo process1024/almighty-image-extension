@@ -200,6 +200,10 @@ const ImageEditor = () => {
       const event = e as fabric.IEvent<Event> & { selected?: fabric.Object[] };
       if (event.selected?.length === 1) {
         const selectedObj = event.selected[0];
+        if (!selectedObj?.type) {
+          return;
+        }
+
         const type = selectedObj.type;
 
         const toolMap: Record<string, string> = {

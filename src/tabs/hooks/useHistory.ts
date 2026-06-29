@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type MutableRefObject } from 'react';
 
 import { registerCustomFabricTypes } from '../utils/fabricCustomTypes';
 
@@ -10,10 +10,50 @@ interface HistoryState {
   timestamp: number;
 }
 
+type FabricImageElement = HTMLImageElement | HTMLVideoElement;
+
+function toFabricImageElement(canvas: HTMLCanvasElement) {
+  return canvas as unknown as FabricImageElement;
+}
+
+function restoreMosaicLayer(
+  dataUrl: string | undefined,
+  tempCanvasRef?: MutableRefObject<HTMLCanvasElement | null>,
+  mosaicLayerRef?: MutableRefObject<fabric.Image | null>,
+  canvas?: fabric.Canvas | null,
+) {
+  const tempCanvas = tempCanvasRef?.current;
+  if (!tempCanvas) return;
+
+  const ctx = tempCanvas.getContext('2d');
+  if (!ctx) return;
+
+  const refreshLayer = () => {
+    if (!mosaicLayerRef?.current || !canvas) return;
+
+    mosaicLayerRef.current.setElement(toFabricImageElement(tempCanvas));
+    canvas.renderAll();
+  };
+
+  if (!dataUrl) {
+    ctx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+    refreshLayer();
+    return;
+  }
+
+  const img = new window.Image();
+  img.onload = () => {
+    ctx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+    ctx.drawImage(img, 0, 0);
+    refreshLayer();
+  };
+  img.src = dataUrl;
+}
+
 export const useHistory = (
   canvas: fabric.Canvas | null,
-  tempCanvasRef?: React.MutableRefObject<HTMLCanvasElement | null>,
-  mosaicLayerRef?: React.MutableRefObject<fabric.Image | null>,
+  tempCanvasRef?: MutableRefObject<HTMLCanvasElement | null>,
+  mosaicLayerRef?: MutableRefObject<fabric.Image | null>,
 ) => {
   const [history, setHistory] = useState<HistoryState[]>([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
@@ -43,7 +83,7 @@ export const useHistory = (
         lastSavedStateRef.current = currentState;
 
         // 新增：保存马赛克像素内容
-        let mosaicDataUrl = undefined;
+        let mosaicDataUrl: string | undefined;
         if (tempCanvasRef && tempCanvasRef.current) {
           try {
             mosaicDataUrl = tempCanvasRef.current.toDataURL();
@@ -53,10 +93,12 @@ export const useHistory = (
         }
         const historyEntry: HistoryState = {
           canvasState: currentState,
-          mosaicDataUrl, // 新增
           action,
           timestamp: Date.now(),
         };
+        if (mosaicDataUrl) {
+          historyEntry.mosaicDataUrl = mosaicDataUrl;
+        }
 
         setHistory(prev => {
           // 移除当前索引之后的所有历史记录（处理分支情况）
@@ -223,11 +265,16 @@ export const useHistory = (
 
       const newIndex = currentIndex - 1;
       const prevState = history[newIndex];
+      if (!prevState) {
+        isLoadingRef.current = false;
+        isRecordingRef.current = true;
+        return;
+      }
 
-      console.log(`撤销操作: ${history[currentIndex]?.action} → ${prevState.action}`);
+      console.log(`撤销操作: ${history[currentIndex]?.action || '未知'} → ${prevState.action}`);
 
       // 使用Promise包装loadFromJSON以更好地处理错误
-      const loadPromise = new Promise((resolve, reject) => {
+      const loadPromise = new Promise<boolean>((resolve, reject) => {
         try {
           canvas.loadFromJSON(JSON.parse(prevState.canvasState), () => {
             try {
@@ -248,28 +295,7 @@ export const useHistory = (
               });
 
               // 新增：恢复马赛克像素内容
-              if (tempCanvasRef && tempCanvasRef.current && prevState.mosaicDataUrl) {
-                const img = new window.Image();
-                img.onload = () => {
-                  const ctx = tempCanvasRef.current!.getContext('2d');
-                  ctx.clearRect(0, 0, tempCanvasRef.current!.width, tempCanvasRef.current!.height);
-                  ctx.drawImage(img, 0, 0);
-                  // 刷新 mosaicLayerRef
-                  if (mosaicLayerRef && mosaicLayerRef.current) {
-                    mosaicLayerRef.current.setElement(tempCanvasRef.current!);
-                    canvas.renderAll();
-                  }
-                };
-                img.src = prevState.mosaicDataUrl;
-              } else if (tempCanvasRef && tempCanvasRef.current) {
-                // 没有历史马赛克，清空
-                const ctx = tempCanvasRef.current.getContext('2d');
-                ctx.clearRect(0, 0, tempCanvasRef.current.width, tempCanvasRef.current.height);
-                if (mosaicLayerRef && mosaicLayerRef.current) {
-                  mosaicLayerRef.current.setElement(tempCanvasRef.current);
-                  canvas.renderAll();
-                }
-              }
+              restoreMosaicLayer(prevState.mosaicDataUrl, tempCanvasRef, mosaicLayerRef, canvas);
               resolve(true);
             } catch (renderError) {
               reject(renderError);
@@ -305,11 +331,16 @@ export const useHistory = (
 
       const newIndex = currentIndex + 1;
       const nextState = history[newIndex];
+      if (!nextState) {
+        isLoadingRef.current = false;
+        isRecordingRef.current = true;
+        return;
+      }
 
-      console.log(`重做操作: ${history[currentIndex]?.action} → ${nextState.action}`);
+      console.log(`重做操作: ${history[currentIndex]?.action || '未知'} → ${nextState.action}`);
 
       // 使用Promise包装loadFromJSON以更好地处理错误
-      const loadPromise = new Promise((resolve, reject) => {
+      const loadPromise = new Promise<boolean>((resolve, reject) => {
         try {
           canvas.loadFromJSON(JSON.parse(nextState.canvasState), () => {
             try {
@@ -330,26 +361,7 @@ export const useHistory = (
               });
 
               // 新增：恢复马赛克像素内容
-              if (tempCanvasRef && tempCanvasRef.current && nextState.mosaicDataUrl) {
-                const img = new window.Image();
-                img.onload = () => {
-                  const ctx = tempCanvasRef.current!.getContext('2d');
-                  ctx.clearRect(0, 0, tempCanvasRef.current!.width, tempCanvasRef.current!.height);
-                  ctx.drawImage(img, 0, 0);
-                  if (mosaicLayerRef && mosaicLayerRef.current) {
-                    mosaicLayerRef.current.setElement(tempCanvasRef.current!);
-                    canvas.renderAll();
-                  }
-                };
-                img.src = nextState.mosaicDataUrl;
-              } else if (tempCanvasRef && tempCanvasRef.current) {
-                const ctx = tempCanvasRef.current.getContext('2d');
-                ctx.clearRect(0, 0, tempCanvasRef.current.width, tempCanvasRef.current.height);
-                if (mosaicLayerRef && mosaicLayerRef.current) {
-                  mosaicLayerRef.current.setElement(tempCanvasRef.current);
-                  canvas.renderAll();
-                }
-              }
+              restoreMosaicLayer(nextState.mosaicDataUrl, tempCanvasRef, mosaicLayerRef, canvas);
               resolve(true);
             } catch (renderError) {
               reject(renderError);

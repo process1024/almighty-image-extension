@@ -10,9 +10,9 @@ import './index.less';
 interface ImageCardProps {
   image: ImageType;
   checked: boolean;
-  onChange: Function;
+  onChange: (checked: boolean) => void;
   renderWidth?: number;
-  onload: Function;
+  onload: (event: Event) => void;
 }
 
 export const ImageCard = ({ image, checked, onChange, renderWidth, onload }: ImageCardProps) => {
@@ -38,7 +38,8 @@ export const ImageCard = ({ image, checked, onChange, renderWidth, onload }: Ima
       const img = new Image();
       img.src = image.src;
       img.onload = (e) => {
-        const { width, height } = e.target;
+        const target = e.target as HTMLImageElement;
+        const { width, height } = target;
         image.width = width;
         image.height = height;
         image.loaded = true;

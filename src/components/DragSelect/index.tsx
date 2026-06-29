@@ -1,14 +1,43 @@
 import { useEventListener } from 'ahooks';
 import classNames from 'classnames';
-import React, { memo, useRef, useState } from 'react';
+import { memo, useRef, useState, type RefObject } from 'react';
 import Selecto from 'react-selecto';
 
 import './index.less';
 
+import type { MasonryHandle } from '~components/Masonry';
+
+type ChooseMap = Record<string, boolean>;
+
+interface DragSelectProps {
+  masonryRef: RefObject<MasonryHandle>;
+  dragCallback?: (chooseMap: ChooseMap, shiftKey: boolean) => void;
+  dragEndCallback?: () => void;
+  container?: HTMLElement | undefined;
+  dragCondition?: (event: {
+    clientY: number;
+    inputEvent?: Event & { clientX?: number; shiftKey?: boolean; target?: EventTarget | null };
+  }) => boolean;
+}
+
+interface SelectPosition {
+  selectTop: number;
+  selectBottom: number;
+  selectLeft: number;
+  selectRight: number;
+}
+
+interface TargetPosition {
+  targetTop: number;
+  targetBottom: number;
+  targetLeft: number;
+  targetRight: number;
+}
+
 /**
  * 主要是用来实现瀑布流的框选功能，如果不是瀑布流的场景可直接使用Selecto组件
  */
-export default memo(function DragSelect(props) {
+export default memo(function DragSelect(props: DragSelectProps) {
   const {
     masonryRef,
     dragCallback,
@@ -29,16 +58,19 @@ export default memo(function DragSelect(props) {
       target: container,
     },
   );
-  const selectoRef = useRef(null);
-  const onDragStart = (e) => {
+  const selectoRef = useRef<Selecto | null>(null);
+  const onDragStart = (e: { inputEvent: { shiftKey: boolean } }) => {
     setShiftKey(e.inputEvent.shiftKey);
   };
-  const onDrag = (e) => {
+  const onDrag = (e: {
+    rect: { top: number; height: number; left: number; right: number };
+  }) => {
     // 选中的id
-    const chooseMap = {};
+    const chooseMap: ChooseMap = {};
     // 浏览器往下滚动的距离
     const documentScrollTop = container.scrollTop;
-    let { top: selectTop, height: selectHeight, left: selectLeft, right: selectRight } = e.rect;
+    let { top: selectTop } = e.rect;
+    const { height: selectHeight, left: selectLeft, right: selectRight } = e.rect;
     selectTop = selectTop + documentScrollTop;
     const selectBottom = selectTop + selectHeight;
     // 避免用户误操作 只有当拖拽框的top和bottom 或者 left 和right 差距2px时候才往下执行
@@ -49,6 +81,10 @@ export default memo(function DragSelect(props) {
     // 添加蒙层
     setShowMask(true);
     const selectPosition = { selectTop, selectBottom, selectLeft, selectRight };
+    if (!masonryRef.current) {
+      return;
+    }
+
     const { computedBricks, containerOffsetLeft, containerOffsetTop }
       = masonryRef.current.getBricksPosition();
     // 拿到瀑布流每个图片位置的数组，这个数组是基于列表容器的距离，所以需要进行计算
@@ -63,11 +99,11 @@ export default memo(function DragSelect(props) {
       chooseMap[key] = checkSelect(selectPosition, targetPosition);
     });
     // 拿到被选中的数据做的操作
-    !!dragCallback && dragCallback(chooseMap, shiftKey);
+    dragCallback?.(chooseMap, shiftKey);
   };
 
   // 检测是否被选中
-  const checkSelect = (selectPosition, targetPosition) => {
+  const checkSelect = (selectPosition: SelectPosition, targetPosition: TargetPosition) => {
     const { selectTop, selectBottom, selectLeft, selectRight } = selectPosition;
     const { targetTop, targetBottom, targetLeft, targetRight } = targetPosition;
     if (
@@ -84,7 +120,7 @@ export default memo(function DragSelect(props) {
   const onDragEnd = () => {
     setShowMask(false);
     setShiftKey(false);
-    !!dragEndCallback && dragEndCallback();
+    dragEndCallback?.();
   };
 
   return (
@@ -123,7 +159,8 @@ export default memo(function DragSelect(props) {
         }}
         onDrag={onDrag}
         onScroll={(e) => {
-          container.scrollBy(e.direction[0] * 10, e.direction[1] * 10);
+          const [x = 0, y = 0] = e.direction;
+          container.scrollBy(x * 10, y * 10);
         }}
       />
       {/* 拖拽开始添加蒙层 */}

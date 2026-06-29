@@ -1,8 +1,7 @@
-import React from 'react';
-
 import './index.less';
 
 import { useDebounceEffect } from 'ahooks';
+import { message } from 'antd';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { When } from 'react-if';
 
@@ -11,8 +10,7 @@ import Crosshair from '~components/Crosshair';
 import { Resizer } from '~components/Resizer';
 import { captureSelect } from '~services/capture';
 import { useMouseDrag, useMouseMove } from '~services/hooks';
-import { getMouseHoverElementPosition, TElementPosition } from '~utils/element';
-import { message } from 'antd';
+import { getMouseHoverElementPosition, type TElementPosition } from '~utils/element';
 
 interface IDrag {
   x: number;
@@ -21,7 +19,14 @@ interface IDrag {
   height: number;
 }
 
-const Btns = ({ pinBtnStyle, onCopy, onCancel, toEdit }) => {
+interface BtnsProps {
+  pinBtnStyle: React.CSSProperties;
+  onCopy: () => void;
+  onCancel: () => void;
+  toEdit: () => void;
+}
+
+const Btns = ({ pinBtnStyle, onCopy, onCancel, toEdit }: BtnsProps) => {
   return (
     <div className="capture-annotate" style={pinBtnStyle}>
       <button className="btn cancel" onClick={onCancel}>
@@ -37,7 +42,13 @@ const Btns = ({ pinBtnStyle, onCopy, onCancel, toEdit }) => {
   );
 };
 
-function ElementInspector({ sharp, onClick }: { sharp: TElementPosition; onClick: Function }) {
+function ElementInspector({
+  sharp,
+  onClick,
+}: {
+  sharp: TElementPosition | null;
+  onClick: React.MouseEventHandler<HTMLDivElement>;
+}) {
   if (sharp) {
     return (
       <div
@@ -51,14 +62,16 @@ function ElementInspector({ sharp, onClick }: { sharp: TElementPosition; onClick
         }}></div>
     );
   }
+
+  return null;
 }
 
 const Capture = ({ onCancel }: { onCancel: () => void }) => {
-  const maskRef = useRef<HTMLElement>();
-  const parentRef = useRef<HTMLElement>();
+  const maskRef = useRef<HTMLDivElement | null>(null);
+  const parentRef = useRef<HTMLDivElement | null>(null);
   const [hidden, setHidden] = useState(false);
   // const board = useLastBoard();
-  const [inspectorInfo, setInspectorInfo] = useState<TElementPosition>();
+  const [inspectorInfo, setInspectorInfo] = useState<TElementPosition | null>(null);
 
   const { axis, moving } = useMouseMove(maskRef);
 
@@ -125,6 +138,10 @@ const Capture = ({ onCancel }: { onCancel: () => void }) => {
   }
 
   function inspectorClick() {
+    if (!inspectorInfo) {
+      return;
+    }
+
     const { left, top, right, bottom } = inspectorInfo;
     setPosition({
       start: {
@@ -172,12 +189,12 @@ const Capture = ({ onCancel }: { onCancel: () => void }) => {
     height: 40,
   };
 
-  function renderBtn(props) {
+  function renderBtn(props: { offset: IDrag }) {
     const { offset } = props;
     const { start, end } = position;
     const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
 
-    let pinBtnStyle = {};
+    let pinBtnStyle: React.CSSProperties = {};
     // 选择区域到页面底部 和 选择区域底部不在当前可视区域时
     // 12为间距大小
     if (

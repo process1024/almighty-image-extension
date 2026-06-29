@@ -1,8 +1,7 @@
-// src/components/ImageEditor/components/common/ToolButton.jsx
-import React from 'react';
 import { Button, Tooltip } from 'antd';
 import styled from 'styled-components';
 
+import type { ToolButtonProps } from '../controlTypes';
 
 export const ToolButton = ({
   icon,
@@ -10,11 +9,11 @@ export const ToolButton = ({
   disabled = false,
   onClick,
   tooltip = '',
-}) => {
+}: ToolButtonProps) => {
   return (
     <Tooltip title={tooltip}>
       <StyledButton
-        type="button"
+        htmlType="button"
         className={active ? 'active' : ''}
         disabled={disabled}
         onClick={onClick}

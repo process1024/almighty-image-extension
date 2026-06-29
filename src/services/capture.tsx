@@ -6,6 +6,8 @@ import { sleep } from '~utils/util';
 const MAC_IMG_SIZE = 44444;
 // import { MAC_IMG_SIZE } from "./config";
 
+type ToggleHandler = () => void;
+
 // 获取当前标签页的可视区域截图
 export async function getTabCaptureImage() {
   // 拿到 base64 的图片
@@ -24,8 +26,8 @@ export type ClipImage = {
   height: number;
 };
 
-function getForbidScroll(el: HTMLElement) {
-  function closeDefault(e) {
+function getForbidScroll(el: HTMLElement): [ToggleHandler, ToggleHandler] {
+  function closeDefault(e: Event) {
     if (e.preventDefault) {
       e.preventDefault(); // 取消事件的默认行为
       e.stopPropagation(); // 阻止冒泡
@@ -60,6 +62,10 @@ export function clipImage2Url(img: ClipImage) {
       canvas.height = img.height * dp;
 
       const context = canvas.getContext('2d');
+      if (!context) {
+        resolve('');
+        return;
+      }
 
       // 裁剪时源图像和目标画布都使用相同的DPR缩放
       context.drawImage(image, img.x * dp, img.y * dp, img.width * dp, img.height * dp, 0, 0, img.width * dp, img.height * dp);
@@ -84,7 +90,7 @@ interface Position {
   };
 }
 
-function getLoadedImage(url) {
+function getLoadedImage(url: string) {
   return new Promise<HTMLImageElement>((resolve) => {
     const image = new Image();
     image.src = url;
@@ -94,7 +100,7 @@ function getLoadedImage(url) {
   });
 }
 
-export function pageScroll(p: Position) {
+export async function pageScroll(p: Position): Promise<void> {
   // 视窗外
   const { start, end } = p;
   if (
@@ -104,7 +110,7 @@ export function pageScroll(p: Position) {
     window.scrollTo(start.x, start.y);
     // console.log(start.x, start.y);
     // document.documentElement.scrollTop = start.y;
-    return sleep();
+    await sleep();
   }
 }
 
@@ -266,7 +272,9 @@ async function capturePage(
 
   const { hiddenScroller, hiddenFixed, removeHidden, unSmoothContainer } = getClearFixFn();
   const [forbidScroll, cancelForbidScroll] = getForbidScroll(document.documentElement);
-  option.hiddenScroll && hiddenScroller();
+  if (option.hiddenScroll) {
+    hiddenScroller();
+  }
   unSmoothContainer();
   forbidScroll();
   const clientHeight = document.documentElement.clientHeight;
@@ -277,7 +285,12 @@ async function capturePage(
   if (pageSize === 1) {
     pagePosition.push(position);
   } else {
+    let previousEndY = position.start.y;
     for (let index = 0; index < pageSize; index++) {
+      const endY = index + 1 === pageSize
+        ? (height % clientHeight) + previousEndY
+        : position.start.y + clientHeight * (index + 1);
+
       pagePosition.push({
         start: {
           x: position.start.x,
@@ -285,12 +298,10 @@ async function capturePage(
         },
         end: {
           x: position.end.x,
-          y:
-            index + 1 === pageSize
-              ? (height % clientHeight) + pagePosition[index - 1].end.y
-              : position.start.y + clientHeight * (index + 1),
+          y: endY,
         },
       });
+      previousEndY = endY;
     }
   }
 
@@ -306,6 +317,10 @@ async function capturePage(
     }
 
     const curPosition = pagePosition[i];
+    if (!curPosition) {
+      continue;
+    }
+
     await pageScroll(curPosition);
     if (i > 0 || option.forceClearFix) {
       hiddenFixed();
@@ -351,7 +366,12 @@ async function capturePage(
 
   // 最终画布尺寸需要考虑设备像素比
   canvas.width = captureSize.width * dp;
-  const lastPageHeight = drawImageArr[drawImageArr.length - 1][4];
+  const lastDrawImage = drawImageArr[drawImageArr.length - 1];
+  if (!lastDrawImage) {
+    return '';
+  }
+
+  const lastPageHeight = lastDrawImage[4];
   canvas.height = ((drawImageArr.length - 1) * clientHeight + lastPageHeight) * dp;
 
   console.log('capturePage - Final canvas size:', canvas.width, 'x', canvas.height);
@@ -359,6 +379,9 @@ async function capturePage(
   console.log('capturePage - Logical size:', captureSize.width, 'x', (drawImageArr.length - 1) * clientHeight + lastPageHeight);
 
   const context = canvas.getContext('2d');
+  if (!context) {
+    return '';
+  }
 
   // 绘制时需要调整每个片段的位置和尺寸以匹配DPR
   drawImageArr.forEach((draw) => {

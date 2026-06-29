@@ -10,8 +10,11 @@ import { fetchContentType, replaceCdnUrl } from '~utils/util';
 import type { ImageType } from '../context';
 
 // 过滤小图片
-function filterSize(img) {
-  const { width, height } = getImgNaturalSize(img);
+function filterSize(img: HTMLImageElement | Element) {
+  const { width, height } = img instanceof HTMLImageElement
+    ? getImgNaturalSize(img)
+    : img.getBoundingClientRect();
+
   return width > 45 && height > 45;
 }
 
@@ -24,11 +27,20 @@ export const CHECKTYPE = {
 
 type CheckValue = (typeof CHECKTYPE)[keyof typeof CHECKTYPE];
 
-interface ISelectedImg extends ImageType {
+export interface ISelectedImg extends ImageType {
   checked: CheckValue;
 }
 
-export function useBatchPin(config) {
+type BatchPinConfig = ReturnType<typeof import('../context').initialState>;
+
+function toSelectedImage(img: ImageType, checked: CheckValue = CHECKTYPE.UNCHECK): ISelectedImg {
+  return {
+    ...img,
+    checked,
+  };
+}
+
+export function useBatchPin(config: BatchPinConfig) {
   const [loading, setLoading] = useState(true);
   const [imageEles, setImageEles] = useState<ImageType[]>([]);
   const [filterImgs, setFilterImgs] = useState<ISelectedImg[]>([]);
@@ -48,11 +60,10 @@ export function useBatchPin(config) {
         return true;
       })
       .map((img) => {
+        const checked = filterImgs.find((i) => i.src === img.src)?.checked ?? CHECKTYPE.UNCHECK;
         return {
           ...img,
-          checked: filterImgs.find((i) =>
-            i.checked === CHECKTYPE.CHECK ? CHECKTYPE.CHECK : CHECKTYPE.UNCHECK,
-          ),
+          checked,
         };
       });
     setFilterImgs(filterImage);
@@ -62,14 +73,14 @@ export function useBatchPin(config) {
     const images = document.images;
     const imagesArr = Array.from(images);
 
-    let result: ImageType[] = uniqWith(imagesArr, isSomeImage)
+    let result: ImageType[] = (uniqWith(imagesArr, isSomeImage) as HTMLImageElement[])
       .filter((img) => filterSize(img))
       .map((img) => {
         // FIX: getComputedStyle(img).getPropertyValue("src")，解决src为空浏览器返回当前地址的问题
         const url = img.currentSrc || getComputedStyle(img).getPropertyValue('src');
-        const image = {
+        const image: ImageType = {
           alt: getImgElTitle(img),
-          src: getImageOriginUrl(img),
+          src: getImageOriginUrl(img) as string,
           renderSrc: url,
           width: img.naturalWidth || img.width,
           height: img.naturalHeight || img.height,
@@ -103,11 +114,11 @@ export function useBatchPin(config) {
       setImageEles([...result]);
     }
 
-    function isSomeImage(a, b) {
+    function isSomeImage(a: HTMLImageElement, b: HTMLImageElement) {
       return a.currentSrc === b.currentSrc;
     }
 
-    function filterType(img, type = 'svg') {
+    function filterType(img: ImageType, type = 'svg') {
       return !img.fileType.includes(type) && img.renderSrc;
     }
 
@@ -117,11 +128,14 @@ export function useBatchPin(config) {
     // }
 
     if (isSortByRender()) {
-      result = result.sort((a, b) => b.img.height * b.img.width - a.img.height * a.img.width);
+      result = result.sort((a, b) =>
+        (b.img?.height ?? b.height) * (b.img?.width ?? b.width)
+        - (a.img?.height ?? a.height) * (a.img?.width ?? a.width),
+      );
     }
 
     // 再次去重
-    result = uniqWith(result, (a, b) => a.src === b.src);
+    result = uniqWith(result, (a: ImageType, b: ImageType) => a.src === b.src) as ImageType[];
 
     setImageEles([...result]);
 
@@ -174,8 +188,9 @@ export function useBatchPin(config) {
       return true;
     });
 
-    setFilterImgs(filterResult);
-    config.filterImgs = filterResult;
+    const selectedFilterResult = filterResult.map((img) => toSelectedImage(img));
+    setFilterImgs(selectedFilterResult);
+    config.filterImgs = selectedFilterResult;
 
     setLoading(false);
 
@@ -252,7 +267,7 @@ export function useBatchPin(config) {
     if (e) {
       const selectedLength = filterImgs.filter((item) => item.checked === CHECKTYPE.CHECK).length;
       if (selectedLength === MAX_BATCH_IMG) {
-        pinMessage.open('fail', `最多选择${MAX_BATCH_IMG}张`);
+        console.warn(`最多选择${MAX_BATCH_IMG}张`);
         return;
       }
       addSelectImg(img);
@@ -275,7 +290,7 @@ export function useBatchPin(config) {
 }
 
 // 获取页面元素的背景图并返回 imgs 标签集合
-function getPageBackgroundImages(updateCb: Function) {
+function getPageBackgroundImages(updateCb: () => void) {
   const allEl = document.body.getElementsByTagName('*');
   const imgs = [] as ImageType[];
   const selectedText = (
@@ -284,17 +299,22 @@ function getPageBackgroundImages(updateCb: Function) {
   const length = allEl.length;
   for (let i = 1; i < length; i++) {
     const el = allEl[i];
+    if (!el) {
+      continue;
+    }
+
     if (['IMG', 'HEAD', 'SCRIPT', 'LINK', 'STYLE', 'META'].includes(el.tagName)) continue;
     let src = getComputedStyle(el).getPropertyValue('background-image');
     if (src !== 'none' && src.indexOf('gradient') === -1 && filterSize(el)) {
-      src = src.replace(/.*url\(\"([^\)]+)\"\).*/gi, '$1');
+      src = src.replace(/.*url\("([^")]+)"\).*/gi, '$1');
       const img = new Image();
       img.src = src;
       const width = img.width;
       const height = img.height;
+      const htmlEl = el as HTMLElement & { alt?: string; title?: string };
       const result = {
         fileType: getImageType(src),
-        alt: selectedText || el.alt || el.title || document.title,
+        alt: selectedText || htmlEl.alt || htmlEl.title || document.title,
         width,
         height,
         src,
@@ -324,6 +344,10 @@ function getPageVideoImages() {
     try {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        return;
+      }
+
       canvas.width = video.offsetWidth;
       canvas.height = video.offsetHeight;
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);

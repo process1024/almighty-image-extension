@@ -4,6 +4,16 @@ import './index.less';
 
 // let loadingInstanceNum = 1;
 
+interface LoadingProps {
+  size?: string | number;
+  stroke?: string;
+  shadow?: string;
+  strokeWidth?: number;
+  strokeDasharray?: string;
+  strokeLinecap?: 'square' | 'inherit' | 'butt' | 'round';
+  animationDuration?: string;
+}
+
 /**
  * 加载状态
  */
@@ -15,7 +25,7 @@ export default function Loading({
   strokeDasharray = '771px 771px', // svg 总长度 771px, 合适的尺寸：771、128
   strokeLinecap = 'square', // square、round
   animationDuration = '1.6s',
-}) {
+}: LoadingProps) {
   const [id] = useState(() => {
     return 'hb_petal_loading_id';
   });

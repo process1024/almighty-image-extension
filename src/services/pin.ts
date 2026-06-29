@@ -1,6 +1,8 @@
-export function getImgElTitle(el: HTMLElement) {
+export function getImgElTitle(el: HTMLElement | HTMLImageElement) {
   const selectedText = (
     `${window.getSelection ? window.getSelection() : document.getSelection()}`
   ).replace(/(^\s+|\s+$)/g, '');
-  return selectedText || el.getAttribute('huaban-alt') || el.alt || document.title;
+  const alt = el instanceof HTMLImageElement ? el.alt : '';
+
+  return selectedText || el.getAttribute('huaban-alt') || alt || document.title;
 }

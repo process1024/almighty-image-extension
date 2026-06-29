@@ -29,6 +29,8 @@ interface RangeSliderProps {
   onChange: (value: number) => void;
 }
 
+type HeaderConfigKey = 'format' | 'minWidth' | 'minHeight';
+
 const FormatDropdown = ({ formats, onChange }: FormatDropdownProps) => {
   const [format, setFormat] = useState('all');
   const [isOpen, setIsOpen] = useState(false);
@@ -170,7 +172,7 @@ const SettingsDropdown = ({ config, onChange }: {
     minWidth: number;
     minHeight: number;
   };
-  onChange: (key: string, value: string | number) => void;
+  onChange: (key: HeaderConfigKey, value: string | number) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -266,10 +268,11 @@ export default function Header({ onClose, all, selected, onSelectAll }: HeaderPr
   const { minHeight, minWidth } = globalConfig.batchPin;
   const [config, setConfig] = useContext(AppContext);
 
-  const onChange = (key: string, value: string | number) => {
-    console.log(key, value);
-    config[key] = value;
-    setConfig({ ...config });
+  const onChange = (key: HeaderConfigKey, value: string | number) => {
+    setConfig({
+      ...config,
+      [key]: value,
+    });
   };
 
   const formats = useMemo(() => {

@@ -1,14 +1,24 @@
-// src/components/ImageEditor/components/ArrowTool/ArrowControls.jsx
-import React from 'react';
 import { StyledControls } from '../../styles/toolControls';
+import type {
+  ControlUpdater,
+  EditableFabricObject,
+  StrokeOptions,
+} from '../controlTypes';
+
+interface ArrowControlsProps {
+  defaultArrowOptions: StrokeOptions;
+  selectedObject: EditableFabricObject | null;
+  onUpdateSelected: ControlUpdater<StrokeOptions>;
+  onUpdateDefaults: ControlUpdater<StrokeOptions>;
+}
 
 export const ArrowControls = ({
   defaultArrowOptions,
   selectedObject,
   onUpdateSelected,
   onUpdateDefaults,
-}) => {
-  const handleChange = (property, value) => {
+}: ArrowControlsProps) => {
+  const handleChange = <K extends keyof StrokeOptions>(property: K, value: StrokeOptions[K]) => {
     if (selectedObject) {
       onUpdateSelected({ [property]: value });
     } else {
@@ -16,7 +26,12 @@ export const ArrowControls = ({
     }
   };
 
-  const options = selectedObject || defaultArrowOptions;
+  const options: StrokeOptions = selectedObject
+    ? {
+      stroke: typeof selectedObject.stroke === 'string' ? selectedObject.stroke : '#000000',
+      strokeWidth: selectedObject.strokeWidth ?? defaultArrowOptions.strokeWidth,
+    }
+    : defaultArrowOptions;
 
   return (
     <StyledControls>

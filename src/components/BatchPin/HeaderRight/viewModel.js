@@ -22,7 +22,6 @@ function isEnter(e) {
 
 export default function useViewModel(props) {
   const {
-    defaultValue,
     suggestTags,
     tagsToSelect,
     suggestVisible: sv,
@@ -61,7 +60,9 @@ export default function useViewModel(props) {
       if (tags.includes(newTag)) return;
       const newTags = [...tags, newTag];
       setTags(newTags);
-      onChange && requestAnimationFrame(() => onChange([...newTags]));
+      if (onChange) {
+        requestAnimationFrame(() => onChange([...newTags]));
+      }
     },
     [disabled, tags, setTags, onChange],
   );
@@ -82,7 +83,9 @@ export default function useViewModel(props) {
           </Select.Option>
         )),
       );
-      onChange && requestAnimationFrame(() => onChange(value));
+      if (onChange) {
+        requestAnimationFrame(() => onChange(value));
+      }
     },
     [setSearchValue, tagsToSelect, setTags, onChange],
   );
@@ -108,7 +111,9 @@ export default function useViewModel(props) {
     if (tags.includes(newTag)) return;
     tags.push(newTag);
     setTags([...tags]);
-    onChange && onChange([...tags]);
+    if (onChange) {
+      onChange([...tags]);
+    }
   });
 
   const compositionStartHandler = useMemoizedFn(() => {

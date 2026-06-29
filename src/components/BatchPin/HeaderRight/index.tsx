@@ -14,7 +14,7 @@ interface HeaderRightProps {
 }
 
 export default function HeaderRight(props: HeaderRightProps) {
-  const [config, setConfig] = useContext(AppContext);
+  const [config] = useContext(AppContext);
   const [isDownloading, setIsDownloading] = useState(false);
   const { all, selected, onSelectAll } = props;
   // const { data: tagResult } = useRequest(async () => {
@@ -61,7 +61,7 @@ export default function HeaderRight(props: HeaderRightProps) {
 
       // 延迟关闭，给用户反馈时间
       setTimeout(() => {
-        props.onClose && props.onClose();
+        props.onClose();
       }, 1000);
     } catch (error) {
       console.error('下载失败:', error);

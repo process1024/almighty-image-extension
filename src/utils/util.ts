@@ -1,27 +1,33 @@
 import { isBase64 } from './base64';
 import { cdnRule } from './cdnRule';
 
-export function uniqArray(arr: any[]) {
+export function uniqArray<T>(arr: T[]) {
   return [...new Set(arr)];
 }
 
+type PipeFn = (...args: unknown[]) => unknown;
+
 // 管道组合函数，函数从左至右执行
 export const pipe
-  = (...fns) =>
-    (...args) => {
-      return fns.reduce((acc, fn) => {
+  = (...fns: PipeFn[]) =>
+    (...args: unknown[]) => {
+      return fns.reduce<unknown>((acc, fn) => {
         if (Array.isArray(acc)) {
           return fn(...acc);
-        } else {
-          return fn(acc);
         }
+
+        return fn(acc);
       }, args);
     };
 
 export function testURLMatches(url: string, matches: string[]) {
-  let r, i;
-  for (i = matches.length - 1; i >= 0; i--) {
-    r = new RegExp(`^${matches[i].replace(/\*/g, '.*')}$`);
+  for (let i = matches.length - 1; i >= 0; i--) {
+    const match = matches[i];
+    if (!match) {
+      continue;
+    }
+
+    const r = new RegExp(`^${match.replace(/\*/g, '.*')}$`);
     if (r.test(url)) {
       return true;
     }
@@ -29,7 +35,7 @@ export function testURLMatches(url: string, matches: string[]) {
   return false;
 }
 
-export function isWebUrl(url) {
+export function isWebUrl(url: string) {
   return url.startsWith('http');
 }
 
@@ -42,24 +48,24 @@ export function getDomainByUrl(url: string) {
 }
 
 export function sleep(time = 300) {
-  return new Promise((resolve) => {
+  return new Promise<void>((resolve) => {
     setTimeout(() => {
-      resolve(1);
+      resolve();
     }, time);
   });
 }
 
 // 获取文件返回类型
 // TODO: 跨域情况
-export function fetchContentType(url) {
+export function fetchContentType(url: string) {
   return fetch(url).then((res) => {
     const contentType = res.headers.get('content-type');
-    return contentType.split('/')[1].match(/\b([a-z]+)/g)[0];
+    return contentType?.split('/')[1]?.match(/\b([a-z]+)/g)?.[0] ?? '';
   });
 }
 
-export function parseJwt(e) {
-  const t = e.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'),
+export function parseJwt(e: string) {
+  const t = (e.split('.')[1] ?? '').replace(/-/g, '+').replace(/_/g, '/'),
     r = decodeURIComponent(
       atob(t)
         .split('')
@@ -80,19 +86,27 @@ export function replaceCdnUrl(url: string, { isAsync } = { isAsync: false }) {
     for (let t = 0; t < cdnRule.rules.length; t++)
       try {
         const r = cdnRule.rules[t];
+        if (!r) {
+          continue;
+        }
+
         const n = r.urlPattern;
         if (RegExp(n).test(url)) {
           if (r.replace) {
-            return r.replace(url);
-          } else {
-            return isAsync ? r.replaceAsync(url) : url;
+            return r.replace(url) ?? url;
           }
+
+          return isAsync && r.replaceAsync
+            ? r.replaceAsync(url).then((nextUrl) => nextUrl ?? url)
+            : url;
         }
       } catch (t) {
         return url;
       }
     return url;
   }
+
+  return url;
 }
 
 /** 返回时差，单位小时 */

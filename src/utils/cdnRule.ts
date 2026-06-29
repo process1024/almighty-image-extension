@@ -1,6 +1,17 @@
 import { parseJwt } from './util';
 
-export const cdnRule = {
+interface CdnRuleItem {
+  urlPattern: string | RegExp;
+  replace?: (url: string) => string | undefined;
+  replaceAsync?: (url: string) => Promise<string | undefined>;
+}
+
+interface CdnRuleConfig {
+  version: number;
+  rules: CdnRuleItem[];
+}
+
+export const cdnRule: CdnRuleConfig = {
   version: 20221117,
   rules: [
     {
@@ -51,7 +62,7 @@ export const cdnRule = {
       // site: "meiye",
       urlPattern: '(.*)image.meiye.art/(.*)',
       replace(e) {
-        return e.split('?imageMogr2')[0].split('?vframe')[0];
+        return e.split('?imageMogr2')[0]?.split('?vframe')[0];
       },
     },
     {
@@ -79,7 +90,7 @@ export const cdnRule = {
           return e.split('?')[0];
         }
         return e.includes('screenshots') && e.includes('.gif')
-          ? e.split('?')[0].replace('_4x', '')
+          ? e.split('?')[0]?.replace('_4x', '')
           : e.includes('/videos/')
             ? e.replace('_large_preview', '')
             : -1 === e.indexOf('/attachments/')
@@ -126,7 +137,7 @@ export const cdnRule = {
       replace(e) {
         const t = e.match(/^(http:\/\/tiebapic\.baidu\.com\/forum\/)ab(pic\/item\/[\w.]+)/i);
         if (/\/sys\/portrait/.test(e)) return e.replace(/\/sys\/portrait/, '/sys/portraitl');
-        if (t) return t[1] + t[2];
+        if (t) return `${t[1] ?? ''}${t[2] ?? ''}`;
         const r = e.match(/\/sign=\w+\/([\w.]+)$/);
         return r ? `http://tiebapic.baidu.com/forum/pic/item/${r[1]}` : e;
       },
@@ -205,7 +216,7 @@ export const cdnRule = {
         return new Promise((t) => {
           let r = e;
           if (
-            !(r = (r = (r = (r = r.replace(/c\/\d+x\d+_\d+(\_[A-z0-9]{2}){0,1}\//, '')).replace(
+            !(r = (r = (r = (r = r.replace(/c\/\d+x\d+_\d+(_[A-z0-9]{2}){0,1}\//, '')).replace(
               /img-master/,
               'img-original',
             )).replace(/custom-thumb/, 'img-original')).replace(/_(?<=_p\d_)(.*)1200/, '')).includes('.jpg')
@@ -249,19 +260,19 @@ export const cdnRule = {
       // site: "Amazon",
       urlPattern: 'https://(images-na.ssl-images|m.media)-amazon.com/images/(.*)',
       replace(e) {
-        return e.replace(/\.\_\S+\./, '.');
+        return e.replace(/\._\S+\./, '.');
       },
     },
     {
       // site: "京东",
       urlPattern: 'https://.*.360buyimg.com.*',
       replace(e) {
-        return e
+        return (e
           .replace(/\/n\d+\//, '/n0/')
           .replace(/s\d+x\d+_?/, '')
           .split('!cc')[0]
-          .split('!q')[0]
-          .replace(/.jpg.avif/, '.jpg');
+          ?.split('!q')[0]
+          ?.replace(/.jpg.avif/, '.jpg')) ?? e;
       },
     },
     {

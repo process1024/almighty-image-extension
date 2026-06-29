@@ -8,7 +8,7 @@ export function getElementTop(element: HTMLElement) {
   return getElPosition(element).top;
 }
 
-export function getElPosition(el) {
+export function getElPosition(el: Element) {
   const rect = el.getBoundingClientRect();
   return {
     top: Math.round(rect.top + window.scrollY),
@@ -56,6 +56,10 @@ export function getClearFixFn() {
     const currentFixEl = [] as FixElement[];
     const square = window.innerHeight * window.innerWidth;
     allEle.forEach((el) => {
+      if (!(el instanceof HTMLElement)) {
+        return;
+      }
+
       const style = window.getComputedStyle(el);
       const position = style.getPropertyValue('position');
       if (fixedPosition.includes(position) && !isElContainWindow(el)) {
@@ -105,18 +109,16 @@ export function getClearFixFn() {
   }
 
   // 固定元素 充满屏幕
-  function isElContainWindow(el: HTMLElement) {
+  function isElContainWindow(el: Element) {
     const rect = el.getBoundingClientRect();
     const { top, width, left, height } = rect;
     const { clientWidth, clientHeight } = document.documentElement;
-    if (top === 0 && left === 0 && width === clientWidth && height === clientHeight) {
-      return true;
-    }
+    return top === 0 && left === 0 && width === clientWidth && height === clientHeight;
   }
 
   function removeHidden() {
     allFixedEl.forEach((e) => {
-      e.style.cssText = e.originCssText;
+      e.style.cssText = e.originCssText ?? '';
     });
     document.head.removeChild(style);
     document.documentElement.style['scrollBehavior'] = scrollBehavior;
@@ -169,6 +171,10 @@ export function getMouseHoverElementPosition(axis: { x: number; y: number }) {
   const length = elements.length;
   for (let index = 0; index < length - 1; index++) {
     const element = elements[index];
+    if (!element) {
+      continue;
+    }
+
     const { width, height, opacity, display, visibility, pointerEvents } = getComputedStyle(element);
     if (
       width !== '0'

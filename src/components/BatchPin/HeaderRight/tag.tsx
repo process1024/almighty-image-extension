@@ -2,6 +2,8 @@ import { Select } from 'antd';
 
 import useViewModel from './viewModel';
 
+type HBTagInputProps = Record<string, unknown>;
+
 /**
  *
  * @param {Object} props 支持 Select 所有参数
@@ -14,7 +16,7 @@ import useViewModel from './viewModel';
  * @returns {JSX.Element}
  * @constructor
  */
-export default function HBTagInput(props) {
+export default function HBTagInput(props: HBTagInputProps) {
   const {
     placeholder,
     allowClear,

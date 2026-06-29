@@ -1,11 +1,12 @@
-// src/components/ImageEditor/components/TextTool/useTextTool.js
-import { useState, useEffect } from 'react';
-import { TOOL_TYPES } from '../../constants/tools';
 import { fabric } from 'fabric';
-import { registerCustomFabricTypes } from '../../utils/fabricCustomTypes';
+import { useEffect, useState } from 'react';
 
-export const useTextTool = (canvas, activeFunction) => {
-  const [textOptions, setTextOptions] = useState({
+import { TOOL_TYPES } from '../../constants/tools';
+import { registerCustomFabricTypes } from '../../utils/fabricCustomTypes';
+import type { TextOptions } from '../controlTypes';
+
+export const useTextTool = (canvas: fabric.Canvas | null, activeFunction: string) => {
+  const [textOptions, setTextOptions] = useState<TextOptions>({
     fontSize: 20,
     fill: '#000000',
     fontFamily: 'Arial',
@@ -18,7 +19,7 @@ export const useTextTool = (canvas, activeFunction) => {
     // 使用统一的自定义类型注册
     registerCustomFabricTypes();
 
-    const handleMouseDown = (options) => {
+    const handleMouseDown = (options: fabric.IEvent<Event>) => {
       if (!canvas) return;
 
       // 当存在激活对象时，取消激活并阻止新建文本
@@ -32,6 +33,7 @@ export const useTextTool = (canvas, activeFunction) => {
       if (options.target || activeFunction !== TOOL_TYPES.TEXT) return;
 
       const pointer = canvas.getPointer(options.e);
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const text = new (fabric as any).TextBox('双击编辑文字', {
         left: pointer.x,

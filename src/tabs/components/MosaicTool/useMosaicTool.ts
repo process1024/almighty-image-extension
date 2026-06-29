@@ -1,20 +1,32 @@
-// src/components/ImageEditor/components/MosaicTool/useMosaicTool.js
 import { fabric } from 'fabric';
 import { useEffect, useRef, useState } from 'react';
 
 import { TOOL_TYPES } from '../../constants/tools';
 
-export const useMosaicTool = (canvas, activeTool) => {
-  const [mosaicOptions, setMosaicOptions] = useState({
+interface MosaicOptions {
+  blockSize: number;
+  brushSize: number;
+  color: string;
+}
+
+type FabricPointer = ReturnType<fabric.Canvas['getPointer']>;
+type FabricImageElement = HTMLImageElement | HTMLVideoElement;
+
+function toFabricImageElement(canvas: HTMLCanvasElement) {
+  return canvas as unknown as FabricImageElement;
+}
+
+export const useMosaicTool = (canvas: fabric.Canvas | null, activeTool: string) => {
+  const [mosaicOptions, setMosaicOptions] = useState<MosaicOptions>({
     blockSize: 10,
     brushSize: 20,
     color: '#ededed', // 新增颜色字段，默认灰色
   });
 
   const isDrawingRef = useRef(false);
-  const lastPosRef = useRef(null);
-  const tempCanvasRef = useRef(null);
-  const mosaicLayerRef = useRef(null);
+  const lastPosRef = useRef<FabricPointer | null>(null);
+  const tempCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const mosaicLayerRef = useRef<fabric.Image | null>(null);
   const updatePendingRef = useRef(false);
 
   // 初始化临时画布
@@ -24,11 +36,11 @@ export const useMosaicTool = (canvas, activeTool) => {
     tempCanvasRef.current = document.createElement('canvas');
 
     // 设置临时画布尺寸与主画布相同
-    tempCanvasRef.current.width = canvas.width;
-    tempCanvasRef.current.height = canvas.height;
+    tempCanvasRef.current.width = canvas.width ?? 0;
+    tempCanvasRef.current.height = canvas.height ?? 0;
 
     // 创建马赛克图层
-    mosaicLayerRef.current = new fabric.Image(tempCanvasRef.current, {
+    mosaicLayerRef.current = new fabric.Image(toFabricImageElement(tempCanvasRef.current), {
       left: 0,
       top: 0,
       selectable: false,
@@ -37,18 +49,20 @@ export const useMosaicTool = (canvas, activeTool) => {
   }, [canvas]);
 
   // 应用马赛克效果的函数
-  const applyMosaic = (x, y) => {
+  const applyMosaic = (x: number, y: number) => {
     if (!canvas || !tempCanvasRef.current) return;
 
     const { blockSize, brushSize } = mosaicOptions;
     const ctx = tempCanvasRef.current.getContext('2d');
+    if (!ctx) return;
+
     // const mainCtx = canvas.getContext(); // 不再需要
 
     // 计算马赛克范围
     const left = Math.max(0, x - brushSize / 2);
     const top = Math.max(0, y - brushSize / 2);
-    const right = Math.min(canvas.width, x + brushSize / 2);
-    const bottom = Math.min(canvas.height, y + brushSize / 2);
+    const right = Math.min(canvas.width ?? 0, x + brushSize / 2);
+    const bottom = Math.min(canvas.height ?? 0, y + brushSize / 2);
 
     // 遍历马赛克块
     for (let bx = left; bx < right; bx += blockSize) {
@@ -67,7 +81,9 @@ export const useMosaicTool = (canvas, activeTool) => {
     if (!updatePendingRef.current) {
       updatePendingRef.current = true;
       requestAnimationFrame(() => {
-        mosaicLayerRef.current.setElement(tempCanvasRef.current);
+        if (!canvas || !mosaicLayerRef.current || !tempCanvasRef.current) return;
+
+        mosaicLayerRef.current.setElement(toFabricImageElement(tempCanvasRef.current));
         canvas.renderAll();
         updatePendingRef.current = false;
       });
@@ -77,7 +93,7 @@ export const useMosaicTool = (canvas, activeTool) => {
   useEffect(() => {
     if (!canvas) return;
 
-    const handleMouseDown = e => {
+    const handleMouseDown = (e: fabric.IEvent<Event>) => {
       if (activeTool !== TOOL_TYPES.MOSAIC) return;
 
       isDrawingRef.current = true;
@@ -85,7 +101,7 @@ export const useMosaicTool = (canvas, activeTool) => {
       lastPosRef.current = pointer;
 
       // 确保马赛克图层在画布上
-      if (!canvas.contains(mosaicLayerRef.current)) {
+      if (mosaicLayerRef.current && !canvas.contains(mosaicLayerRef.current)) {
         canvas.add(mosaicLayerRef.current);
       }
 
@@ -93,7 +109,7 @@ export const useMosaicTool = (canvas, activeTool) => {
       applyMosaic(pointer.x, pointer.y);
     };
 
-    const handleMouseMove = e => {
+    const handleMouseMove = (e: fabric.IEvent<Event>) => {
       if (!isDrawingRef.current || activeTool !== TOOL_TYPES.MOSAIC) return;
 
       const pointer = canvas.getPointer(e.e);
@@ -125,7 +141,7 @@ export const useMosaicTool = (canvas, activeTool) => {
 
     if (activeTool === TOOL_TYPES.MOSAIC) {
       // 禁用所有对象的选择和事件
-      canvas.forEachObject(obj => {
+      canvas.forEachObject((obj) => {
         obj.selectable = false;
         obj.evented = false;
       });
@@ -137,7 +153,7 @@ export const useMosaicTool = (canvas, activeTool) => {
       canvas.on('mouse:up', handleMouseUp);
     } else {
       // 恢复所有对象的选择和事件
-      canvas.forEachObject(obj => {
+      canvas.forEachObject((obj) => {
         if (obj !== mosaicLayerRef.current) {
           obj.selectable = true;
           obj.evented = true;
